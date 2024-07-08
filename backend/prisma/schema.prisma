@@ -1,0 +1,70 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Products {
+  id Int @id @default(autoincrement())
+  product_name String
+  description String
+  categoryId Int
+  category ProductCategory @relation(fields: [categoryId], references: [id])
+  productItem ProductItem[]
+}
+
+model ProductCategory {
+  id Int @id @default(autoincrement())
+  category_name String
+  products Products[]
+  variations Variations[]
+}
+
+model ProductItem {
+  id Int @id @default(autoincrement())
+  productId Int
+  variationOptionId Int
+  productLogId Int
+  unitId String @default(cuid())
+  imageURLs String []
+  price Int
+  manufacturer String
+  qty Int
+  status String
+  productLog ProductLog @relation(fields: [productLogId], references: [id])
+  product Products @relation(fields: [productId], references: [id])
+  variationOption VariationOptions @relation(fields: [variationOptionId], references: [id])
+}
+
+model Variations {
+  id Int @id @default(autoincrement())
+  categoryId Int
+  variationName String
+  category ProductCategory @relation(fields: [categoryId], references: [id])
+  options VariationOptions[]
+}
+
+model VariationOptions {
+  id Int @id @default(autoincrement())
+  variationValue String
+  variationId Int
+  variations Variations @relation(fields: [variationId], references: [id])
+  productItems ProductItem[]
+}
+
+model ProductLog {
+  id Int @id @default(autoincrement())
+  createdBy String
+  createdAt String
+  process String
+  productItem ProductItem[]
+}
