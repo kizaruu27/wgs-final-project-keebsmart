@@ -32,24 +32,27 @@ model ProductCategory {
 model ProductItem {
   id Int @id @default(autoincrement())
   productId Int
+  product Products @relation(fields: [productId], references: [id])
   variationOptionId Int
+  variationOption VariationOptions @relation(fields: [variationOptionId], references: [id])
   productLogId Int
+  productLog ProductLog @relation(fields: [productLogId], references: [id])
+  cartId Int
+  cart Cart @relation(fields: [cartId], references: [id])
   unitId String @default(cuid())
   imageURLs String []
   price Int
   manufacturer String
   qty Int
   status String
-  productLog ProductLog @relation(fields: [productLogId], references: [id])
-  product Products @relation(fields: [productId], references: [id])
-  variationOption VariationOptions @relation(fields: [variationOptionId], references: [id])
+  orders Orders []
 }
 
 model Variations {
   id Int @id @default(autoincrement())
   categoryId Int
-  variationName String
   category ProductCategory @relation(fields: [categoryId], references: [id])
+  variationName String
   options VariationOptions[]
 }
 
@@ -63,8 +66,89 @@ model VariationOptions {
 
 model ProductLog {
   id Int @id @default(autoincrement())
-  createdBy String
-  createdAt String
+  userId String
+  createdBy User @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
   process String
   productItem ProductItem[]
+}
+
+model User {
+  id String @id @default(uuid())
+  name String
+  email String @unique
+  password String
+  phoneNumber String
+  isActive Boolean
+  access String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  productLog ProductLog []
+  userAddress UserAddress []
+  cart Cart []
+  shipment Shipping []
+  orders Orders []
+  messeges Messeges []
+}
+
+model UserAddress {
+  id Int @id @default(autoincrement())
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  street String
+  kelurahan String
+  kecamatan String
+  city String
+  province String
+  postCode Int
+  isDefault Boolean
+  orders Orders []
+  shipment Shipping []
+}
+
+model PaymentMethods {
+  id Int @id @default(autoincrement())
+  paymentType String
+  orders Orders []
+}
+
+model Cart {
+  id Int @id @default(autoincrement())
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  productItem ProductItem []
+}
+model Shipping {
+  id String @id @default(uuid())
+  shipmentName String @default("KeebsMart Express")
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  addressId Int
+  address UserAddress @relation(fields: [addressId], references: [id])
+  orders Orders []
+}
+
+model Orders {
+  orderId String @id @default(uuid())
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  orderDate DateTime @default(now())
+  paymentMethodId Int
+  paymentMethod PaymentMethods @relation(fields: [paymentMethodId], references: [id])
+  addressId Int
+  address UserAddress @relation(fields: [addressId], references: [id])
+  shippingId String
+  shipping Shipping @relation(fields: [shippingId], references: [id])
+  orderStatus String
+  productItems ProductItem []
+  orderTotal Int
+  totalPrice Int
+  orderNotes String
+}
+
+model Messeges {
+  id Int @id @default(autoincrement())
+  userId String
+  user User @relation(fields: [userId], references: [id])
+  msg String
 }

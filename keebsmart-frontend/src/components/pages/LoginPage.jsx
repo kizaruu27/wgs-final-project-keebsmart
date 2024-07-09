@@ -9,7 +9,7 @@ export default function LoginPage() {
         <LoginRegister>
             <LoginRegisterCover src="https://res.cloudinary.com/kineticlabs/image/upload/q_auto/c_fit,w_3500/f_auto/v1/api-images/products/yunzii-al66-keyboard/DSC00796_vmnqhp" />
             <LoginLayout>
-                <Logo />
+                <Logo textStyle='text-4xl text-center mt-14' />
                 <LoginForm />
             </LoginLayout>
         </LoginRegister>
