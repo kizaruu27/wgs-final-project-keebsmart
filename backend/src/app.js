@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const app = express();
@@ -10,6 +12,103 @@ app.use(cors());
 app.use(express.json());
 
 const PORT = process.env.PORT;
+const SECRET = process.env.JWT_SECRET;
+
+// Middleware for authenticate with JWT
+const accessValidation = (req, res, next) => {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) res.status(401).json({error: 'Token not found! Please add a token!'});
+
+    try {
+        const decoded = jwt.verify(token, SECRET);
+        req.userId = decoded.userId;
+        next();
+    } catch (error) {
+        res.status(401).json({error: 'Invalid Token'})
+    }
+}
+
+// API for see all users
+app.get('/users', accessValidation, async (req, res) => {
+    try {
+        const users = await prisma.user.findMany();
+        res.json({
+            data: {users},
+            msg: 'Get all users success'
+        })
+    } catch (error) {
+        console.log(error.messege);
+    }
+})
+
+// API for registration
+app.post('/registration', async (req, res) => {
+    try {
+        const {name, email, password, phoneNumber, isActive, access} = req.body;
+    
+        // Validate email
+        const similarEmail = await prisma.user.findUnique({
+            where: {
+                email
+            }
+        });
+    
+        if (similarEmail) {
+            return res.json({
+                msg: 'Email sudah digunakan! Silahkan gunakan email yg berbeda!'
+            })
+        };
+
+        const hashPassword = await bcrypt.hash(password, 10);
+    
+        const newUser = await prisma.user.create({
+            data: {
+                name, email, 
+                password: hashPassword, 
+                phoneNumber, isActive, access
+            }
+        });
+        
+        res.status(201);
+        res.json({
+            data: newUser,
+            msg: 'Akun berhasil dibuat!'
+        })
+    } catch (error) {
+        console.log(error.messege);
+    }
+})
+
+// API for login
+app.post('/login', async (req, res) => {
+    const {email, password} = req.body;
+
+    const user = await prisma.user.findUnique({
+        where: { email }
+    });
+
+    if (!user) {
+        return res.json('Akun tidak terdaftar!');
+    }
+
+    const passwordIsValid = await bcrypt.compare(password, user.password);
+    if (!passwordIsValid) {
+        return res.json('Password salah!');
+    }
+
+    const payload = {
+        userId: user.id,
+        name: user.name
+    }
+    const expiresIn = 60 * 60 * 1;
+    const token = jwt.sign(payload, SECRET, {expiresIn});
+
+    res.json({
+        data: user,
+        token,
+        msg: 'Login Berhasil!'
+    })
+})
 
 // API for get all products
 app.get('/products', async (req, res) => {
