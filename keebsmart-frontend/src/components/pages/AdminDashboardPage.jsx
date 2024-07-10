@@ -66,12 +66,6 @@ export default function AdminDashboardPage() {
                         <AccordionDetails>
                             <a href="">All Users</a>
                         </AccordionDetails>
-                        <AccordionDetails>
-                            <a href="">Active Users</a>
-                        </AccordionDetails>
-                        <AccordionDetails>
-                            <a href="">Non-Active Users</a>
-                        </AccordionDetails>
                     </Accordion>
 
                     <Accordion>
