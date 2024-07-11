@@ -9,20 +9,29 @@ import FeaturedProductItem from '../elements/FeaturedProductItem';
 import HomePageGallery from '../Layouts/HomePageGallery';
 import Navbar from '../Layouts/Navbar';
 import Footer from '../Layouts/Footer';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { getUserData } from '../../server/userDataController';
+import { GoToPage } from '../../server/pageController';
 
 export default function HomePage() {
+    const [username, setUsername] = useState('');
+
+    const onSuccessGetUserData = (data) => setUsername(data.name);
+    const onTokenEmpty = () => GoToPage('/login');
+    
+    const onFailedGetUserData = (error) => {
+        // Error handling
+
+        console.log(error);
+    }
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        setTimeout(() => {
-            if (!token) window.location.href = '/login';
-        }, 100);
+        getUserData(onSuccessGetUserData, onFailedGetUserData, onTokenEmpty);
     }, [0]);
 
     return (
         <>
-            <Navbar />
+            <Navbar username={username}/>
             <HeaderNavigation />
             <HomePagePreview />
             <HomePageWhyUs />

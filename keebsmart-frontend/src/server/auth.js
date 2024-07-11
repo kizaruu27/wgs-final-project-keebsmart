@@ -1,19 +1,25 @@
 import axios from 'axios';
 import { urlEndpoint } from './url';
+import { jwtDecode } from 'jwt-decode';
 
-export const login = async (email, password, onAdminLogin, onCustomerLogin, onLoginFailed) => {
+export const userLogin = async (email, password, onAdminLogin, onCustomerLogin, onLoginFailed) => {
     try {
         const response = await axios.post(`${urlEndpoint}/login`, {
             email, password
         })
-        console.log(response.data);
         const { token } = response.data;
+        const payload = jwtDecode(token);
+        console.log(response.data);
         localStorage.setItem('token', token);
 
-        if (response.data.data.access === 'admin') {
-            onAdminLogin();
-        } else if (response.data.data.access === 'customer') {
-            onCustomerLogin();
+        switch (payload.access) {
+            case 'admin':
+                onAdminLogin();
+                break;
+            case 'customer':
+                onCustomerLogin();
+            default:
+                break;
         }
     } catch (error) {
         onLoginFailed();

@@ -3,9 +3,9 @@ import NavbarLogo from "../elements/NavbarLogo"
 import NavbarMenuContainer from "../fragments/NavbarMenuContainer"
 import NavbarMenu from "../elements/NavbarMenu"
 import CartIcon from "../elements/CartIcon"
-import NavbarSignInButton from "../elements/NavbarSignInButton"
+import NavbarUsername from "../elements/NavbarUsername"
 
-export default function Navbar() {
+export default function Navbar({username}) {
     const backToHome = () => window.location.href = '/';
 
     return (
@@ -16,7 +16,7 @@ export default function Navbar() {
                 <NavbarMenu linkTo='/keycaps' text='Keycaps' />
                 <NavbarMenu linkTo='/switches' text='Switches' />
                 <CartIcon size={6}/>
-                <NavbarSignInButton linkTo='/login' text='Sign In'/>
+                <NavbarUsername linkTo='/profile' text={username}/>
             </NavbarMenuContainer>
         </NavbarFragment>
     )

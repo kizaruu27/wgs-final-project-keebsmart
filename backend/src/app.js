@@ -98,81 +98,48 @@ app.post('/login', async (req, res) => {
 
     const payload = {
         userId: user.id,
-        name: user.name
+        name: user.name,
+        access: user.access
     }
     const expiresIn = 60 * 60 * 1;
     const token = jwt.sign(payload, SECRET, {expiresIn});
 
     res.json({
-        data: user,
+        user,
         token,
         msg: 'Login Berhasil!'
     })
+});
+
+// API for get login user data
+app.get('/user', accessValidation, async (req, res) => {
+    try {
+        const id = req.userId;
+        const response = await prisma.user.findUnique({
+            where: {id}
+        });
+        res.json({
+            user: response,
+            msg: 'Successfull get user data!'
+        })
+    } catch (error) {
+        res.json({
+            msg: error
+        })
+    }
+    
 })
 
 // API for get all products
 app.get('/products', async (req, res) => {
     try {
         const response = await prisma.products.findMany({
-            select: {
-                id: true,
-                product_name: true,
-                description: true,
-                category: {
-                    select: {
-                        category_name: true
-                    }
-                },
-                productItem : {
-                    select : {
-                        id: true,
-                        unitId: true,
-                        imageURLs: true,
-                        price: true,
-                        manufacturer: true,
-                        qty: true,
-                        status: true,
-                        productLog: {
-                            select: {
-                                createdBy: true,
-                                createdAt: true
-                            }
-                        },
-                        variationOption: {
-                            select: {
-                                variations: {
-                                    select: {
-                                        variationName: true
-                                    }
-                                },
-                                variationValue: true
-                            }
-                        }
-                    }
-                }
-            }
+            include: {
+                category: true,
+                productItem: true
+            } 
         });
-
-        const products = response.map(product => ({
-            id: product.id,
-            productName: product.product_name,
-            description: product.description,
-            category: product.category.category_name,
-            productItem: product.productItem.map(product => ({
-                id: product.id,
-                unitId: product.unitId,
-                imageURLs: product.imageURLs,
-                manufacturer: product.manufacturer,
-                qty: product.qty,
-                price: product.price,
-                status: product.status,
-                createdBy: product.productLog.createdBy,
-                createdAt: product.productLog.createdAt,
-                [product.variationOption.variations.variationName]: product.variationOption.variationValue
-            }))
-        }));
-
-        res.json(products);
+        res.json(response);
     } catch (error) {
         console.log(error.message);
     }
@@ -184,37 +151,24 @@ app.get('/product/:id', async (req, res) => {
         const { id } = req.params;
         const response = await prisma.products.findUnique({
             select: {
-                id: true,
-                product_name: true,
+                productName: true,
                 description: true,
-                category: {
-                    select: {
-                        category_name: true
-                    }
-                },
-                productItem : {
-                    select : {
-                        id: true,
-                        unitId: true,
-                        imageURLs: true,
-                        price: true,
-                        manufacturer: true,
-                        qty: true,
-                        status: true,
-                        productLog: {
-                            select: {
-                                createdBy: true,
-                                createdAt: true
+                brand: true,
+                category: true,
+                productItem: {
+                    include: {
+                        variationOption: {
+                            include: {
+                                variations: true
                             }
                         },
-                        variationOption: {
-                            select: {
-                                variations: {
+                        productLog: {
+                            include: {
+                                createdBy: {
                                     select: {
-                                        variationName: true
+                                        name: true
                                     }
-                                },
-                                variationValue: true
+                                }
                             }
                         }
                     }
@@ -224,61 +178,45 @@ app.get('/product/:id', async (req, res) => {
                 id: Number(id)
             }
         });
-
-        const product = {
-            id: response.id,
-            productName: response.product_name,
-            description: response.description,
-            category: response.category.category_name,
-            productItem: response.productItem.map(product => ({
-                id: product.id,
-                unitId: product.unitId,
-                imageURLs: product.imageURLs,
-                manufacturer: product.manufacturer,
-                qty: product.qty,
-                price: product.price,
-                status: product.status,
-                createdBy: product.productLog.createdBy,
-                createdAt: product.productLog.createdAt,
-                [product.variationOption.variations.variationName]: product.variationOption.variationValue
-            }))
-        };
         
-        res.json(product);
+        res.json(response);
     } catch (error) {
-        console.log(error.messege);
+        console.log(error);
     }
 });
 
 // API for add new product
 app.post('/product/add', async (req, res) => {
-    const { createdBy, createdAt, categoryId, productName, description, process } = req.body;
+    const { productName, description, brand, categoryId } = req.body;
 
     try {
-        const productLog = await prisma.productLog.create({
-            data: {
-                createdAt: createdAt,
-                createdBy: createdBy,
-                process: process
-            }
-        });
-
         const newProduct = await prisma.products.create({
             data: {
-                product_name: productName,
-                description: description,
-                categoryId: categoryId
+                productName, description, brand, categoryId
             }
         });
 
+        res.status(201);
         res.json({
-            data: newProduct,
+            product: newProduct,
             msg: 'Product berhasil ditambah!'
         });
     } catch (error) {
-        console.log(error.message);
+        res.json({
+            error
+        })
     }
 });
+
+// API for get all category
+app.get('/category', async (req, res) => {
+    try {
+        const response = await prisma.productCategory.findMany();
+        res.json(response);
+    } catch (error) {
+        res.json({error});
+    }
+})
 
 // API for add product item
 app.post('/product/item/add', async (req, res) => {
