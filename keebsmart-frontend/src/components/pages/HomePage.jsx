@@ -9,8 +9,17 @@ import FeaturedProductItem from '../elements/FeaturedProductItem';
 import HomePageGallery from '../Layouts/HomePageGallery';
 import Navbar from '../Layouts/Navbar';
 import Footer from '../Layouts/Footer';
+import { useEffect } from 'react';
 
 export default function HomePage() {
+
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        setTimeout(() => {
+            if (!token) window.location.href = '/login';
+        }, 100);
+    }, [0]);
+
     return (
         <>
             <Navbar />
