@@ -6,6 +6,7 @@ import AdminDashboardPage from './components/pages/AdminDashboardPage';
 import AdminAddProductForm from './components/pages/AdminAddProductForm';
 import AdminAllProductPage from './components/pages/AdminAllProductPage';
 import AdminProductItem from './components/pages/AdminProductItem';
+import AdminAddProductItemForm from './components/pages/AdminAddProductItemForm';
 
 export default function App() {
     return (
@@ -19,6 +20,7 @@ export default function App() {
                     <Route path="/admin/add-product" Component={AdminAddProductForm}/>
                     <Route path="/admin/products" Component={AdminAllProductPage}/>
                     <Route path="/admin/product/:id" Component={AdminProductItem}/>
+                    <Route path="/admin/add-item/:id" Component={AdminAddProductItemForm}/>
                 </Routes>
             </Router>
         </>

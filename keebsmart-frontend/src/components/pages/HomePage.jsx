@@ -12,9 +12,11 @@ import Footer from '../Layouts/Footer';
 import { useEffect, useState } from 'react';
 import { getUserData } from '../../server/userDataController';
 import { GoToPage } from '../../server/pageController';
+import { getSwitchesData } from '../../server/productController';
 
 export default function HomePage() {
     const [username, setUsername] = useState('');
+    const [switchData, setSwitchData] = useState([]);
 
     const onSuccessGetUserData = (data) => setUsername(data.name);
     const onTokenEmpty = () => GoToPage('/login');
@@ -22,12 +24,20 @@ export default function HomePage() {
     const onFailedGetUserData = (error) => {
         // Error handling
 
-        console.log(error);
+        GoToPage('/login');
     }
 
     useEffect(() => {
         getUserData(onSuccessGetUserData, onFailedGetUserData, onTokenEmpty);
     }, [0]);
+
+    useEffect(() => {
+        const fetchSwitchData = async () => {
+            await getSwitchesData(setSwitchData);
+        };
+        
+        fetchSwitchData();
+    },[]);
 
     return (
         <>
@@ -38,7 +48,9 @@ export default function HomePage() {
 
             {/* Featured Switches */}
             <FeaturedProducts icon={switchIcon} title='Featured Switch' description='Mechanical keyboard switches come in all shapes and sizes. We offer a wide selection of switches to suit your needs: linear, clicky, tactile, even silent switches.' buttonText='Shop Switches'> 
-                <FeaturedProductItem productName='Hippo Linear Switches' description='Smooth UHMWPE Stem' price='Rp. 3500' imgMarginY='mt-3' img='https://res.cloudinary.com/kineticlabs/image/upload/q_auto/c_fit,w_590/f_auto/v1/api-images/products/hippos/hippo-linear-switch_jehz9a' />
+                {switchData.map((item, key) => (
+                    <FeaturedProductItem key={key} productName={item.productName} description={item.description} price={item.productItem[0].price} imgMarginY='mt-3' img={item.productItem[0].imageURLs[0]} />
+                ))}
             </FeaturedProducts>
 
             {/* Featured Keycaps */}

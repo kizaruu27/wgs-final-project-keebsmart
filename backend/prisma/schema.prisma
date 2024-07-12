@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -14,142 +8,142 @@ datasource db {
 }
 
 model Products {
-  id Int @id @default(autoincrement())
+  id          Int             @id @default(autoincrement())
   productName String
   description String
-  brand String
-  categoryId Int
-  category ProductCategory @relation(fields: [categoryId], references: [id])
+  brand       String
+  categoryId  Int
   productItem ProductItem[]
+  category    ProductCategory @relation(fields: [categoryId], references: [id])
 }
 
 model ProductCategory {
-  id Int @id @default(autoincrement())
-  category_name String
-  products Products[]
-  variations Variations[]
+  id            Int          @id @default(autoincrement())
+  categoryName String
+  products      Products[]
+  variations    Variations[]
 }
 
 model ProductItem {
-  id Int @id @default(autoincrement())
-  productId Int
-  product Products @relation(fields: [productId], references: [id])
+  id                Int              @id @default(autoincrement())
+  productId         Int
   variationOptionId Int
-  variationOption VariationOptions @relation(fields: [variationOptionId], references: [id])
-  productLogId Int
-  productLog ProductLog @relation(fields: [productLogId], references: [id])
-  cartId Int
-  cart Cart @relation(fields: [cartId], references: [id])
-  unitId String @default(cuid())
-  imageURLs String []
-  price Int
-  manufacturer String
-  qty Int
-  status String
-  orders Orders []
+  productLogId      Int
+  unitId            String           @default(cuid())
+  imageURLs         String[]
+  price             Int
+  manufacturer      String
+  qty               Int
+  status            String
+  Cart              Cart             []
+  product           Products         @relation(fields: [productId], references: [id])
+  productLog        ProductLog       @relation(fields: [productLogId], references: [id])
+  variationOption   VariationOptions @relation(fields: [variationOptionId], references: [id])
+  orders            Orders[]         @relation("OrdersToProductItem")
 }
 
 model Variations {
-  id Int @id @default(autoincrement())
-  categoryId Int
-  category ProductCategory @relation(fields: [categoryId], references: [id])
+  id            Int                @id @default(autoincrement())
+  categoryId    Int
   variationName String
-  options VariationOptions[]
+  options       VariationOptions[]
+  category      ProductCategory    @relation(fields: [categoryId], references: [id])
 }
 
 model VariationOptions {
-  id Int @id @default(autoincrement())
+  id             Int           @id @default(autoincrement())
   variationValue String
-  variationId Int
-  variations Variations @relation(fields: [variationId], references: [id])
-  productItems ProductItem[]
+  variationId    Int
+  productItems   ProductItem[]
+  variations     Variations    @relation(fields: [variationId], references: [id])
 }
 
 model ProductLog {
-  id Int @id @default(autoincrement())
-  userId String
-  createdBy User @relation(fields: [userId], references: [id])
-  createdAt DateTime @default(now())
-  process String
+  id          Int           @id @default(autoincrement())
+  userId      String
+  createdAt   DateTime      @default(now())
+  process     String
   productItem ProductItem[]
+  createdBy   User          @relation(fields: [userId], references: [id])
 }
 
 model User {
-  id String @id @default(uuid())
-  name String
-  email String @unique
-  password String
+  id          String        @id @default(uuid())
+  name        String
+  email       String        @unique
+  password    String
   phoneNumber String
-  isActive Boolean
-  access String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  productLog ProductLog []
-  userAddress UserAddress []
-  cart Cart []
-  shipment Shipping []
-  orders Orders []
-  messeges Messeges []
+  isActive    Boolean
+  access      String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  cart        Cart?
+  messeges    Messeges[]
+  orders      Orders[]
+  productLog  ProductLog[]
+  shipment    Shipping[]
+  userAddress UserAddress[]
 }
 
 model UserAddress {
-  id Int @id @default(autoincrement())
-  userId String
-  user User @relation(fields: [userId], references: [id])
-  street String
+  id        Int        @id @default(autoincrement())
+  userId    String
+  street    String
   kelurahan String
   kecamatan String
-  city String
-  province String
-  postCode Int
+  city      String
+  province  String
+  postCode  Int
   isDefault Boolean
-  orders Orders []
-  shipment Shipping []
+  orders    Orders[]
+  shipment  Shipping[]
+  user      User       @relation(fields: [userId], references: [id])
 }
 
 model PaymentMethods {
-  id Int @id @default(autoincrement())
+  id          Int      @id @default(autoincrement())
   paymentType String
-  orders Orders []
+  orders      Orders[]
 }
 
 model Cart {
-  id Int @id @default(autoincrement())
-  userId String
-  user User @relation(fields: [userId], references: [id])
-  productItem ProductItem []
+  id          Int           @id @default(autoincrement())
+  userId      String        @unique
+  user        User          @relation(fields: [userId], references: [id])
+  ProductItem ProductItem[]
 }
+
 model Shipping {
-  id String @id @default(uuid())
-  shipmentName String @default("KeebsMart Express")
-  userId String
-  user User @relation(fields: [userId], references: [id])
-  addressId Int
-  address UserAddress @relation(fields: [addressId], references: [id])
-  orders Orders []
+  id           String      @id @default(uuid())
+  shipmentName String      @default("KeebsMart Express")
+  userId       String
+  addressId    Int
+  orders       Orders[]
+  address      UserAddress @relation(fields: [addressId], references: [id])
+  user         User        @relation(fields: [userId], references: [id])
 }
 
 model Orders {
-  orderId String @id @default(uuid())
-  userId String
-  user User @relation(fields: [userId], references: [id])
-  orderDate DateTime @default(now())
+  orderId         String         @id @default(uuid())
+  userId          String
+  orderDate       DateTime       @default(now())
   paymentMethodId Int
-  paymentMethod PaymentMethods @relation(fields: [paymentMethodId], references: [id])
-  addressId Int
-  address UserAddress @relation(fields: [addressId], references: [id])
-  shippingId String
-  shipping Shipping @relation(fields: [shippingId], references: [id])
-  orderStatus String
-  productItems ProductItem []
-  orderTotal Int
-  totalPrice Int
-  orderNotes String
+  addressId       Int
+  shippingId      String
+  orderStatus     String
+  orderTotal      Int
+  totalPrice      Int
+  orderNotes      String
+  address         UserAddress    @relation(fields: [addressId], references: [id])
+  paymentMethod   PaymentMethods @relation(fields: [paymentMethodId], references: [id])
+  shipping        Shipping       @relation(fields: [shippingId], references: [id])
+  user            User           @relation(fields: [userId], references: [id])
+  productItems    ProductItem[]  @relation("OrdersToProductItem")
 }
 
 model Messeges {
-  id Int @id @default(autoincrement())
+  id     Int    @id @default(autoincrement())
   userId String
-  user User @relation(fields: [userId], references: [id])
-  msg String
+  msg    String
+  user   User   @relation(fields: [userId], references: [id])
 }

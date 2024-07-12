@@ -29,7 +29,7 @@ export const userLogin = async (email, password, onAdminLogin, onCustomerLogin, 
 export const userRegister = async (name, email, password, phoneNumber, onRegisterSuccess, onRegisterFailed, setMsg) => {
     try {
         const response = await axios.post(`${urlEndpoint}/registration`, {
-            name, email, password, phoneNumber, isActive: true, access: 'customer'
+            name, email, password, phoneNumber
         });
         if (response.status !== 201) {
             onRegisterFailed();

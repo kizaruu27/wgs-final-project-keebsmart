@@ -48,7 +48,7 @@ export default function AdminAddProductForm() {
                                 <select onChange={e => setCategoryId(e.target.value)} id="category" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full p-2.5">
                                     <option defaultValue={''}>Select category</option>
                                     {categories.map((cat, key) => (
-                                        <option key={key} value={cat.id}>{cat.category_name}</option>
+                                        <option key={key} value={cat.id}>{cat.categoryName}</option>
                                     ))}
                                 </select>
                             </div>

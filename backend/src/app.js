@@ -41,10 +41,10 @@ app.get('/users', accessValidation, async (req, res) => {
     }
 })
 
-// API for registration
+// API for user registration
 app.post('/registration', async (req, res) => {
     try {
-        const {name, email, password, phoneNumber, isActive, access} = req.body;
+        const {name, email, password, phoneNumber} = req.body;
     
         // Validate email
         const similarEmail = await prisma.user.findUnique({
@@ -63,21 +63,62 @@ app.post('/registration', async (req, res) => {
     
         const newUser = await prisma.user.create({
             data: {
-                name, email, 
-                password: hashPassword, 
-                phoneNumber, isActive, access
+                name, email, password: hashPassword, phoneNumber, isActive: true, access: 'customer'
             }
         });
         
+        const newCart = await prisma.cart.create({
+            data: {
+                userId: newUser.id
+            }
+        })
+
         res.status(201);
         res.json({
-            data: newUser,
+            user: newUser,
+            cart: newCart,
             msg: 'Akun berhasil dibuat!'
         })
     } catch (error) {
-        console.log(error.messege);
+        console.log(error);
     }
-})
+});
+
+// API for admin registration
+app.post('/admin/registration', async (req, res) => {
+    try {
+        const {name, email, password, phoneNumber} = req.body;
+    
+        // Validate email
+        const similarEmail = await prisma.user.findUnique({
+            where: {
+                email
+            }
+        });
+    
+        if (similarEmail) {
+            return res.json({
+                msg: 'Email sudah digunakan! Silahkan gunakan email yg berbeda!'
+            })
+        };
+
+        const hashPassword = await bcrypt.hash(password, 10);
+    
+        const newUser = await prisma.user.create({
+            data: {
+                name, email, password: hashPassword, phoneNumber, isActive: true, access: 'admin'
+            }
+        });
+
+        res.status(201);
+        res.json({
+            user: newUser,
+            msg: 'Akun berhasil dibuat!'
+        })
+    } catch (error) {
+        console.log(error);
+    }
+});
 
 // API for login
 app.post('/login', async (req, res) => {
@@ -219,31 +260,39 @@ app.get('/category', async (req, res) => {
 })
 
 // API for add product item
-app.post('/product/item/add', async (req, res) => {
-    const { createdBy, createdAt, productId, qty, imageURL, price, manufacturer, status, variationOptionId, process } = req.body;
+app.post('/product/item/add', accessValidation, async (req, res) => {
+    const { productId, qty, imageURLs, price, manufacturer, status, process, variationValue, variationId } = req.body;
+    const id = req.userId;
 
     try {
         const productLog = await prisma.productLog.create({
             data: {
-                createdAt: createdAt,
-                createdBy: createdBy,
-                process: process
+                userId: id, 
+                process
             }
         });
+
+        const variationOption = await prisma.variationOptions.create({
+            data: {
+                variationValue, 
+                variationId
+            }
+        })
 
         const newProductItem = await prisma.productItem.create({
             data: {
-                productId: productId,
-                variationOptionId: variationOptionId,
+                productId, 
+                variationOptionId: variationOption.id,
                 productLogId: productLog.id,
-                imageURLs: imageURL,
-                price: price,
-                manufacturer: manufacturer,
-                qty: qty,
-                status: status
+                imageURLs,
+                price,
+                manufacturer,
+                qty,
+                status
             }
-        });
+        })
 
+        res.status(201);
         res.json({
             data: newProductItem,
             msg: 'Product Item berhasil ditambah!'
@@ -252,6 +301,42 @@ app.post('/product/item/add', async (req, res) => {
         console.log(error.message);
     }
 });
+
+// API for get variation from product
+app.get('/product/variation/:id', async (req, res) => {
+    const { id } = req.params;
+
+    const variation = await prisma.variations.findMany({
+        where: {
+            categoryId: Number(id)
+        } 
+    }); 
+
+    res.json(variation);
+});
+
+// API for get switch products
+app.get('/products/switch', async (req, res) => {
+    try {
+        const switches = await prisma.products.findMany({
+            where: {
+                category: {
+                    categoryName: 'Switch'
+                }
+            },
+            include: {
+                productItem: true
+            }
+        });
+        
+        res.json({
+            switches,
+            msg: 'Berhasil mendapatkan data switches!'
+        })
+    } catch (error) {
+        res.json({error})
+    }
+})
 
 // API for edit product data
 app.put('/product/update/:id', async (req, res) => {

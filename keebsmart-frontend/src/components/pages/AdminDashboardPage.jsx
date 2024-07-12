@@ -15,7 +15,7 @@ export default function AdminDashboardPage() {
 
     const onGetUserFailed = (error) => {
         // handling error
-
+        GoToPage('/login');
         console.log(error);
     }
 
