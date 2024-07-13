@@ -3,6 +3,8 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const path = require('path');
+const multer = require('multer');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const app = express();
@@ -10,6 +12,7 @@ dotenv.config();
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static('public'));
 
 const PORT = process.env.PORT;
 const SECRET = process.env.JWT_SECRET;
@@ -27,6 +30,37 @@ const accessValidation = (req, res, next) => {
         res.status(401).json({error: 'Invalid Token'})
     }
 }
+
+// Middleware multer for disk storage
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'public/images/');
+    },
+    filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({ storage })
+
+// API for image test
+app.post('/product/images', upload.array('images', 20), (req, res) => {
+    try {
+        const { nama, role } = req.body;
+        const imageUrls = req.files.map(file => `http://localhost:${PORT}/images/${file.filename}`);
+        res.status(200).json({
+            nama, role,
+            message: 'Images uploaded successfully',
+            imageUrls: imageUrls
+        });
+    } catch (error) {
+        res.status(500).json({
+            message: 'Image upload failed',
+            error: error.message
+        });
+    }
+});
 
 // API for see all users
 app.get('/users', accessValidation, async (req, res) => {
@@ -260,11 +294,12 @@ app.get('/category', async (req, res) => {
 })
 
 // API for add product item
-app.post('/product/item/add', accessValidation, async (req, res) => {
-    const { productId, qty, imageURLs, price, manufacturer, status, process, variationValue, variationId } = req.body;
-    const id = req.userId;
-
+app.post('/product/item/add', accessValidation, upload.array('images', 10), async (req, res) => {
     try {
+        const imageURLs = req.files.map(file => `http://localhost:${PORT}/images/${file.filename}`);
+        const { productId, qty, price, manufacturer, status, process, variationValue, variationId } = req.body;
+        const id = req.userId;
+
         const productLog = await prisma.productLog.create({
             data: {
                 userId: id, 
@@ -275,19 +310,19 @@ app.post('/product/item/add', accessValidation, async (req, res) => {
         const variationOption = await prisma.variationOptions.create({
             data: {
                 variationValue, 
-                variationId
+                variationId: Number(variationId)
             }
         })
 
         const newProductItem = await prisma.productItem.create({
             data: {
-                productId, 
+                productId: Number(productId), 
                 variationOptionId: variationOption.id,
                 productLogId: productLog.id,
                 imageURLs,
-                price,
+                price: Number(price),
                 manufacturer,
-                qty,
+                qty: Number(qty),
                 status
             }
         })

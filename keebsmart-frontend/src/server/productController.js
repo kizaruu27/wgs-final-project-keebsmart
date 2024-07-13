@@ -56,23 +56,27 @@ export const getProductVariation = async (id, setVariation) => {
     }
 }
 
-export const addProductItem = async (productId, qty, imageURLs, price, manufacturer, status, process, variationValue, variationId, onSuccess, onFailed) => {
-    const token = localStorage.getItem('token');
+export const addProductItem = async (productId, qty, images, price, manufacturer, status, process, variationValue, variationId, onSuccess, onFailed) => {
     try {
-        const response = await axios.post(`${urlEndpoint}/product/item/add`, {
-            productId: Number(productId), 
-            qty: Number(qty), 
-            imageURLs, 
-            price: Number(price), 
-            manufacturer, 
-            status, 
-            process, 
-            variationValue, 
-            variationId: Number(variationId)
-        },
-        {
+        const token = localStorage.getItem('token');
+        const formData = new FormData();
+        formData.append('productId', productId);
+        formData.append('qty', qty);
+        formData.append('price', price);
+        formData.append('manufacturer', manufacturer);
+        formData.append('status', status);
+        formData.append('process', process);
+        formData.append('variationValue', variationValue);
+        formData.append('variationId', variationId);
+
+        for (let i = 0; i < images.length; i++) {
+            formData.append('images', images[i]);
+        }
+
+        const response = await axios.post(`${urlEndpoint}/product/item/add`, formData, {
             headers: {
-                Authorization: `Bearer ${token}`
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data'
             }
         });
 

@@ -41,8 +41,7 @@ export default function AdminAddProductItemForm() {
     const onPostFailed = (error) => console.log(error);
 
     const readImage = (e) => {  
-        const image = URL.createObjectURL(e.target.files[0]);
-        setImageURL([image]);
+        console.log(e);
     }
 
     const postNewProductItem = (e) => {
@@ -98,8 +97,8 @@ export default function AdminAddProductItemForm() {
                                 <input onChange={e => setProcess(e.target.value)} type="text" name="notes" id="notes" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Add your notes here" required="" />
                             </div>
                             <div className="sm:col-span-2">
-                                <label class="block mb-2 text-sm font-medium text-gray-900" for="image">Upload Image</label>
-                                <input multiple class="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none0" id="image" name="image" type="file" onChange={e => readImage(e)} />
+                                <label className="block mb-2 text-sm font-medium text-gray-900" htmlFor="images">Upload Image</label>
+                                <input type="file" accept="image" multiple className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none0" id="images" name="images" onChange={e => setImageURL(e.target.files)} />
                             </div>
                         </div>
                         <button type="submit" className="inline-flex items-center px-5 py-2.5 mt-4 sm:mt-6 text-sm font-medium text-center text-white bg-slate-500 rounded-lg focus:ring-4 focus:ring-gray-200 hover:bg-slate-400">

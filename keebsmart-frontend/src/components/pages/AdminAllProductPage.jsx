@@ -18,7 +18,7 @@ export default function AdminAllProductPage() {
             <DashboardContent>
                 <div className="flex flex-col justify-center my-9">
                     <h1 className="text-2xl font-medium text-center mb-7">List Of Products</h1>
-                    <button onClick={() => GoToPage('/admin/add-product')} type="button" class="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2">+ Add New Product</button>
+                    <button onClick={() => GoToPage('/admin/add-product')} type="button" className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2">+ Add New Product</button>
                     <div className="relative overflow-x-auto">
                         <table className="w-full text-sm text-left rtl:text-right text-gray-500">
                             <thead className="text-xs text-gray-700 uppercase bg-gray-50">
