@@ -176,7 +176,7 @@ app.post('/login', async (req, res) => {
         name: user.name,
         access: user.access
     }
-    const expiresIn = 60 * 60 * 1;
+    const expiresIn = 60 * 60 * 24;
     const token = jwt.sign(payload, SECRET, {expiresIn});
 
     res.json({
@@ -211,7 +211,8 @@ app.get('/products', async (req, res) => {
         const response = await prisma.products.findMany({
             include: {
                 category: true,
-                productItem: true
+                productItem: true,
+                productImage: true
             } 
         });
         res.json(response);
@@ -261,37 +262,38 @@ app.get('/product/:id', async (req, res) => {
 });
 
 // API for add new product
-app.post('/product/add', async (req, res) => {
-    const { productName, description, brand, categoryId } = req.body;
+app.post('/product', accessValidation, upload.fields([
+    { name: 'imagePreview', maxCount: 1 },
+    { name: 'images', maxCount: 10 }
+]), 
+    async (req, res) => {
+        try {
+            const { productName, description, brand, categoryId } = req.body;
+            const imagePreviewUrl = `http://localhost:${PORT}/images/${req.files['imagePreview'][0].filename}`;
+            const imageUrls = req.files['images'].map(file => `http://localhost:${PORT}/images/${file.filename}`);
 
-    try {
-        const newProduct = await prisma.products.create({
-            data: {
-                productName, description, brand, categoryId
-            }
-        });
+            const newProduct = await prisma.products.create({
+                data: {
+                    productName, description, brand, categoryId: Number(categoryId),
+                    productImage: {
+                        create: {
+                            imagePreviewUrl, imageUrls
+                        }
+                    }
+                }
+            });
 
-        res.status(201);
-        res.json({
-            product: newProduct,
-            msg: 'Product berhasil ditambah!'
-        });
-    } catch (error) {
-        res.json({
-            error
-        })
-    }
+            res.status(201);
+            res.json({
+                product: newProduct,
+                msg: 'Product berhasil ditambah!'
+            });
+        } catch (error) {
+            res.json({
+                error
+            })
+        }
 });
-
-// API for get all category
-app.get('/category', async (req, res) => {
-    try {
-        const response = await prisma.productCategory.findMany();
-        res.json(response);
-    } catch (error) {
-        res.json({error});
-    }
-})
 
 // API for add product item
 app.post('/product/item/add', accessValidation, upload.array('images', 10), async (req, res) => {
@@ -337,6 +339,17 @@ app.post('/product/item/add', accessValidation, upload.array('images', 10), asyn
     }
 });
 
+// API for get all category
+app.get('/category', async (req, res) => {
+    try {
+        const response = await prisma.productCategory.findMany();
+        res.json(response);
+    } catch (error) {
+        res.json({error});
+    }
+})
+
+
 // API for get variation from product
 app.get('/product/variation/:id', async (req, res) => {
     const { id } = req.params;
@@ -360,12 +373,61 @@ app.get('/products/switch', async (req, res) => {
                 }
             },
             include: {
-                productItem: true
+                productItem: true,
+                productImage: true
             }
         });
         
         res.json({
             switches,
+            msg: 'Berhasil mendapatkan data switches!'
+        })
+    } catch (error) {
+        res.json({error})
+    }
+});
+
+// API for get product keycaps
+app.get('/products/keycaps', async (req, res) => {
+    try {
+        const keycaps = await prisma.products.findMany({
+            where: {
+                category: {
+                    categoryName: 'Keycaps'
+                }
+            },
+            include: {
+                productItem: true,
+                productImage: true
+            }
+        });
+        
+        res.json({
+            keycaps,
+            msg: 'Berhasil mendapatkan data switches!'
+        })
+    } catch (error) {
+        res.json({error})
+    }
+})
+
+// API for get all keyboards
+app.get('/products/keyboards', async (req, res) => {
+    try {
+        const keyboards = await prisma.products.findMany({
+            where: {
+                category: {
+                    categoryName: 'Keyboard'
+                }
+            },
+            include: {
+                productItem: true,
+                productImage: true
+            }
+        });
+        
+        res.json({
+            keyboards,
             msg: 'Berhasil mendapatkan data switches!'
         })
     } catch (error) {

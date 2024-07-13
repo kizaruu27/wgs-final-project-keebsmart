@@ -11,10 +11,25 @@ export const getAllCategory = async (setCategories) => {
     }
 }
 
-export const addNewProduct = async (productName, description, brand, categoryId, onSuccess, onFailed) => {
+export const addNewProduct = async (productName, description, brand, categoryId, imagePreview, images, onSuccess, onFailed) => {
     try {
-        const response = await axios.post(`${urlEndpoint}/product/add`, {
-            productName, description, brand, categoryId: Number(categoryId)
+        const token = localStorage.getItem('token');
+        const formData = new FormData();
+        formData.append('productName', productName);
+        formData.append('description', description);
+        formData.append('brand', brand);
+        formData.append('categoryId', categoryId);
+        formData.append('imagePreview', imagePreview);
+
+        for (let i = 0; i < images.length; i++) {
+            formData.append('images', images[i]);
+        }
+
+        const response = await axios.post(`${urlEndpoint}/product`, formData, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data'
+            }
         });
 
         if (response.status !== 201) return onFailed('Add product failed!');
@@ -97,5 +112,24 @@ export const getSwitchesData = async (setSwitch) => {
     } catch (error) {
         console.log(error);
     }
+}
 
+export const getKeycapsData = async (setKeycaps) => {
+    try {
+        const response = await axios.get(`${urlEndpoint}/products/keycaps`);
+        console.dir(response.data.keycaps);
+        setKeycaps(response.data.keycaps);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const getKeyboardsData = async (setKeyboards) => {
+    try {
+        const response = await axios.get(`${urlEndpoint}/products/keyboards`);
+        console.dir(response.data.keyboards);
+        setKeyboards(response.data.keyboards);
+    } catch (error) {
+        console.log(error);
+    }
 }
