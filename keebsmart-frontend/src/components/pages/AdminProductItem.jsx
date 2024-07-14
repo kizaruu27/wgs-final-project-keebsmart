@@ -1,11 +1,13 @@
 import DashboardContent from "../fragments/DashboardContent";
 import DashboardFragment from "../fragments/DashboardFragment";
 import DashboardSideMenu from "../Layouts/DashboardSideMenu";
-import { getProductDetail, getProductVariation, addProductItem  } from "../../server/productController";
+import { getProductDetail, getProductVariation, addProductItem, deleteProductItem  } from "../../server/productController";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import DashboardNavbar from "../Layouts/DashboardNavbar";
 import { GoToPage } from "../../server/pageController";
+import { Button, Modal } from "flowbite-react";
+import { HiOutlineExclamationCircle } from "react-icons/hi";
 
 function ModalForm() {
     const [product, setProduct] = useState([]);
@@ -126,8 +128,22 @@ export default function AdminProductItem() {
     const [productItems, setProductItems] = useState([]);
     const [category, setCategory] = useState('');
     const [image, setImage] = useState('');
+    const [productItemId, setProductItemId] = useState(0);
+    const [openModal, setOpenModal] = useState(false);
 
     const { id } = useParams(); 
+
+    const setDelete = (id) => {
+        setOpenModal(true);
+        setProductItemId(id);
+    }
+    const onDeleteSuccess = () => GoToPage(`/admin/product/${id}`, 500);
+    const onDeleteFailed = (error) => console.log(error);
+    const onClickDeleteProductItem = (e) => {
+        e.preventDefault();
+        deleteProductItem(productItemId, onDeleteSuccess, onDeleteFailed)
+    }
+
 
     useEffect(() => {
         getProductDetail(id, setProduct, setProductItems, setCategory, setImage);
@@ -178,63 +194,83 @@ export default function AdminProductItem() {
                             {/* onClick={() => window.location.href = `/admin/add-item/${id}`}  */}
                             <button data-modal-target="crud-modal" data-modal-toggle="crud-modal" type="button" className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2">+ Add New Variation</button>
                         </div>
-                        <table className="w-full text-sm text-left rtl:text-right text-gray-500">
-                            <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                        <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr>
-                                    <th scope="col" className="px-6 py-3">
+                                    <th scope="col" class="px-6 py-3">
                                         Variation
                                     </th>
-                                    <th scope="col" className="px-6 py-3">
+                                    <th scope="col" class="px-6 py-3">
+                                        Product Image
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
                                         Unit ID
                                     </th>
-                                    <th scope="col" className="px-6 py-3">
-                                        Price
+                                    <th scope="col" class="px-6 py-3">
+                                        Manufacturer
                                     </th>
-                                    <th scope="col" className="px-6 py-3">
+                                    <th scope="col" class="px-6 py-3">
                                         Added By
                                     </th>
-                                    <th scope="col" className="px-6 py-3">
+                                    <th scope="col" class="px-6 py-3">
+                                        Price
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
                                         Qty
                                     </th>
-                                    <th scope="col" className="px-6 py-3">
+                                    <th scope="col" class="px-6 py-3">
+                                        Sold
+                                    </th>
+                                    <th scope="col" class="px-6 py-3">
                                         Status
                                     </th>
-                                    <th scope="col" className="px-6 py-3">
+                                    <th scope="col" class="px-6 py-3">
                                         Action
                                     </th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {productItems.map((item, key) => (
-                                    <tr key={key} className="bg-white border-b">
-                                        <td scope="col" className="px-6 py-3">
+                                    <tr key={key} class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
+                                        <th scope="row" class="px-6 py-4 font-light  text-gray-900 whitespace-nowrap dark:text-white">
                                             {item.variationOption.variationValue}
+                                        </th>
+                                        <td class="px-6 py-4">
+                                            <img src={item.imageURLs[0]} alt="" />
                                         </td>
-                                        <td scope="col" className="px-6 py-3">
+                                        <td class="px-6 py-4 text-wrap">
                                             {item.unitId}
                                         </td>
-                                        <td scope="col" className="px-6 py-3">
-                                            Rp. {item.price}
+                                        <td class="px-6 py-4">
+                                            {item.manufacturer}
                                         </td>
-                                        <td scope="col" className="px-6 py-3">
+                                        <td class="px-6 py-4">
                                             {item.productLog.createdBy.name}
                                         </td>
-                                        <td scope="col" className="px-6 py-3">
+                                        <td class="px-6 py-4 text-sm text-nowrap">
+                                            Rp. {item.price}
+                                        </td>
+                                        <td class="px-6 py-4">
                                             {item.qty}
                                         </td>
-                                        <td scope="col" className="px-6 py-3">
-                                            {item.status}
+                                        <td class="px-6 py-4">
+                                            SOLD
                                         </td>
-                                        <th scope="col" className="px-6 py-3">
-                                            <a href={`/admin/item/${item.id}`} className="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded">details</a>
-                                        </th>
+                                        <td class="px-6 py-4 w-10">
+                                            {item.status === 'in stock' ? <span class="bg-green-100 rounded-xl text-green-800 text-xs font-medium me-2 p-1.5 dark:bg-green-900 dark:text-green-300 text-nowrap">in stock</span> :  <span class="bg-red-100 rounded-xl text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 dark:bg-green-900 dark:text-green-300 text-nowrap">empty</span>}
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <span class="cursor-pointer bg-yellow-100 rounded-xl text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 dark:bg-green-900 dark:text-green-300">edit</span>
+                                            <span onClick={() => setDelete(item.id)} data-modal-target="confirmation-modal" data-modal-toggle="confirmation-modal" class="cursor-pointer bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl inline dark:bg-red-900 dark:text-red-300">delete</span>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
                 </div>
-
+                
+                {/* CRUD MODAL */}
                 <div id="crud-modal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
                     <div class="relative p-4 w-full max-w-3xl max-h-full">
                         {/* <!-- Modal content --> */}
@@ -256,6 +292,27 @@ export default function AdminProductItem() {
                         </div>
                     </div>
                 </div> 
+
+                {/* CONFIRMATION MODAL */}
+                <Modal show={openModal} size="md" onClose={() => setOpenModal(false)} popup>
+                    <Modal.Header />
+                    <Modal.Body>
+                    <div className="text-center">
+                        <HiOutlineExclamationCircle className="mx-auto mb-4 h-14 w-14 text-gray-400 dark:text-gray-200" />
+                        <h3 className="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400">
+                        Are you sure you want to delete this product?
+                        </h3>
+                        <div className="flex justify-center gap-4">
+                        <Button color="failure" onClick={(e) => onClickDeleteProductItem(e)}>
+                            {"Yes, I'm sure"}
+                        </Button>
+                        <Button color="gray" onClick={() => setOpenModal(false)}>
+                            No, cancel
+                        </Button>
+                        </div>
+                    </div>
+                    </Modal.Body>
+                </Modal>
             </DashboardContent>
         </DashboardFragment>
     )

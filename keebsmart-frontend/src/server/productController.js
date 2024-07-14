@@ -134,3 +134,33 @@ export const getKeyboardsData = async (setKeyboards) => {
         console.log(error);
     }
 }
+
+export const deleteProduct = async (productId, onDelete, onFailed) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.delete (`${urlEndpoint}/product/${productId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        onDelete('Delete product success');
+    } catch (error) {
+        console.log(error);
+        onFailed(error);
+    }
+}
+
+export const deleteProductItem = async (productItemId, onDelete, onFailed) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.delete(`${urlEndpoint}/product/item/${productItemId}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        onDelete('Success delete product item');
+    } catch (error) {
+        console.log(error);
+        onFailed(error);
+    }
+}

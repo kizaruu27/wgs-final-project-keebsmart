@@ -483,43 +483,108 @@ app.put('/product/update/:id', async (req, res) => {
 });
 
 // API for Delete Product Item
-app.delete('/product/item/:id', async (req, res) => {
-    const { id } = req.params;
-    const deleteProductItem = await prisma.productItem.delete({
-        where: {
-            id: Number(id)
-        }
-    });
+app.delete('/product/item/:id', accessValidation,  async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.userId;
 
-    res.json('Data Berhasil Di hapus!');
+        const deleteProductItem = await prisma.productItem.delete({
+            where: {
+                id: Number(id)
+            },
+            include: {
+                variationOption: true
+            }
+        });
+    
+        const productVariation = await prisma.variationOptions.findUnique({
+            where: {
+                id: Number(deleteProductItem.variationOptionId)
+            }
+        });
+        if (productVariation) {
+            await prisma.variationOptions.delete({
+                where: {
+                    id: Number(deleteProductItem.variationOptionId)
+                }
+            })
+        }
+
+        const productLog = await prisma.productLog.create({
+            data: {
+                userId,
+                process: `Delete product item ${deleteProductItem.variationOption.variationValue}`
+            }
+        })
+    
+        res.json({
+            deleteProductItem,
+            productVariation,
+            productLog,
+            msg: 'Berhasil menghapus productitem'
+        });
+        
+    } catch (error) {
+        console.log(error);
+        res.json(error)
+    }
+
 });
 
 // API for delete Products
-app.delete('/product/:id', async (req, res) => {
+app.delete('/product/:id', accessValidation, async (req, res) => {
     const { id } = req.params;
+    const userId = req.userId;
 
-    const product = await prisma.products.findUnique({
-        where: {
-            id: Number(id)
-        },
-        include: {
-            productItem: true
+    try {
+        const productImage = await prisma.productImage.findFirst({
+            where: {
+                productId: Number(id)
+            }
+        })
+
+        if (productImage) {
+            await prisma.productImage.delete({
+                where: {
+                    productId: Number(id)
+                }
+            });
         }
-    });
 
-    if (product.productItem.length != 0) {
-        res.json('Product memiliki item! Dianjurkan menghapus item terlebih dahulu');
-        return false;
-    } 
+        const productItem = await prisma.productItem.findMany({
+            where: {
+                productId: Number(id)
+            }
+        })
 
-    const deleteProduct = await prisma.products.delete({
-        where: {
-            id: Number(id)
+        if (productItem) {
+            await prisma.productItem.deleteMany({
+                where: {
+                    productId: Number(id)
+                }
+            })
         }
-    });
-    
 
-    res.json('Product Berhasil Dihapus!');
+        const deleteProduct = await prisma.products.delete({
+            where: {
+                id: Number(id)
+            }
+        });
+
+        if (deleteProduct) {
+            await prisma.productLog.create({
+                data: {
+                    userId,
+                    process: `Delete product ${deleteProduct.productName}`
+                }
+            })
+        }
+        res.json('Product Berhasil Dihapus!');
+
+    } catch (error) {
+        console.log(error);
+        res.json(error);
+    }
 });
 
 
