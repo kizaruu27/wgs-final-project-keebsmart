@@ -231,6 +231,7 @@ app.get('/product/:id', async (req, res) => {
                 description: true,
                 brand: true,
                 category: true,
+                productImage: true,
                 productItem: {
                     include: {
                         variationOption: {

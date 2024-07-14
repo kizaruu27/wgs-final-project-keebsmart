@@ -17,10 +17,10 @@ export default function App() {
                     <Route path="/login" Component={LoginPage}/>
                     <Route path="/register" Component={RegisterPage}/>
                     <Route path="/admin" Component={AdminDashboardPage}/>
-                    <Route path="/admin/add-product" Component={AdminAddProductForm}/>
                     <Route path="/admin/products" Component={AdminAllProductPage}/>
                     <Route path="/admin/product/:id" Component={AdminProductItem}/>
-                    <Route path="/admin/add-item/:id" Component={AdminAddProductItemForm}/>
+                    {/* <Route path="/admin/add-product" Component={AdminAddProductForm}/> */}
+                    {/* <Route path="/admin/add-item/:id" Component={AdminAddProductItemForm}/> */}
                 </Routes>
             </Router>
         </>

@@ -51,11 +51,12 @@ export const getAllProducts = async (setProducts) => {
     }
 };
 
-export const getProductDetail = async (id, setProduct, setProductItems, setCategory) => {
+export const getProductDetail = async (id, setProduct, setProductItems, setCategory, setImage) => {
     try {
         const response = (await axios.get(`${urlEndpoint}/product/${id}`)).data;
         setProduct(response);
         setProductItems(response.productItem);
+        setImage(response.productImage.imagePreviewUrl);
         setCategory(response.category.categoryName);
     } catch (error) {
         console.log(error);
