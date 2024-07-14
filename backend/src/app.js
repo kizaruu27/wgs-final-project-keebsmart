@@ -221,7 +221,7 @@ app.get('/products', async (req, res) => {
     }
 });
 
-// API for get product detail by id
+// API for get product item by id
 app.get('/product/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -437,49 +437,110 @@ app.get('/products/keyboards', async (req, res) => {
 })
 
 // API for edit product data
-app.put('/product/update/:id', async (req, res) => {
-    const { createdBy, createdAt, categoryId, productName, description, qty, imageURL, price, manufacturer, status, variationOptionId, process, productItemId} = req.body;
-    const { id } = req.params;
+app.put('/product/update/:id', accessValidation, upload.fields([
+    { name: 'imagePreview', maxCount: 1 },
+    { name: 'images', maxCount: 10 }
+]), 
+    async (req, res) => {
+        try {
+            const { id } = req.params;
+            const { productName, description, brand, categoryId } = req.body;
+            const imagePreviewUrl = `http://localhost:${PORT}/images/${req.files['imagePreview'][0].filename}`;
+            const imageUrls = req.files['images'].map(file => `http://localhost:${PORT}/images/${file.filename}`);
 
-    const productLog = await prisma.productLog.create({
-        data: {
-            createdAt: createdAt,
-            createdBy: createdBy,
-            process: process
+            const updatedProduct = await prisma.products.update({
+                data: {
+                    productName, description, brand, categoryId: Number(categoryId),
+                    productImage: {
+                        update: {
+                            imagePreviewUrl, 
+                            imageUrls
+                        }
+                    }
+                },
+                where: {
+                    id: Number(id)
+                }
+            });
+
+            const productLog = await prisma.productLog.create({
+                data: {
+                    userId: req.userId,
+                    process: `Delete ${updatedProduct.productName}`
+                }
+            })
+
+            res.status(201);
+            res.json({
+                updatedProduct,
+                productLog,
+                msg: 'Product berhasil diubah!'
+            });
+        } catch (error) {
+            res.json({
+                error
+            });
+            console.log(error);
         }
-    });
+});
 
-    const updateProduct = await prisma.products.update({
-        where: {
-            id: Number(id)
-        },
-        data: {
-            product_name: productName,
-            description: description,
-            categoryId: categoryId
-        }
-    });
+// API for edit product item
+app.put('/product/item/update/:id', accessValidation, upload.array('images', 10), async (req, res) => {
+    try {
+        const { id } = req.params;
+        const imageURLs = req.files.map(file => `http://localhost:${PORT}/images/${file.filename}`);
+        const { qty, price, manufacturer, status, variationValue, variationId } = req.body;
+        const userId = req.userId;
 
-    const updateProductItem = await prisma.productItem.update({
-        where: {
-            id: productItemId
-        },
-        data: {
-            productId: updateProduct.id,
-            variationOptionId: variationOptionId,
-            productLogId: productLog.id,
-            imageURLs: imageURL,
-            price: price,
-            manufacturer: manufacturer,
-            qty: qty,
-            status: status
-        }
-    });
+        const productItem = await prisma.productItem.findUnique({
+            where: {
+                id: Number(id)
+            }
+        })
 
-    res.json({
-        data: updateProductItem,
-        msg: 'Product Berhasil diedit!'
-    })
+        const updatedVariationOption = await prisma.variationOptions.update({
+            data: {
+                variationValue, 
+                variationId: Number(variationId)
+            },
+            where: {
+                id: productItem.variationOptionId
+            }
+        })
+
+        const productLog = await prisma.productLog.create({
+            data: {
+                userId, 
+                process: `Edit product item ${productItem.unitId}`
+            }
+        });
+
+        const updatedProductItem = await prisma.productItem.update({
+            data: {
+                productLogId: productLog.id,
+                variationOptionId: updatedVariationOption.id,
+                imageURLs,
+                price: Number(price),
+                manufacturer,
+                qty: Number(qty),
+                status
+            },
+            where: {
+                id: Number(id)
+            }
+        })
+
+        res.status(201);
+        res.json({
+            updatedProductItem,
+            updatedVariationOption,
+            productLog,
+            msg: 'Product item berhasil diubah!'
+        });
+    } catch (error) {
+        res.json(error);
+        console.log(error.message);
+    }
 });
 
 // API for Delete Product Item
