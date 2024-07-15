@@ -4,23 +4,23 @@ import DashboardNavbar from "../Layouts/DashboardNavbar";
 import DashboardSideMenu from "../Layouts/DashboardSideMenu";
 import { useState, useEffect } from "react";
 import { getUserData } from "../../server/userDataController";
-import { getKeycapsData, deleteProduct } from "../../server/productController";
+import { getSwitchesData, deleteProduct } from "../../server/productController";
 import { GoToPage } from "../../server/pageController";
 import DonutChart from "../elements/DonutChart";
 import DeleteModal from "../Layouts/DeleteModal";
 import ModalFormEditProduct from "../Layouts/ModalFormEditProduct";
 import FormModal from "../Layouts/FormModal";
 
-export default function AdminKeycapsProduct() {
+export default function AdminSwitchProduct() {
     const [username, setUsername] = useState('');
     const [userEmail, setUserEmail] = useState('');
-    const [keycaps, setKeycaps] = useState([]);
+    const [switches, setSwitches] = useState([]);
 
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [selectedId, setSelectedId] = useState(0);
 
     const [openEditModal, setOpenEditModal] = useState(false);
-    const [selectedKeycaps, setSelectedKeycaps] = useState([]);
+    const [selectedSwitches, setSelectedSwitches] = useState([]);
 
 
     const setDelete = (id) => {
@@ -28,7 +28,7 @@ export default function AdminKeycapsProduct() {
         setSelectedId(id);
     }
 
-    const onSuccesDelete = (msg) => GoToPage('/admin/products/keycaps', 500);
+    const onSuccesDelete = (msg) => GoToPage('/admin/products/switches', 500);
     const onFailedDelete = (error) => console.log(error);
     const onClickDeleteProduct = (e) => {
         e.preventDefault();
@@ -52,12 +52,12 @@ export default function AdminKeycapsProduct() {
     }, [0]);
 
     useEffect(() => {
-        getKeycapsData(setKeycaps);
+        getSwitchesData(setSwitches);
     }, [0]);
 
     const setEdit = (product) => {
         setOpenEditModal(true);
-        setSelectedKeycaps(product);
+        setSelectedSwitches(product);
     }
 
     return (
@@ -101,7 +101,7 @@ export default function AdminKeycapsProduct() {
                             </tr>
                         </thead>
                         <tbody>
-                            {keycaps.map((item, key) => (
+                            {switches.map((item, key) => (
                                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600" key={key}>
                                     <td class="px-6 py-4">
                                         <img src={item.productImage.imagePreviewUrl} alt="" style={{width: 100}} />
@@ -134,7 +134,7 @@ export default function AdminKeycapsProduct() {
 
                 <DeleteModal onShow={openDeleteModal} onClose={() => setOpenDeleteModal(false)} onConfirm={(e) => onClickDeleteProduct(e)} />
                 <FormModal onShow={openEditModal} onClose={() => setOpenEditModal(false)}>
-                    <ModalFormEditProduct product={selectedKeycaps} onRedirect='/admin/products/keycaps' />
+                    <ModalFormEditProduct product={selectedSwitches} onRedirect='/admin/products/switches' />
                 </FormModal>
             </DashboardContent>
         </DashboardFragment>
