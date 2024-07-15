@@ -388,6 +388,31 @@ app.get('/products/switch', async (req, res) => {
     }
 });
 
+// API for get keyboards
+app.get('/products/keyboards', async (req, res) => {
+    try {
+        const keyboards = await prisma.products.findMany({
+            where: {
+                category: {
+                    categoryName: 'Keyboard'
+                }
+            },
+            include: {
+                productItem: true,
+                productImage: true,
+                category: true
+            }
+        });
+        
+        res.json({
+            keyboards,
+            msg: 'Berhasil mendapatkan data keyboards!'
+        })
+    } catch (error) {
+        res.json({error})
+    }
+});
+
 // API for get product keycaps
 app.get('/products/keycaps', async (req, res) => {
     try {
@@ -412,29 +437,6 @@ app.get('/products/keycaps', async (req, res) => {
     }
 })
 
-// API for get all keyboards
-app.get('/products/keyboards', async (req, res) => {
-    try {
-        const keyboards = await prisma.products.findMany({
-            where: {
-                category: {
-                    categoryName: 'Keyboard'
-                }
-            },
-            include: {
-                productItem: true,
-                productImage: true
-            }
-        });
-        
-        res.json({
-            keyboards,
-            msg: 'Berhasil mendapatkan data switches!'
-        })
-    } catch (error) {
-        res.json({error})
-    }
-})
 
 // API for edit product data
 app.put('/product/update/:id', accessValidation, upload.fields([

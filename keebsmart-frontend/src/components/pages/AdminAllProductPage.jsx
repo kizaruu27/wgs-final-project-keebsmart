@@ -181,7 +181,7 @@ function EditModalForm({product}) {
                         </button>
                     </form>
                 </div>
-            </section>
+        </section>
     )
 }
 
@@ -301,7 +301,7 @@ export default function AdminAllProductPage() {
                     </div>
                 </div> 
 
-                {/* CONFIRMATION MODAL */}
+                {/* CONFIRMATION DELETE MODAL */}
                 <Modal show={openConfirmationModal} size="md" onClose={() => setOpenConfirmationModal(false)} popup>
                     <Modal.Header />
                     <Modal.Body>
