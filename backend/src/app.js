@@ -375,7 +375,8 @@ app.get('/products/switch', async (req, res) => {
             },
             include: {
                 productItem: true,
-                productImage: true
+                productImage: true,
+                category: true
             }
         });
         
@@ -424,7 +425,8 @@ app.get('/products/keycaps', async (req, res) => {
             },
             include: {
                 productItem: true,
-                productImage: true
+                productImage: true,
+                category: true
             }
         });
         

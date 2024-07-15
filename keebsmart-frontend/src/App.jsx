@@ -8,6 +8,7 @@ import AdminAllProductPage from './components/pages/AdminAllProductPage';
 import AdminProductItem from './components/pages/AdminProductItem';
 import AdminKeyboardProducts from './components/pages/AdminKeyboardProducts';
 import AdminAddProductItemForm from './components/pages/AdminAddProductItemForm';
+import AdminKeycapsProduct from './components/pages/AdminKeycapsProduct';
 
 export default function App() {
     return (
@@ -21,6 +22,7 @@ export default function App() {
                     <Route path="/admin/products" Component={AdminAllProductPage}/>
                     <Route path="/admin/product/:id" Component={AdminProductItem}/>
                     <Route path="/admin/products/keyboards" Component={AdminKeyboardProducts}/>
+                    <Route path="/admin/products/keycaps" Component={AdminKeycapsProduct}/>
                     {/* <Route path="/admin/add-product" Component={AdminAddProductForm}/> */}
                     {/* <Route path="/admin/add-item/:id" Component={AdminAddProductItemForm}/> */}
                 </Routes>
