@@ -10,6 +10,7 @@ import DonutChart from "../elements/DonutChart";
 import DeleteModal from "../Layouts/DeleteModal";
 import ModalFormEditProduct from "../Layouts/ModalFormEditProduct";
 import FormModal from "../Layouts/FormModal";
+import ModalFormAddProduct from "../Layouts/ModalFormAddProduct";
 
 export default function AdminKeyboardProducts() {
     const [username, setUsername] = useState('');
@@ -22,10 +23,19 @@ export default function AdminKeyboardProducts() {
     const [openEditModal, setOpenEditModal] = useState(false);
     const [selectedKeyboard, setSelectedKeyboard] = useState([]);
 
+    // Add product variable
+    const [openAddProductModal, setOpenAddProductModal] = useState(false);
+    const [categoryId, setCategoryId] = useState(0);
 
     const setDelete = (id) => {
         setOpenDeleteModal(true);
         setSelectedId(id);
+    }
+
+    // Set add product
+    const setAdd = (id) => {
+        setOpenAddProductModal(true);
+        setCategoryId(id);
     }
 
     const onSuccesDelete = (msg) => GoToPage('/admin/products/keyboards', 500);
@@ -34,6 +44,7 @@ export default function AdminKeyboardProducts() {
         e.preventDefault();
         deleteProduct(selectedId, onSuccesDelete, onFailedDelete);
     }
+
 
     const onGetUserSuccess = (data) => {
         setUsername(data.name);
@@ -78,6 +89,7 @@ export default function AdminKeyboardProducts() {
 
                 <div className="p-5 mx-5">
                     <h1 className="text-xl ">Product List</h1>
+                    <button onClick={() => setAdd(1)} type="button" style={{width: 150}} className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-2 py-3 my-3 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">+ Add New Product</button>
                     <table class="w-full text-sm text-left my-2 rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
@@ -133,8 +145,11 @@ export default function AdminKeyboardProducts() {
                 </div>
 
                 <DeleteModal onShow={openDeleteModal} onClose={() => setOpenDeleteModal(false)} onConfirm={(e) => onClickDeleteProduct(e)} />
-                <FormModal onShow={openEditModal} onClose={() => setOpenEditModal(false)}>
+                <FormModal onShow={openEditModal} onClose={() => setOpenEditModal(false)} headerTitle='Edit Product'>
                     <ModalFormEditProduct product={selectedKeyboard} onRedirect='/admin/products/keyboards' />
+                </FormModal>
+                <FormModal onShow={openAddProductModal} onClose={() => setOpenAddProductModal(false)} headerTitle='Add Product'>
+                    <ModalFormAddProduct onRedirect={'/admin/products/keyboards'} catId={categoryId} />
                 </FormModal>
             </DashboardContent>
         </DashboardFragment>

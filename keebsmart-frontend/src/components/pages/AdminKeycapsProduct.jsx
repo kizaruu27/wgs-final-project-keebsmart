@@ -10,6 +10,7 @@ import DonutChart from "../elements/DonutChart";
 import DeleteModal from "../Layouts/DeleteModal";
 import ModalFormEditProduct from "../Layouts/ModalFormEditProduct";
 import FormModal from "../Layouts/FormModal";
+import ModalFormAddProduct from "../Layouts/ModalFormAddProduct";
 
 export default function AdminKeycapsProduct() {
     const [username, setUsername] = useState('');
@@ -21,6 +22,16 @@ export default function AdminKeycapsProduct() {
 
     const [openEditModal, setOpenEditModal] = useState(false);
     const [selectedKeycaps, setSelectedKeycaps] = useState([]);
+
+    // Add product variable
+    const [openAddProductModal, setOpenAddProductModal] = useState(false);
+    const [categoryId, setCategoryId] = useState(0);
+
+    // Set add product
+    const setAdd = (id) => {
+        setOpenAddProductModal(true);
+        setCategoryId(id);
+    }
 
 
     const setDelete = (id) => {
@@ -78,6 +89,7 @@ export default function AdminKeycapsProduct() {
 
                 <div className="p-5 mx-5">
                     <h1 className="text-xl ">Product List</h1>
+                    <button onClick={() => setAdd(2)} type="button" style={{width: 150}} className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-2 py-3 my-3 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">+ Add New Product</button>
                     <table class="w-full text-sm text-left my-2 rtl:text-right text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
@@ -135,6 +147,9 @@ export default function AdminKeycapsProduct() {
                 <DeleteModal onShow={openDeleteModal} onClose={() => setOpenDeleteModal(false)} onConfirm={(e) => onClickDeleteProduct(e)} />
                 <FormModal onShow={openEditModal} onClose={() => setOpenEditModal(false)}>
                     <ModalFormEditProduct product={selectedKeycaps} onRedirect='/admin/products/keycaps' />
+                </FormModal>
+                <FormModal onShow={openAddProductModal} onClose={() => setOpenAddProductModal(false)} headerTitle='Add Product'>
+                    <ModalFormAddProduct onRedirect={'/admin/products/keycaps'} catId={categoryId} />
                 </FormModal>
             </DashboardContent>
         </DashboardFragment>
