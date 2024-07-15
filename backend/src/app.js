@@ -215,6 +215,7 @@ app.get('/products', async (req, res) => {
                 productImage: true
             } 
         });
+
         res.json(response);
     } catch (error) {
         console.log(error.message);
@@ -261,6 +262,44 @@ app.get('/product/:id', async (req, res) => {
         console.log(error);
     }
 });
+
+// API for get product sales
+app.get('/sales', async (req, res) => {
+    const products = await prisma.products.findMany({
+        select: {
+            id: true,
+            productName: true,
+            soldTotal: true,
+            category: {
+                select: {
+                    categoryName: true
+                }
+            },
+            productItem: {
+                select: {
+                    sold: true
+                }
+            }
+        }
+    })
+
+    const updatedProducts = products.map(product => {
+        const soldTotal = product.productItem.reduce((acc, item) => acc + item.sold, 0);
+        return {
+        ...product,
+        soldTotal: soldTotal
+        };
+    });
+
+    await Promise.all(updatedProducts.map(product => {
+        return prisma.products.update({
+            where: { id: product.id },
+            data: { soldTotal: product.soldTotal }
+        });
+    }));
+
+    res.json(updatedProducts);
+})
 
 // API for add new product
 app.post('/product', accessValidation, upload.fields([
@@ -399,7 +438,11 @@ app.get('/products/keyboards', async (req, res) => {
                 }
             },
             include: {
-                productItem: true,
+                productItem: {
+                    include: {
+                        variationOption: true
+                    }
+                },
                 productImage: true,
                 category: true
             }
@@ -407,6 +450,7 @@ app.get('/products/keyboards', async (req, res) => {
         
         res.json({
             keyboards,
+            soldTotal: '',
             msg: 'Berhasil mendapatkan data keyboards!'
         })
     } catch (error) {
@@ -546,6 +590,31 @@ app.put('/product/item/update/:id', accessValidation, upload.array('images', 10)
         console.log(error.message);
     }
 });
+
+// API for set active a product
+app.patch('/product/activate/:id', accessValidation, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { isActive } = req.body;
+        
+        const activatedProduct = await prisma.products.update({
+            data: {
+                isActive
+            },
+            where: {
+                id: Number(id)
+            }
+        });
+
+        res.json({
+            activatedProduct,
+            msg: 'Product Activated!'
+        })
+    } catch (error) {
+        console.log(error);
+        res.json(error);
+    }
+})
 
 // API for Delete Product Item
 app.delete('/product/item/:id', accessValidation,  async (req, res) => {

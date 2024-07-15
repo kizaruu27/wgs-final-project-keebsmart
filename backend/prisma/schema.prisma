@@ -13,6 +13,9 @@ model Products {
   description  String
   brand        String
   categoryId   Int
+  isActive     Boolean?        @default(false)
+  specs        String[]        @db.VarChar
+  soldTotal    Int?            @default(0)
   productImage ProductImage?
   productItem  ProductItem[]
   category     ProductCategory @relation(fields: [categoryId], references: [id])

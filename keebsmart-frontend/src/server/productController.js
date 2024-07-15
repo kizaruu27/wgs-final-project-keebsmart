@@ -51,13 +51,23 @@ export const getAllProducts = async (setProducts) => {
     }
 };
 
-export const getProductDetail = async (id, setProduct, setProductItems, setCategory, setImage) => {
+export const getProductDetail = async (id, setProduct, setProductItems, setCategory, setImage, onGetStatistic) => {
     try {
         const response = (await axios.get(`${urlEndpoint}/product/${id}`)).data;
         setProduct(response);
         setProductItems(response.productItem);
         setImage(response.productImage.imagePreviewUrl);
         setCategory(response.category.categoryName);
+        
+        const items = response.productItem;
+        const soldItem = items.map(item => item.sold);
+        const variationItem = items.map(item => item.variationOption.variationValue);
+
+        if (onGetStatistic) {
+            onGetStatistic(soldItem, variationItem);
+        }
+
+
     } catch (error) {
         console.log(error);
     }
@@ -66,7 +76,7 @@ export const getProductDetail = async (id, setProduct, setProductItems, setCateg
 export const getProductVariation = async (id, setVariation) => {
     try {
         const response = (await axios.get(`${urlEndpoint}/product/variation/${id}`)).data;
-        console.log(response);
+        // console.log(response);
         setVariation(response);
     } catch (error) {
         console.log(error);
@@ -126,11 +136,26 @@ export const getKeycapsData = async (setKeycaps) => {
     }
 }
 
-export const getKeyboardsData = async (setKeyboards) => {
+export const getKeyboardsData = async (setKeyboards, onGetStatistic) => {
     try {
         const response = await axios.get(`${urlEndpoint}/products/keyboards`);
-        console.dir(response.data.keyboards);
+        // console.dir(response.data.keyboards);
         setKeyboards(response.data.keyboards);
+
+        const keyboards = response.data.keyboards;
+        const sold = keyboards.map((kb) => (
+            kb.productItem.map((item) => ( 
+                item.sold
+            ))
+        )).map(item => (
+            item.reduce((accumulator, currentValue) => {
+                return accumulator + currentValue;
+            }, 0)
+        )).sort((a, b) => b - a).slice(0, 3);
+
+        const keyboardName = keyboards.map(kb => kb.productName).slice(0, 3);
+
+        if (onGetStatistic) onGetStatistic(sold, keyboardName);
     } catch (error) {
         console.log(error);
     }
@@ -224,5 +249,32 @@ export const updateProductItem = async (id, qty, images, price, manufacturer, st
 
     } catch (error) {
         onFailed(error);
+    }
+}
+
+export const activateProduct = async (id, isActive) => {
+    try {
+        const token = localStorage.getItem('token');
+        const response = await axios.patch(`${urlEndpoint}/product/activate/${id}`, {
+            isActive
+        },
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        console.log(response);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const getSalesStatistic = async (onSuccess) => {
+    try {
+        const sales = await axios.get(`${urlEndpoint}/sales`);
+        onSuccess(sales)
+    } catch (error) {
+        console.log(error);
     }
 }

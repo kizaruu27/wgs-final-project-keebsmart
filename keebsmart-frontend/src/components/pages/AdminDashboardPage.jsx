@@ -11,6 +11,7 @@ import DashboardSummary from '../Layouts/DashboardSummary';
 import DonutChart from '../elements/DonutChart';
 import LineChart from '../elements/LineChart';
 import DashboardNavbar from '../Layouts/DashboardNavbar';
+import { getSalesStatistic } from '../../server/productController';
 
 export default function AdminDashboardPage() {
     const [username, setUsername] = useState('');
@@ -30,7 +31,13 @@ export default function AdminDashboardPage() {
 
     useEffect(() => {
         getUserData(onGetUserSuccess, onGetUserFailed, onTokenEmpty);
-    })
+    }, [0])
+
+    useEffect(() => {
+        getSalesStatistic((stat) => {
+            console.log(stat.data);
+        })  
+    }, [0])
     
 
     return (

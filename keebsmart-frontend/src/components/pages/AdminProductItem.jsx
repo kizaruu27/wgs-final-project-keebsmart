@@ -8,6 +8,7 @@ import DashboardNavbar from "../Layouts/DashboardNavbar";
 import { GoToPage } from "../../server/pageController";
 import { Button, Modal } from "flowbite-react";
 import { HiOutlineExclamationCircle } from "react-icons/hi";
+import DonutChart from "../elements/DonutChart";
 
 function ModalForm() {
     const [product, setProduct] = useState([]);
@@ -236,6 +237,8 @@ export default function AdminProductItem() {
     const [openModal, setOpenModal] = useState(false);
     const [openEditModal, setOpenEditModal] = useState(false);
     const [selectedItem, setSelectedItem] = useState([]);
+    const [chartLabel, setChartLabel] = useState([]);
+    const [chartSeries, setChartSeries] = useState([]);
 
     const { id } = useParams(); 
 
@@ -255,9 +258,11 @@ export default function AdminProductItem() {
         deleteProductItem(productItemId, onDeleteSuccess, onDeleteFailed)
     }
 
-
     useEffect(() => {
-        getProductDetail(id, setProduct, setProductItems, setCategory, setImage);
+        getProductDetail(id, setProduct, setProductItems, setCategory, setImage, (sold, variation) => {
+            setChartLabel(variation);
+            setChartSeries(sold);
+        });
         console.log(product);
     }, [0]);
 
@@ -285,24 +290,19 @@ export default function AdminProductItem() {
                         </div>
                     </div>
 
-                    <div className="flex flex-col p-5 gap-2 h-60 bg-white shadow-md rounded-xl">
+                    <div className="flex flex-col p-5 gap-2 h-96 bg-white shadow-md rounded-xl">
                         <h2 className="text-xl font-medium">Description</h2>
                         <p className="text-lg font-light">{product.description}</p>
                     </div>
-                    <div className="flex flex-col p-5 gap-2 h-60 bg-white shadow-md rounded-xl">
-                        <h2 className="text-xl font-medium">Specs</h2>
-                        <ul className="list-disc p-5">
-                            <li>POM Stem</li>
-                            <li>High Quality</li>
-                            <li>Can be pressed</li>
-                        </ul>
+                    <div className="flex flex-col p-5 gap-4 h-96 bg-white shadow-md rounded-xl">
+                        <h2 className="text-xl font-medium">Sales Statistic</h2>
+                        <DonutChart labels={chartLabel.length > 0 ? chartLabel : ['No Data']} series={chartSeries.length > 0 ? chartSeries : [100]} width='450' />
                     </div>
                 </div>
                 <div className="flex flex-col my-9">
                     <div className="relative overflow-x-auto">
                         <h1 className="text-2xl font-medium">Variations:</h1>
                         <div className="my-5">
-                            {/* onClick={() => window.location.href = `/admin/add-item/${id}`}  */}
                             <button data-modal-target="crud-modal" data-modal-toggle="crud-modal" type="button" className="focus:outline-none text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2">+ Add New Variation</button>
                         </div>
                         <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -365,7 +365,7 @@ export default function AdminProductItem() {
                                             {item.qty}
                                         </td>
                                         <td class="px-6 py-4">
-                                            SOLD
+                                            {item.sold}
                                         </td>
                                         <td class="px-6 py-4 w-10">
                                             {item.status === 'in stock' ? <span class="bg-green-100 rounded-xl text-green-800 text-xs font-medium me-2 p-1.5 dark:bg-green-900 dark:text-green-300 text-nowrap">in stock</span> :  <span class="bg-red-100 rounded-xl text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 dark:bg-green-900 dark:text-green-300 text-nowrap">empty</span>}
