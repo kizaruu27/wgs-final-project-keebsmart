@@ -726,6 +726,93 @@ app.delete('/product/:id', accessValidation, async (req, res) => {
     }
 });
 
+// API for get order details
+app.get('/orders', async (req, res) => {
+    try {
+        const orders = await prisma.orders.findMany({
+            include: {
+                user: true,
+                address: true,
+                paymentMethod: true
+            },
+            orderBy: {
+                orderDate: 'asc'
+            }
+        });
+        res.json({
+            orders, 
+            msg: 'Get orders success'
+        });
+    } catch (error) {
+        console.log(error);
+        res.json(error);
+    }
+});
+
+// API for set order status
+app.patch('/order/status/:id', accessValidation, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { status } = req.body;
+        const updatedOrder = await prisma.orders.update({
+            data:{
+                orderStatus: status
+            },
+            where: {
+                orderId: id
+            }
+        });
+
+        res.json({
+            updatedOrder,
+            msg: 'Order successfully updated!'
+        });
+    } catch (error) {
+        console.log(error);
+        res.json(error);
+    }
+});
+
+// API for get order by id
+app.get('/order/:id', accessValidation, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const order = await prisma.orders.findUnique({
+            where: {
+                orderId: id
+            },
+            include: {
+                user: {
+                    include: {
+                        userAddress: true
+                    }
+                },
+                paymentMethod: true,
+                address: true,
+                shipping: true,
+                productItems: {
+                    include: {
+                        product: true,
+                        variationOption: {
+                            include: {
+                                variations: true
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
+        res.json({
+            order,
+            msg: 'Success get order detail'
+        })
+    } catch (error) {
+        console.log(error);
+        res.json(error);
+    }
+})
+
 
 app.listen(PORT, () => {
     console.log(`Listening to port http://localhost:${PORT}`);

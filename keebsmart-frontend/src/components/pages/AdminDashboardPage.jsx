@@ -143,7 +143,7 @@ export default function AdminDashboardPage() {
                     {/* Chart penjualan keyboard */}
                     <div className="flex flex-col items-center justify-center gap-3 p-3 h-96 rounded bg-white shadow-md dark:bg-gray-800">
                         <h1 className='text-xl font-normal text-gray-500'>Keyboard Sales</h1>
-                        <DonutChart labels={keyboardSeriesChart.every(item => item === 0) ? ['No Data'] : keyboardSeriesChart} series={keyboardSeriesChart.every(item => item === 0) ? [100] : keyboardSeriesChart} width='400' showLegend={false} />
+                        <DonutChart labels={keyboardSeriesChart.every(item => item === 0) ? ['No Data'] : keyboardLabelChart} series={keyboardSeriesChart.every(item => item === 0) ? [100] : keyboardSeriesChart} width='400' showLegend={false} />
                         <h1 className='text-md font-ligth text-gray-500'>Chart of keyboards sales so far</h1>
                     </div>
 
