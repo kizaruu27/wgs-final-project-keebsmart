@@ -11,11 +11,30 @@ import DashboardSummary from '../Layouts/DashboardSummary';
 import DonutChart from '../elements/DonutChart';
 import LineChart from '../elements/LineChart';
 import DashboardNavbar from '../Layouts/DashboardNavbar';
-import { getSalesStatistic } from '../../server/productController';
+import { getSalesStatistic, getAllProducts } from '../../server/productController';
 
 export default function AdminDashboardPage() {
     const [username, setUsername] = useState('');
     const [userEmail, setUserEmail] = useState('');
+
+    // Data chart keyboard
+    const [keyboardLabelChart, setKeyboardLabelChart] = useState([]);
+    const [keyboardSeriesChart, setKeyboardSeriesChart] = useState([]);
+
+    // Data chart keycaps
+    const [keycapsLabelChart, setKeycapsLabelChart] = useState([]);
+    const [keycapsSeriesChart, setKeycapsSeriesChart] = useState([]);
+    
+    // Data chart switches
+    const [switchLabelChart, setSwitchLabelChart] = useState([]);
+    const [switchSeriesChart, setSwitchSeriesChart] = useState([]);
+
+    // Data all products statistics
+    const [productStat, setProductStat] = useState([]);
+    const [soldStat, setSoldStat] = useState([]);
+
+    // Data all active products
+    const [totalActiveProducts, setTotalActiveProducts] = useState(0);
 
     const onGetUserSuccess = (data) => {
         setUsername(data.name);
@@ -31,14 +50,36 @@ export default function AdminDashboardPage() {
 
     useEffect(() => {
         getUserData(onGetUserSuccess, onGetUserFailed, onTokenEmpty);
-    }, [0])
+    }, [0]);
 
     useEffect(() => {
         getSalesStatistic((stat) => {
-            console.log(stat.data);
+            const allProductStatistic = stat.data;
+            const keyboardStatistic = stat.data.filter(item => item.category.categoryName === 'Keyboard');
+            const keycapsStatistic = stat.data.filter(item => item.category.categoryName === 'Keycaps');
+            const switchStatistic = stat.data.filter(item => item.category.categoryName === 'Switch');
+
+            setProductStat(allProductStatistic.map(item => item.productName));
+            setSoldStat(allProductStatistic.map(item => item.soldTotal));
+
+            setKeyboardLabelChart(keyboardStatistic.map(item => item.productName));
+            setKeyboardSeriesChart(keyboardStatistic.map(item => item.soldTotal));
+            
+            setKeycapsLabelChart(keycapsStatistic.map(item => item.productName));
+            setKeycapsSeriesChart(keycapsStatistic.map(item => item.soldTotal));
+            
+            setSwitchLabelChart(switchStatistic.map(item => item.productName));
+            setSwitchSeriesChart(switchStatistic.map(item => item.soldTotal));
         })  
-    }, [0])
+    }, [0]);
     
+    useState(() => {
+        getAllProducts((products) => {
+            const allActiveProducts = products.filter(product => product.isActive === true);
+            console.log(allActiveProducts.length);
+            setTotalActiveProducts(allActiveProducts.length);
+        })
+    }, [0]);
 
     return (
         <DashboardFragment>
@@ -51,40 +92,39 @@ export default function AdminDashboardPage() {
             {/* Content */}
             <DashboardContent>
                 <div className="grid grid-cols-2 gap-4 mb-4">
-                    {/* New Orders */}
+                    {/* Total Income */}
                     <div className="flex justify-between items-center rounded bg-white h-60 dark:bg-gray-800 shadow-md px-10">
                         <div>
                             <div class="w-full flex flex-col gap-2">
-                                <h3 class="text-xl font-normal text-gray-500 dark:text-gray-400">New Orders</h3>
-                                <span class="text-2xl font-bold leading-none text-gray-900 sm:text-3xl dark:text-white">4</span>
+                                <h3 class="text-xl font-normal text-gray-500 dark:text-gray-400">Total Income</h3>
+                                <span class="text-2xl font-bold leading-none text-gray-900 sm:text-3xl dark:text-white">Rp. 3.000.000</span>
                                 <p class="flex items-center text-lg text-wrap font-normal text-gray-500 dark:text-gray-400">
-                                    <span class="flex items-center mr-1.5 text-sm text-green-500 dark:text-green-400">
-                                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                        <path clip-rule="evenodd" fill-rule="evenodd" d="M10 17a.75.75 0 01-.75-.75V5.612L5.29 9.77a.75.75 0 01-1.08-1.04l5.25-5.5a.75.75 0 011.08 0l5.25 5.5a.75.75 0 11-1.08 1.04l-3.96-4.158V16.25A.75.75 0 0110 17z"></path>
-                                    </svg>
-                                    4
-                                    </span>
-                                    new orders that must be confirm
+                                    Total income from solded products so far
                                 </p>
                             </div>
                         </div>
 
-                        <div className='mx-auto'>
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="size-28 text-green-400">
-                                <path d="M18.375 2.25c-1.035 0-1.875.84-1.875 1.875v15.75c0 1.035.84 1.875 1.875 1.875h.75c1.035 0 1.875-.84 1.875-1.875V4.125c0-1.036-.84-1.875-1.875-1.875h-.75ZM9.75 8.625c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v11.25c0 1.035-.84 1.875-1.875 1.875h-.75a1.875 1.875 0 0 1-1.875-1.875V8.625ZM3 13.125c0-1.036.84-1.875 1.875-1.875h.75c1.036 0 1.875.84 1.875 1.875v6.75c0 1.035-.84 1.875-1.875 1.875h-.75A1.875 1.875 0 0 1 3 19.875v-6.75Z" />
+                        <div className='mx-auto text-green-400'>
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-32">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v12m-3-2.818.879.659c1.171.879 3.07.879 4.242 0 1.172-.879 1.172-2.303 0-3.182C13.536 12.219 12.768 12 12 12c-.725 0-1.45-.22-2.003-.659-1.106-.879-1.106-2.303 0-3.182s2.9-.879 4.006 0l.415.33M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
                             </svg>
                         </div>
                     </div>
                     
                     {/* Total Active Products */}
                     <div className="flex justify-between items-center rounded bg-white h-60 dark:bg-gray-800 shadow-md px-10">
-                        <div>
+                        <div className='flex gap-3 p-5 items-center justify-between'>
                             <div class="w-full flex flex-col gap-2">
                                 <h3 class="text-xl font-normal text-gray-500 dark:text-gray-400">Total Active Products</h3>
-                                <span class="text-2xl font-bold leading-none text-gray-900 sm:text-3xl dark:text-white">120</span>
+                                <span class="text-2xl font-bold leading-none text-gray-900 sm:text-3xl dark:text-white">{totalActiveProducts}</span>
                                 <p class="flex items-center text-lg text-wrap font-normal text-gray-500 dark:text-gray-400">
-                                    Currently there are 120 products displayed on store
+                                    Currently there are {totalActiveProducts} products displayed on store
                                 </p>
+                            </div>
+                            <div className='text-orange-400'>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-32">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
+                                </svg>
                             </div>
                         </div>
                     </div>
@@ -95,7 +135,7 @@ export default function AdminDashboardPage() {
                         <h1 className='text-2xl font-ligth mb-5 text-gray-500'>Total Product Sales</h1>
                     </div>
                     <div className="mixed-chart">
-                        <LineChart />
+                        <LineChart products={productStat} sold={soldStat} />
                     </div>
                 </div>
 
@@ -103,21 +143,21 @@ export default function AdminDashboardPage() {
                     {/* Chart penjualan keyboard */}
                     <div className="flex flex-col items-center justify-center gap-3 p-3 h-96 rounded bg-white shadow-md dark:bg-gray-800">
                         <h1 className='text-xl font-normal text-gray-500'>Keyboard Sales</h1>
-                        <DonutChart />
+                        <DonutChart labels={keyboardLabelChart} series={keyboardSeriesChart} width='400' showLegend={false} />
                         <h1 className='text-md font-ligth text-gray-500'>Chart of keyboards sales so far</h1>
                     </div>
 
                     {/* chart penjualan keycaps */}
                     <div className="flex flex-col items-center justify-center gap-3 p-3 h-96 rounded bg-white shadow-md dark:bg-gray-800">
                         <h1 className='text-xl font-normal text-gray-500'>Keycaps Sales</h1>
-                        <DonutChart />
+                        <DonutChart labels={keycapsLabelChart} series={keycapsSeriesChart} width='400' showLegend={false}/>
                         <h1 className='text-md font-ligth text-gray-500'>Chart of keycaps sales so far</h1>
                     </div>
 
                     {/* chart penjualan switch */}
                     <div className="flex flex-col items-center justify-center gap-3 p-3 h-96 rounded bg-white shadow-md dark:bg-gray-800">
                         <h1 className='text-xl font-normal text-gray-500'>Switches Sales</h1>
-                        <DonutChart />
+                        <DonutChart labels={switchLabelChart} series={switchSeriesChart} width='400' showLegend={false}/>
                         <h1 className='text-md font-ligth text-gray-500'>Chart of switches sales so far</h1>
                     </div>
                 </div>

@@ -44,7 +44,7 @@ export const addNewProduct = async (productName, description, brand, categoryId,
 export const getAllProducts = async (setProducts) => {
     try {
         const response = (await axios.get(`${urlEndpoint}/products`)).data;
-        console.dir(response);
+        // console.dir(response);
         setProducts(response);
     } catch (error) {
         console.log(error);

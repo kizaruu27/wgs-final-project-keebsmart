@@ -1,20 +1,26 @@
 import ReactApexChart from "react-apexcharts";
 
-export default function LineChart() {
+export default function LineChart({products, sold}) {
      // option untuk charts
     const options = {
+        chart: {
+            type: 'bar'
+        },
         xaxis: {
-            categories: [1991, 1992, 1993, 1994, 1995, 1996, 1997, 1998]
+            categories: products,
+            labels: {
+                show: false
+            }
         }
     };
     
     // data untuk charts
     const series = [
         {
-            name: "series-1",
-            data: [30, 40, 45, 50, 49, 60, 70, 91]
+            name: "Sold",
+            data: sold
         }
     ]
 
-    return  <ReactApexChart options={options} series={series} type="line" width="800" height="300"/>
+    return  <ReactApexChart options={options} series={series} type="bar" width="800" height="300"/>
 }

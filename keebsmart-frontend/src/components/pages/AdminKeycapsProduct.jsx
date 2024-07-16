@@ -4,7 +4,7 @@ import DashboardNavbar from "../Layouts/DashboardNavbar";
 import DashboardSideMenu from "../Layouts/DashboardSideMenu";
 import { useState, useEffect } from "react";
 import { getUserData } from "../../server/userDataController";
-import { getKeycapsData, deleteProduct, activateProduct } from "../../server/productController";
+import { getKeycapsData, deleteProduct, activateProduct, getSalesStatistic } from "../../server/productController";
 import { GoToPage } from "../../server/pageController";
 import DonutChart from "../elements/DonutChart";
 import DeleteModal from "../Layouts/DeleteModal";
@@ -26,6 +26,13 @@ export default function AdminKeycapsProduct() {
     // Add product variable
     const [openAddProductModal, setOpenAddProductModal] = useState(false);
     const [categoryId, setCategoryId] = useState(0);
+
+    // Add product statistic
+    const [chartLabel, setChartLabel] = useState([]);
+    const [chartSeries, setChartSeries] = useState([]);
+
+    // Total keycaps products
+    const [totalProducts, setTotalProducts] = useState(0);
 
     // Set add product
     const setAdd = (id) => {
@@ -63,7 +70,18 @@ export default function AdminKeycapsProduct() {
     }, [0]);
 
     useEffect(() => {
-        getKeycapsData(setKeycaps);
+        getKeycapsData((data) => {
+            setKeycaps(data);
+            setTotalProducts(data.length)
+        });
+    }, [0]);
+
+    useEffect(() => {
+        getSalesStatistic((stat) => {
+            const keycapsStatistic = stat.data.filter(item => item.category.categoryName === 'Keycaps');
+            setChartLabel(keycapsStatistic.map(item => item.productName));
+            setChartSeries(keycapsStatistic.map(item => item.soldTotal));
+        })
     }, [0]);
 
     const setEdit = (product) => {
@@ -77,13 +95,14 @@ export default function AdminKeycapsProduct() {
             <DashboardSideMenu />
             <DashboardContent>
                 <div className="grid grid-cols-2 gap-3">
-                    <div className="flex flex-col gap-3 h-96 bg-white p-5 rounded-xl shadow-md">
+                    <div className="flex flex-col justify-center gap-16 h-96 bg-white p-5 rounded-xl shadow-md">
                         <h1 className="text-2xl">Total Keycaps</h1>
-                        <DonutChart />
+                        <h3 className="font-medium text-center text-9xl">{totalProducts}</h3>
+                        <p className="text-lg">Currently there are {totalProducts} keycaps on the list</p>
                     </div>
                     <div className="flex flex-col gap-3 h-96 bg-white p-5 rounded-xl shadow-md">
                         <h1 className="text-2xl">Total Keycaps Sales</h1>
-                        <DonutChart />
+                        <DonutChart labels={chartLabel} series={chartSeries} width='550' showLegend={true} />
                     </div>
                 </div>
 

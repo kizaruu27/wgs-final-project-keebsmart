@@ -296,7 +296,7 @@ export default function AdminProductItem() {
                     </div>
                     <div className="flex flex-col p-5 gap-4 h-96 bg-white shadow-md rounded-xl">
                         <h2 className="text-xl font-medium">Sales Statistic</h2>
-                        <DonutChart labels={chartLabel.length > 0 ? chartLabel : ['No Data']} series={chartSeries.length > 0 ? chartSeries : [100]} width='450' />
+                        <DonutChart labels={chartLabel.length > 0 ? chartLabel : ['No Data']} series={chartSeries.length > 0 ? chartSeries : [100]} width='350' showLegend={true} />
                     </div>
                 </div>
                 <div className="flex flex-col my-9">

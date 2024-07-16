@@ -277,14 +277,19 @@ app.get('/sales', async (req, res) => {
             },
             productItem: {
                 select: {
-                    sold: true
+                    sold: true,
+                    price: true
                 }
             }
         }
-    })
+    });
+
+    let totalIncome = 0;
 
     const updatedProducts = products.map(product => {
         const soldTotal = product.productItem.reduce((acc, item) => acc + item.sold, 0);
+        const productIncome = product.productItem.reduce((acc, item) => acc + (item.sold * item.price), 0);
+        totalIncome += productIncome;
         return {
         ...product,
         soldTotal: soldTotal

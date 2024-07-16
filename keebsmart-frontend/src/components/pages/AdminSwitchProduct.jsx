@@ -4,7 +4,7 @@ import DashboardNavbar from "../Layouts/DashboardNavbar";
 import DashboardSideMenu from "../Layouts/DashboardSideMenu";
 import { useState, useEffect } from "react";
 import { getUserData } from "../../server/userDataController";
-import { getSwitchesData, deleteProduct, activateProduct } from "../../server/productController";
+import { getSwitchesData, deleteProduct, activateProduct, getSalesStatistic } from "../../server/productController";
 import { GoToPage } from "../../server/pageController";
 import DonutChart from "../elements/DonutChart";
 import DeleteModal from "../Layouts/DeleteModal";
@@ -33,6 +33,12 @@ export default function AdminSwitchProduct() {
         setCategoryId(id);
     }
 
+     // Add product statistic
+    const [chartLabel, setChartLabel] = useState([]);
+    const [chartSeries, setChartSeries] = useState([]);
+
+    // Total keycaps products
+    const [totalProducts, setTotalProducts] = useState(0);
 
     const setDelete = (id) => {
         setOpenDeleteModal(true);
@@ -63,7 +69,18 @@ export default function AdminSwitchProduct() {
     }, [0]);
 
     useEffect(() => {
-        getSwitchesData(setSwitches);
+        getSwitchesData((data) => {
+            setSwitches(data);
+            setTotalProducts(data.length);
+        });
+    }, [0]);
+
+    useEffect(() => {
+        getSalesStatistic((stat) => {
+            const statistic = stat.data.filter(item => item.category.categoryName === 'Switch');
+            setChartLabel(statistic.map(item => item.productName));
+            setChartSeries(statistic.map(item => item.soldTotal));
+        })
     }, [0]);
 
     const setEdit = (product) => {
@@ -77,13 +94,14 @@ export default function AdminSwitchProduct() {
             <DashboardSideMenu />
             <DashboardContent>
                 <div className="grid grid-cols-2 gap-3">
-                    <div className="flex flex-col gap-3 h-96 bg-white p-5 rounded-xl shadow-md">
-                        <h1 className="text-2xl">Total Keycaps</h1>
-                        <DonutChart />
+                    <div className="flex flex-col justify-center gap-16 h-96 bg-white p-5 rounded-xl shadow-md">
+                        <h1 className="text-2xl">Total Switches</h1>
+                        <h3 className="font-medium text-center text-9xl">{totalProducts}</h3>
+                        <p className="text-lg">Currently there are {totalProducts} switches on the list</p>
                     </div>
                     <div className="flex flex-col gap-3 h-96 bg-white p-5 rounded-xl shadow-md">
-                        <h1 className="text-2xl">Total Keycaps Sales</h1>
-                        <DonutChart />
+                        <h1 className="text-2xl">Total Switches Sales</h1>
+                        <DonutChart labels={chartLabel} series={chartSeries} width='580' showLegend={true} />
                     </div>
                 </div>
 

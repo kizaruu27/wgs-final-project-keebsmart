@@ -1,26 +1,34 @@
 import ReactApexChart from "react-apexcharts";
 
-export default function DonutChart({labels, series, width}) {
+export default function DonutChart({labels, series, width, showLegend}) {
     const donutOptions = {
         chart: {
-            type: 'donut',
+            type: 'pie',
         },
         labels: labels,
+        legend: {
+            position: 'right', // Position the legend at the bottom
+            show: showLegend
+        },
         responsive: [{
-            breakpoint: 480,
+            breakpoint: 500,
             options: {
                 chart: {
-                width: 380
-            },
-            legend: {
-                position: 'bottom'
+                    width: 280
+                },
+                legend: {
+                    show: true
+                }
             }
-        }
         }]
     };
 
     // series for donut chart
     const donutSeries = series;
 
-    return <ReactApexChart options={donutOptions} series={donutSeries} type='donut' width={width} />
+    return (
+        <div>
+            <ReactApexChart options={donutOptions} series={donutSeries} type='pie' width={width} />        
+        </div>
+    )
 }
