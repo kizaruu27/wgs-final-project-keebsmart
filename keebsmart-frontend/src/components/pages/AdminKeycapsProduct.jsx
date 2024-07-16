@@ -102,7 +102,9 @@ export default function AdminKeycapsProduct() {
                     </div>
                     <div className="flex flex-col gap-3 h-96 bg-white p-5 rounded-xl shadow-md">
                         <h1 className="text-2xl">Total Keycaps Sales</h1>
-                        <DonutChart labels={chartLabel} series={chartSeries} width='550' showLegend={true} />
+                        <div className="flex justify-center">
+                            <DonutChart labels={chartSeries.every(item => item === 0) ? ['No Data'] : chartLabel} series={chartSeries.every(item => item === 0) ? [100] : chartSeries} width={350} showLegend={false} />
+                        </div>
                     </div>
                 </div>
 

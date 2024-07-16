@@ -81,6 +81,11 @@ export default function AdminKeyboardProducts() {
             const statistic = stat.data.filter(item => item.category.categoryName === 'Keyboard');
             setChartLabel(statistic.map(item => item.productName));
             setChartSeries(statistic.map(item => item.soldTotal));
+
+            // setTimeout(() => {
+            //     const isZero = chartSeries.every(item => item === 0);
+            //     console.log(isZero); 
+            // }, 1000);
         })
     }, [0])
 
@@ -100,9 +105,11 @@ export default function AdminKeyboardProducts() {
                         <h3 className="font-medium text-center text-9xl">{totalProducts}</h3>
                         <p className="text-lg">Currently there are {totalProducts} keyboards on the list</p>
                     </div>
-                    <div className="flex flex-col gap-3 h-96 bg-white p-5 rounded-xl shadow-md">
+                    <div className="flex flex-col h-96 gap-3 bg-white p-5 rounded-xl shadow-md">
                         <h1 className="text-2xl">Total Keyboard Sales</h1>
-                        <DonutChart labels={chartLabel} series={chartSeries} width={550} showLegend={true} />
+                        <div className="flex justify-center p-5">
+                            <DonutChart labels={chartSeries.every(item => item === 0) ? ['No Data'] : chartLabel} series={chartSeries.every(item => item === 0) ? [100] : chartSeries} width={350} showLegend={false} />
+                        </div>
                     </div>
                 </div>
 

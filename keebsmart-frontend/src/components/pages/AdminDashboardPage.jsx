@@ -143,21 +143,21 @@ export default function AdminDashboardPage() {
                     {/* Chart penjualan keyboard */}
                     <div className="flex flex-col items-center justify-center gap-3 p-3 h-96 rounded bg-white shadow-md dark:bg-gray-800">
                         <h1 className='text-xl font-normal text-gray-500'>Keyboard Sales</h1>
-                        <DonutChart labels={keyboardLabelChart} series={keyboardSeriesChart} width='400' showLegend={false} />
+                        <DonutChart labels={keyboardSeriesChart.every(item => item === 0) ? ['No Data'] : keyboardSeriesChart} series={keyboardSeriesChart.every(item => item === 0) ? [100] : keyboardSeriesChart} width='400' showLegend={false} />
                         <h1 className='text-md font-ligth text-gray-500'>Chart of keyboards sales so far</h1>
                     </div>
 
                     {/* chart penjualan keycaps */}
                     <div className="flex flex-col items-center justify-center gap-3 p-3 h-96 rounded bg-white shadow-md dark:bg-gray-800">
                         <h1 className='text-xl font-normal text-gray-500'>Keycaps Sales</h1>
-                        <DonutChart labels={keycapsLabelChart} series={keycapsSeriesChart} width='400' showLegend={false}/>
+                        <DonutChart labels={keycapsSeriesChart.every(item => item === 0) ? ['No Data'] : keycapsLabelChart} series={keycapsSeriesChart.every(item => item === 0) ? [100] : keycapsSeriesChart} width='400' showLegend={false}/>
                         <h1 className='text-md font-ligth text-gray-500'>Chart of keycaps sales so far</h1>
                     </div>
 
                     {/* chart penjualan switch */}
                     <div className="flex flex-col items-center justify-center gap-3 p-3 h-96 rounded bg-white shadow-md dark:bg-gray-800">
                         <h1 className='text-xl font-normal text-gray-500'>Switches Sales</h1>
-                        <DonutChart labels={switchLabelChart} series={switchSeriesChart} width='400' showLegend={false}/>
+                        <DonutChart labels={switchSeriesChart.every(item => item === 0) ? ['No Data'] : switchLabelChart} series={switchSeriesChart.every(item => item === 0) ? [100] : switchSeriesChart} width='400' showLegend={false}/>
                         <h1 className='text-md font-ligth text-gray-500'>Chart of switches sales so far</h1>
                     </div>
                 </div>

@@ -4,6 +4,8 @@ export default function DonutChart({labels, series, width, showLegend}) {
     const donutOptions = {
         chart: {
             type: 'pie',
+            width: '100%',
+            height: '100%'
         },
         labels: labels,
         legend: {
@@ -14,7 +16,8 @@ export default function DonutChart({labels, series, width, showLegend}) {
             breakpoint: 500,
             options: {
                 chart: {
-                    width: 280
+                    width: '100%',
+                    height: '100%'
                 },
                 legend: {
                     show: true
