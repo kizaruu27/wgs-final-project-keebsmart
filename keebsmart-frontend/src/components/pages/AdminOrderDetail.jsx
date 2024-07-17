@@ -114,7 +114,7 @@ export default function AdminOrderDetail () {
                     </div>
                     <div className="bg-white col-span-2 rounded-xl shadow-lg p-5">
                         <h1 className="text-xl font-medium">Order Timeline</h1>
-                        <h3 className="my-2">Updated at: </h3>
+                        <h3 className="my-2">Updated at: {new Date(order.updateDate).toDateString()} | {new Date(order.updateDate).toLocaleTimeString()} </h3>
                         <div className="p-5">
                             <ol class="relative border-s border-gray-200 dark:border-gray-700">
                             {orderStatus.map((item, key) => {

@@ -749,6 +749,7 @@ app.patch('/order/status/:id', accessValidation, async (req, res) => {
         const { status } = req.body;
         const updatedOrder = await prisma.orders.update({
             data:{
+                updateDate: new Date(),
                 orderStatus: status
             },
             where: {
@@ -804,25 +805,156 @@ app.get('/order/:id', accessValidation, async (req, res) => {
         console.log(error);
         res.json(error);
     }
+});
+
+// API for get all cart
+app.get('/cart', async (req, res) => {
+    try {
+        const cart = await prisma.cart.findMany();
+        res.json(cart);
+    } catch (error) {
+        console.log(error);
+        res.json(error);
+    }
+});
+
+// API for get user card
+app.get('/user/cart', accessValidation, async (req, res) => {
+    try {
+        const userId = req.userId;
+        const cart = await prisma.cart.findMany({
+            where: {
+                userId
+            }
+        });
+        res.json(cart);
+    } catch (error) {
+        console.log(error);
+        res.json(error);
+    }
+});
+
+// API for create new cart
+app.post('/cart', accessValidation, async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { productItemId, qty } = req.body;
+
+        const productItem = await prisma.productItem.findUnique({
+            where: {
+                id: productItemId
+            }
+        });
+
+        const newCart = await prisma.cart.create({
+            data: {
+                userId, productItemId, qty, 
+                subTotalPrice: productItem.price * qty,
+            }
+        })
+
+        res.json({
+            newCart,
+            productItem
+        });  
+
+    } catch (error) {
+        console.log(error);
+        res.json(error);
+    }
 })
 
-// API for get user cart
+// API for get cart detail
 app.get('/cart/:id', async (req, res) => {
     try {
         const { id } = req.params;
-        const newCart = await prisma.user.create({
-            data: {
-                cart: {
-                    connect: [
-                        {}
-                    ]
-                }
+        const cart = await prisma.cart.findUnique({
+            where: {
+                id: Number(id)
             }
         })
         res.json(cart);
     } catch (error) {
         res.json(error);
         console.log(error);
+    }
+});
+
+// API for making new orders
+app.post('/order', accessValidation, async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { targetedCartIds, paymentMethodId, addressId, shippingId, orderStatus, orderNotes } = req.body;
+        
+        const targetCarts = await prisma.cart.findMany({
+            where: {
+                id: {
+                    in: targetedCartIds
+                }
+            },
+            include: {
+                productItem: {
+                    select: {
+                        id: true,
+                        qty: true,
+                        sold: true
+                    }
+                }
+            }
+        });
+
+        const totalPrice = targetCarts.map((item) => item.subTotalPrice).reduce((acc, accValue) => acc + accValue, 0);
+        const orderTotal = targetCarts.map((item) => item.qty).reduce((acc, accValue) => acc+ accValue, 0);
+
+        const newOrder = await prisma.orders.create({
+            data: {
+                userId,
+                paymentMethodId,
+                addressId,
+                shippingId,
+                orderStatus,
+                orderTotal,
+                totalPrice,
+                orderNotes,
+                carts: {
+                    connect: targetCarts
+                }
+            }
+        });
+
+        const productItemIds = [];
+        for (const item of targetCarts) {
+            await prisma.productItem.update({
+                data: {
+                    qty: item.productItem.qty - item.qty,
+                    sold: item.productItem.sold + item.qty
+                },
+                where: {
+                    id: item.productItem.id
+                }
+            });
+            productItemIds.push(item.productItemId);
+        }
+
+        const updatedProductItem = await prisma.productItem.findMany({
+            where: {
+                id: {
+                    in: productItemIds
+                }
+            }
+        })
+
+        res.json({
+            newOrder,
+            targetCarts,
+            totalPrice,
+            updatedProductItem,
+            orderTotal
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.json(error);
     }
 })
 

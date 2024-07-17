@@ -124,6 +124,7 @@ model Cart {
   productItemId Int
   qty           Int
   subTotalPrice Int
+  isOrdered Boolean @default(false)
   productItem   ProductItem @relation(fields: [productItemId], references: [id])
   user          User        @relation(fields: [userId], references: [id])
   order         Orders[]    @relation("CartToOrders")
@@ -143,7 +144,6 @@ model Orders {
   orderId         String         @id @default(uuid())
   userId          String
   orderDate       DateTime       @default(now())
-  updateDate DateTime @updatedAt
   paymentMethodId Int
   addressId       Int
   shippingId      String
@@ -151,6 +151,7 @@ model Orders {
   orderTotal      Int
   totalPrice      Int
   orderNotes      String
+  updateDate      DateTime       @default(now())
   address         UserAddress    @relation(fields: [addressId], references: [id])
   paymentMethod   PaymentMethods @relation(fields: [paymentMethodId], references: [id])
   shipping        Shipping       @relation(fields: [shippingId], references: [id])
@@ -159,10 +160,9 @@ model Orders {
 }
 
 model orderStatus {
-  id Int @id @default(autoincrement())
+  id       Int      @id @default(autoincrement())
   updateAt DateTime @default(now())
-  status String
-
+  status   String
 }
 
 model Messeges {
