@@ -747,18 +747,23 @@ app.patch('/order/status/:id', accessValidation, async (req, res) => {
     try {
         const { id } = req.params;
         const { status } = req.body;
-        const updatedOrder = await prisma.orders.update({
-            data:{
-                updateDate: new Date(),
-                orderStatus: status
-            },
+
+        const orderStatus = await prisma.orderStatus.findFirst({
             where: {
-                orderId: id
+                status
             }
-        });
+        })
+
+        const updatedStatus = await prisma.currentStatus.create({
+            data: {
+                orderId: id,
+                orderStatusId: orderStatus.id
+            }
+        })
 
         res.json({
-            updatedOrder,
+            updatedStatus,
+            orderStatus,
             msg: 'Order successfully updated!'
         });
     } catch (error) {
@@ -793,7 +798,8 @@ app.get('/order/:id', accessValidation, async (req, res) => {
                 user: true,
                 shipping: true,
                 paymentMethod: true,
-                address: true
+                address: true,
+                currentStatus: true
             }
         })
 
@@ -884,7 +890,7 @@ app.get('/cart/:id', async (req, res) => {
 app.post('/order', accessValidation, async (req, res) => {
     try {
         const userId = req.userId;
-        const { targetedCartIds, paymentMethodId, addressId, shippingId, orderStatus, orderNotes } = req.body;
+        const { targetedCartIds, paymentMethodId, addressId, shippingId, orderNotes } = req.body;
         
         const targetCarts = await prisma.cart.findMany({
             where: {
@@ -912,7 +918,6 @@ app.post('/order', accessValidation, async (req, res) => {
                 paymentMethodId,
                 addressId,
                 shippingId,
-                orderStatus,
                 orderTotal,
                 totalPrice,
                 orderNotes,
@@ -921,6 +926,13 @@ app.post('/order', accessValidation, async (req, res) => {
                 }
             }
         });
+
+        const setOrderStatus = await prisma.currentStatus.create({
+            data: {
+                orderId: newOrder.orderId,
+                orderStatusId: 1
+            }
+        })
 
         const productItemIds = [];
         for (const item of targetCarts) {
@@ -946,6 +958,7 @@ app.post('/order', accessValidation, async (req, res) => {
 
         res.json({
             newOrder,
+            setOrderStatus,
             targetCarts,
             totalPrice,
             updatedProductItem,
@@ -958,6 +971,7 @@ app.post('/order', accessValidation, async (req, res) => {
     }
 });
 
+// API for delete order
 app.delete('/order/:id', accessValidation, async (req, res) => {
     try {
         const { id } = req.params;

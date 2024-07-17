@@ -124,7 +124,7 @@ model Cart {
   productItemId Int
   qty           Int
   subTotalPrice Int
-  isOrdered Boolean @default(false)
+  isOrdered     Boolean     @default(false)
   productItem   ProductItem @relation(fields: [productItemId], references: [id])
   user          User        @relation(fields: [userId], references: [id])
   order         Orders[]    @relation("CartToOrders")
@@ -141,28 +141,38 @@ model Shipping {
 }
 
 model Orders {
-  orderId         String         @id @default(uuid())
+  orderId         String          @id @default(uuid())
   userId          String
-  orderDate       DateTime       @default(now())
+  orderDate       DateTime        @default(now())
   paymentMethodId Int
   addressId       Int
   shippingId      String
-  orderStatus     String
   orderTotal      Int
   totalPrice      Int
   orderNotes      String
-  updateDate      DateTime       @default(now())
-  address         UserAddress    @relation(fields: [addressId], references: [id])
-  paymentMethod   PaymentMethods @relation(fields: [paymentMethodId], references: [id])
-  shipping        Shipping       @relation(fields: [shippingId], references: [id])
-  user            User           @relation(fields: [userId], references: [id])
-  carts           Cart[]         @relation("CartToOrders")
+  updateDate      DateTime        @default(now())
+  address         UserAddress     @relation(fields: [addressId], references: [id])
+  paymentMethod   PaymentMethods  @relation(fields: [paymentMethodId], references: [id])
+  shipping        Shipping        @relation(fields: [shippingId], references: [id])
+  user            User            @relation(fields: [userId], references: [id])
+  currentStatus   currentStatus[]
+  carts           Cart[]          @relation("CartToOrders")
+}
+
+model currentStatus {
+  id            Int         @id @default(autoincrement())
+  updateAt      DateTime    @updatedAt
+  orderStatusId Int
+  orderId       String
+  order         Orders      @relation(fields: [orderId], references: [orderId])
+  status        orderStatus @relation(fields: [orderStatusId], references: [id])
 }
 
 model orderStatus {
-  id       Int      @id @default(autoincrement())
-  updateAt DateTime @default(now())
-  status   String
+  id                Int             @id @default(autoincrement())
+  status            String
+  statusDescription String
+  currentStatus     currentStatus[]
 }
 
 model Messeges {
