@@ -2,7 +2,7 @@ import DashboardContent from "../fragments/DashboardContent";
 import DashboardFragment from "../fragments/DashboardFragment";
 import DashboardNavbar from "../Layouts/DashboardNavbar";
 import DashboardSideMenu from "../Layouts/DashboardSideMenu";
-import { getOrders, setOrderStatus, orderStatus } from "../../server/orderController";
+import { getOrders, setOrderStatus, orderStatus, deleteOrder } from "../../server/orderController";
 import { useEffect, useState } from "react";
 import { GoToPage } from "../../server/pageController";
 
@@ -26,6 +26,13 @@ export default function AdminOrderPage() {
         }
 
         return textColor;
+    }
+
+    const onDeleteOrder = (id) => {
+        deleteOrder(id, (data) => {
+            console.log(data);
+            GoToPage('/admin/orders');
+        })
     }
 
     useEffect(() => {
@@ -105,7 +112,7 @@ export default function AdminOrderPage() {
                                             </td>
                                             <td class="px-6 py-4">
                                                 <span onClick={() => GoToPage(`/admin/order/${order.orderId}`)} class="bg-yellow-100 rounded-xl text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 cursor-pointer">detail</span>
-                                                {/* <span class="bg-red-100 rounded-xl text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 cursor-pointer">delete</span> */}
+                                                <span onClick={() => onDeleteOrder(order.orderId)} className="bg-red-100 rounded-xl text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 cursor-pointer">delete</span>
                                             </td>
                                         </tr>
                                     ))}

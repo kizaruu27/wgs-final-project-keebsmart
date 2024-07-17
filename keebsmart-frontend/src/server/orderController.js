@@ -79,3 +79,16 @@ export const getOrderDetail = async (id, setOrderDetail) => {
     }
 }
 
+export const deleteOrder = async (id, onDelete) => {
+    try {
+        const deletedOrder = await axios.delete(`${urlEndpoint}/order/${id}`,{
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        onDelete(deletedOrder);
+    } catch (error) {
+        console.log(error);
+    }
+}

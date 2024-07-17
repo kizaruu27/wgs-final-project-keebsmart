@@ -16,11 +16,53 @@ export default function AdminOrderDetail () {
     const [address, setAddress] = useState([]);
     const [shipping, setShipping] = useState({});
     const [paymentMethod, setPaymentMethod] = useState({});
+    const [statusColor, setStatusColor] = useState('');
+
+    const canCancel = () => {
+        if (order.orderStatus === 'Canceled') return false;
+        if (order.orderStatus === 'Delivered') return false;
+        if (order.orderStatus === 'Finish') return false;
+        else return true;
+    }
 
     let shouldStop = false;
 
-    const changeOrderStatus = (status) => {
-        setOrderStatus(id, status, GoToPage(`/admin/order/${id}`));
+    const changeStatusColor = (orderStatus) => {
+        switch (orderStatus) {
+            case 'Paid':
+                setStatusColor('bg-yellow-100 text-yellow-800')
+                break;
+            case 'On Process':
+                setStatusColor('bg-blue-100 text-blue-800')
+                break;
+            case 'On Packing':
+                setStatusColor('bg-blue-100 text-blue-800')
+                break;
+            case 'Courier Pick Up':
+                setStatusColor('bg-blue-100 text-blue-800')
+                break;
+            case 'On Delivery':
+                setStatusColor('bg-blue-100 text-blue-800')
+                break;
+            case 'Delivered':
+                setStatusColor('bg-green-100 text-green-800')
+                break;
+            case 'Finish':
+                setStatusColor('bg-green-100 text-green-800')
+                break;
+            case 'Canceled':
+                setStatusColor('bg-red-100 text-red-800')
+                break;
+            default:
+                setStatusColor('bg-blue-100 text-blue-800')
+                break;
+        }
+    }
+
+    const cancelOrder = (status) => {
+        setOrderStatus(id, status, () => {
+            GoToPage(`/admin/order/${id}`, 100);
+        })
     }
 
     useEffect(() => {
@@ -33,7 +75,11 @@ export default function AdminOrderDetail () {
             setPaymentMethod(data.paymentMethod);
             console.dir(data.carts[0].productItem.variationOption.variationValue);
         })
-    }, [0])
+    }, [0]);
+
+    useEffect(() => {
+        changeStatusColor(order.orderStatus);
+    }, [order.orderStatus])
 
     return (
         <DashboardFragment>
@@ -74,7 +120,7 @@ export default function AdminOrderDetail () {
                         </div>
                         <div className="p-5 flex flex-col gap-3 text-nowrap ">
                             <h1 className="font-medium text-2xl">Status</h1>
-                            <span className="bg-green-100 w-28 p-4 text-center text-green-800 text-xs font-medium me-2 py-1 rounded-xl dark:bg-green-900 dark:text-green-300">{order.orderStatus}</span>
+                            <span className={`${statusColor} w-28 p-4 text-center text-xs font-medium me-2 py-1 rounded-xl dark:bg-green-900 dark:text-green-300`}>{order.orderStatus}</span>
                         </div>
                         <div className="p-5 flex flex-col gap-3 ">
                             <h1 className="font-medium text-2xl">Shipment</h1>
@@ -83,7 +129,7 @@ export default function AdminOrderDetail () {
                     </div>  
                     <div className="bg-white rounded-xl shadow-md col-span-2">
                         <h1 className="font-medium text-2xl my-3 px-5">Items</h1>
-                        <div className="grid grid-cols-2 gap-3 p-5">
+                        <div className="grid grid-cols-2 gap-3 p-5"> 
                             <div>
                                 {carts.map((cart, key) => (
                                     <div key={key} className="border rounded-xl shadow-md p-5 grid grid-cols-3">
@@ -107,7 +153,11 @@ export default function AdminOrderDetail () {
                                 <div className="border flex flex-col justify-center rounded-lg shadow-lg p-5">
                                     <p className="text-lg font-semibold mt-5">Total Items: <span className="font-normal">{order.orderTotal}</span></p>
                                     <p className="text-lg font-semibold mt-5">Total Price: <span className="font-normal">Rp. {order.totalPrice}</span></p>
-                                    <SetOrderButton status={order.orderStatus} orderId={order.orderId} />
+                                    <div className="flex gap-2">
+                                        <SetOrderButton status={order.orderStatus} orderId={order.orderId} />
+                                        <button hidden={canCancel() ? false : true} onClick={() => cancelOrder('Canceled')} type="button" className={`focus:outline-none w-44 text-white bg-red-500 hover:bg-red-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 my-5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800`}>Cancel Product</button>
+                                        
+                                    </div>
                                 </div>
                             </div>
                         </div>

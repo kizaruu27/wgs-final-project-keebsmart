@@ -956,6 +956,22 @@ app.post('/order', accessValidation, async (req, res) => {
         console.log(error);
         res.json(error);
     }
+});
+
+app.delete('/order/:id', accessValidation, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedOrder = await prisma.orders.delete({
+            where: {
+                orderId: id
+            }
+        });
+
+        res.json({deletedOrder, msg: 'Order deleted successfully'});
+    } catch (error) {
+        console.log(error);
+        res.json(error);
+    }
 })
 
 
