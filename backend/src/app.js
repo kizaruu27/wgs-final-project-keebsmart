@@ -100,17 +100,10 @@ app.post('/registration', async (req, res) => {
                 name, email, password: hashPassword, phoneNumber, isActive: true, access: 'customer'
             }
         });
-        
-        const newCart = await prisma.cart.create({
-            data: {
-                userId: newUser.id
-            }
-        })
 
         res.status(201);
         res.json({
             user: newUser,
-            cart: newCart,
             msg: 'Akun berhasil dibuat!'
         })
     } catch (error) {
@@ -782,24 +775,24 @@ app.get('/order/:id', accessValidation, async (req, res) => {
                 orderId: id
             },
             include: {
-                user: {
+                carts: {
                     include: {
-                        userAddress: true
-                    }
-                },
-                paymentMethod: true,
-                address: true,
-                shipping: true,
-                productItems: {
-                    include: {
-                        product: true,
-                        variationOption: {
+                        productItem: {
                             include: {
-                                variations: true
+                                product: true,
+                                variationOption: {
+                                    include: {
+                                        variations: true
+                                    }
+                                }
                             }
                         }
                     }
-                }
+                },
+                user: true,
+                shipping: true,
+                paymentMethod: true,
+                address: true
             }
         })
 
@@ -810,6 +803,26 @@ app.get('/order/:id', accessValidation, async (req, res) => {
     } catch (error) {
         console.log(error);
         res.json(error);
+    }
+})
+
+// API for get user cart
+app.get('/cart/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const newCart = await prisma.user.create({
+            data: {
+                cart: {
+                    connect: [
+                        {}
+                    ]
+                }
+            }
+        })
+        res.json(cart);
+    } catch (error) {
+        res.json(error);
+        console.log(error);
     }
 })
 

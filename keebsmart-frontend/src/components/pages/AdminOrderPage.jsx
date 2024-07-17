@@ -2,39 +2,12 @@ import DashboardContent from "../fragments/DashboardContent";
 import DashboardFragment from "../fragments/DashboardFragment";
 import DashboardNavbar from "../Layouts/DashboardNavbar";
 import DashboardSideMenu from "../Layouts/DashboardSideMenu";
-import { getOrders, setOrderStatus } from "../../server/orderController";
+import { getOrders, setOrderStatus, orderStatus } from "../../server/orderController";
 import { useEffect, useState } from "react";
 import { GoToPage } from "../../server/pageController";
 
 export default function AdminOrderPage() {
     const [orders, setOrders] = useState([]);
-
-    const orderStatus = [
-        {
-            status: 'Waiting Confirmation',
-        },
-        {
-            status: 'On Process',
-        },
-        {
-            status: 'On Packing',
-        },
-        {
-            status: 'Sent to Courier',
-        },
-        {
-            status: 'On Delivery',
-        },
-        {
-            status: 'Delivered',
-        },
-        {
-            status: 'Canceled',
-        },
-        {
-            status: 'Finish',
-        },
-    ];
 
     const changeOrderStatus = (e, id) => {
         e.preventDefault();
@@ -125,7 +98,7 @@ export default function AdminOrderPage() {
                                             <td class="px-6 py-4 text-nowrap">
                                                 <select class={`block py-2.5 px-5 text-sm text-gray-500 bg-transparent border-0 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer`} onChange={(e) => changeOrderStatus(e, order.orderId)}>
                                                     <option value={order.orderStatus} className="font-medium text-md">{order.orderStatus}</option>
-                                                    {orderStatus.filter((item) => item.status !== 'Waiting Confirmation').map((item, key) => (
+                                                    {orderStatus.filter((item) => item.status !== 'Paid').map((item, key) => (
                                                         <option key={key} value={item.status} className="font-normal text-md">{item.status}</option>
                                                     ))}
                                                 </select>
