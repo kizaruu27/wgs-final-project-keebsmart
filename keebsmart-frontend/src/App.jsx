@@ -12,6 +12,10 @@ import AdminKeycapsProduct from './components/pages/AdminKeycapsProduct';
 import AdminSwitchProduct from './components/pages/AdminSwitchProduct';
 import AdminOrderPage from './components/pages/AdminOrderPage';
 import AdminOrderDetail from './components/pages/AdminOrderDetail';
+import AdminOrderProcessed from './components/pages/AdminOrderProcessed';
+import AdminOrderOnDelivery from './components/pages/AdminOrderOnDelivery';
+import AdminOrderCanceled from './components/pages/AdminOrderCanceled';
+import AdminOrderFinished from './components/pages/AdminOrderFinished';
 
 export default function App() {
     return (
@@ -29,6 +33,10 @@ export default function App() {
                     <Route path="/admin/products/switches" Component={AdminSwitchProduct}/>
                     <Route path="/admin/orders" Component={AdminOrderPage}/>
                     <Route path="/admin/order/:id" Component={AdminOrderDetail}/>
+                    <Route path="/admin/order/processed" Component={AdminOrderProcessed}/>
+                    <Route path="/admin/order/ondelivery" Component={AdminOrderOnDelivery}/>
+                    <Route path="/admin/order/canceled" Component={AdminOrderCanceled}/>
+                    <Route path="/admin/order/finish" Component={AdminOrderFinished}/>
                     {/* <Route path="/admin/add-product" Component={AdminAddProductForm}/> */}
                     {/* <Route path="/admin/add-item/:id" Component={AdminAddProductItemForm}/> */}
                 </Routes>

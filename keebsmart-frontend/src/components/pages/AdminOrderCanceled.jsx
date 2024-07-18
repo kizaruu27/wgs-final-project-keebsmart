@@ -6,7 +6,7 @@ import { getOrders, deleteOrder } from "../../server/orderController";
 import { useEffect, useState } from "react";
 import { GoToPage } from "../../server/pageController";
 
-export default function AdminOrderPage() {
+export default function AdminOrderCanceled () {
     const [orders, setOrders] = useState([]);
     
     const changeStatusColor = (status) => {
@@ -55,8 +55,9 @@ export default function AdminOrderPage() {
 
     useEffect(() => {
         getOrders((response) => {
-            setOrders(response.data.orders);
-            console.dir(orders.map(order => order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1])
+            setOrders(response.data.orders.filter(order => order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1] === 'Canceled'));
+            console.dir(
+                orders.filter(order => order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1] === 'On Process' )
             );  
         }, (error) => {
             console.log(error);
@@ -68,9 +69,9 @@ export default function AdminOrderPage() {
             <DashboardNavbar />
             <DashboardSideMenu />
             <DashboardContent>
-                <div className="mb-4 dark:bg-gray-800">
+            <div className="mb-4 dark:bg-gray-800">
                     <div className="bg-white rounded-xl shadow-md p-7">
-                        <h1 className='font-medium text-gray-500 text-2xl my-5'>All Orders</h1>
+                        <h1 className='font-medium text-gray-500 text-2xl my-5'>Canceled Orders</h1>
                         <div class="relative bg-white overflow-x-auto sm:rounded-lg" style={{height: 450}}>
                             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -136,7 +137,6 @@ export default function AdminOrderPage() {
                         </div>
                     </div>
                 </div>
-
             </DashboardContent>
         </DashboardFragment>
     )

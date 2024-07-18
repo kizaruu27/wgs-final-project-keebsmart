@@ -49,17 +49,16 @@ export const getOrders = async (setOrders, onFailed) => {
 
 export const setOrderStatus = async (id, orderStatus, onSuccess) => {
     try {
-        const updatedOrders = await axios.patch(`${urlEndpoint}/order/status/${id}`, {
+        const updatedStatus = await axios.patch(`${urlEndpoint}/order/status/${id}`, {
             status: orderStatus
         },
         {
             headers: {
                 Authorization: `Bearer ${token}`
             }
-        });
+        })
 
-        console.log(updatedOrders);
-        onSuccess();
+        onSuccess(updatedStatus);
     } catch (error) {
         console.log(error);
     }

@@ -726,10 +726,15 @@ app.get('/orders', async (req, res) => {
             include: {
                 user: true,
                 address: true,
-                paymentMethod: true
+                paymentMethod: true,
+                currentStatus: {
+                    include: {
+                        status: true
+                    }
+                }
             },
             orderBy: {
-                orderDate: 'asc'
+                orderDate: 'desc'
             }
         });
         res.json({
@@ -799,7 +804,11 @@ app.get('/order/:id', accessValidation, async (req, res) => {
                 shipping: true,
                 paymentMethod: true,
                 address: true,
-                currentStatus: true
+                currentStatus: {
+                    include: {
+                        status: true
+                    }
+                }
             }
         })
 
@@ -975,6 +984,12 @@ app.post('/order', accessValidation, async (req, res) => {
 app.delete('/order/:id', accessValidation, async (req, res) => {
     try {
         const { id } = req.params;
+        const currentStatus = await prisma.currentStatus.deleteMany({
+            where: {
+                orderId: id
+            }
+        })
+
         const deletedOrder = await prisma.orders.delete({
             where: {
                 orderId: id

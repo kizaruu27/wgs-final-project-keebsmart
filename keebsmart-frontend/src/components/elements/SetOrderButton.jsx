@@ -2,21 +2,22 @@ import { useEffect, useState } from "react";
 import { setOrderStatus } from "../../server/orderController";
 import { GoToPage } from "../../server/pageController";
 
-export default function SetOrderButton({status, orderId}) {
+export default function SetOrderButton({status, orderId, paymentMethod}) {
     const [newStatus, setNewStatus] = useState('');
     const [btnText, setBtnText] = useState(''); 
     const [btnColor, setBtnColor] = useState(''); 
     const [btnIsDisabled, setBtnIsDisabled] = useState(false);
 
-    const setStatus = (status) => {
-        setOrderStatus(orderId, status, () => {
+    const setStatus = (orderStatus) => {
+        setOrderStatus(orderId, orderStatus, (data) => {
+            console.log(data);
             GoToPage(`/admin/order/${orderId}`, 100);
         })
     } 
 
     const setButton = (status) => {
         switch (status) {
-            case 'Paid':
+            case 'Checkout Success':
                 setBtnText('Process Order');
                 setNewStatus('On Process');
                 setBtnColor('bg-yellow-300 hover:bg-yellow-400');
@@ -41,9 +42,20 @@ export default function SetOrderButton({status, orderId}) {
                 setBtnIsDisabled(false);
                 break;
             case 'On Delivery':
-                setBtnText('Delivered');
-                setNewStatus('Delivered');
+                if (paymentMethod === 'Cash On Delivery') {
+                    setBtnText('Accept Payment');
+                    setNewStatus('Cash On Delivery Paid');
+                } else {
+                    setBtnText('Finish Deliver');
+                    setNewStatus('Delivered');
+                }
                 setBtnColor('bg-blue-500 hover:bg-blue-800');
+                setBtnIsDisabled(false);
+                break;
+            case 'Cash On Delivery Paid':
+                setBtnText('Finish Deliver');
+                setNewStatus('Delivered');
+                setBtnColor('bg-green-500 hover:bg-green-800');
                 setBtnIsDisabled(false);
                 break;
             case 'Delivered':
@@ -65,7 +77,7 @@ export default function SetOrderButton({status, orderId}) {
             default:
                 setBtnText('Waiting Response...');
                 setBtnColor('bg-blue-500 hover:bg-blue-800');
-                setBtnIsDisabled(true);
+                setBtnIsDisabled(false);
                 break;
         }
     };

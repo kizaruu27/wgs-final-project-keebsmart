@@ -17,11 +17,13 @@ export default function AdminOrderDetail () {
     const [shipping, setShipping] = useState({});
     const [paymentMethod, setPaymentMethod] = useState({});
     const [statusColor, setStatusColor] = useState('');
+    const [status, setStatus] = useState('');
+    const [currentStatus, setCurrentStatus] = useState([]);
 
     const canCancel = () => {
-        if (order.orderStatus === 'Canceled') return false;
-        if (order.orderStatus === 'Delivered') return false;
-        if (order.orderStatus === 'Finish') return false;
+        if (status === 'Canceled') return false;
+        if (status === 'Delivered') return false;
+        if (status === 'Finish') return false;
         else return true;
     }
 
@@ -73,13 +75,15 @@ export default function AdminOrderDetail () {
             setAddress(data.address);
             setShipping(data.shipping);
             setPaymentMethod(data.paymentMethod);
-            console.dir(data.carts[0].productItem.variationOption.variationValue);
+            setStatus(data.currentStatus[data.currentStatus.length - 1].status.status);
+            setCurrentStatus(data.currentStatus);
+            console.dir(data.currentStatus);
         })
     }, [0]);
 
     useEffect(() => {
-        changeStatusColor(order.orderStatus);
-    }, [order.orderStatus])
+        changeStatusColor(status);
+    }, [status])
 
     return (
         <DashboardFragment>
@@ -120,7 +124,7 @@ export default function AdminOrderDetail () {
                         </div>
                         <div className="p-5 flex flex-col gap-3 text-nowrap ">
                             <h1 className="font-medium text-2xl">Status</h1>
-                            <span className={`${statusColor} w-28 p-4 text-center text-xs font-medium me-2 py-1 rounded-xl dark:bg-green-900 dark:text-green-300`}>{order.orderStatus}</span>
+                            <span className={`${statusColor} w-28 p-4 text-center text-xs font-medium me-2 py-1 rounded-xl dark:bg-green-900 dark:text-green-300`}>{status}</span>
                         </div>
                         <div className="p-5 flex flex-col gap-3 ">
                             <h1 className="font-medium text-2xl">Shipment</h1>
@@ -154,9 +158,8 @@ export default function AdminOrderDetail () {
                                     <p className="text-lg font-semibold mt-5">Total Items: <span className="font-normal">{order.orderTotal}</span></p>
                                     <p className="text-lg font-semibold mt-5">Total Price: <span className="font-normal">Rp. {order.totalPrice}</span></p>
                                     <div className="flex gap-2">
-                                        <SetOrderButton status={order.orderStatus} orderId={order.orderId} />
+                                        <SetOrderButton status={status} orderId={order.orderId} paymentMethod={paymentMethod.paymentType} />
                                         <button hidden={canCancel() ? false : true} onClick={() => cancelOrder('Canceled')} type="button" className={`focus:outline-none w-44 text-white bg-red-500 hover:bg-red-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 my-5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800`}>Cancel Product</button>
-                                        
                                     </div>
                                 </div>
                             </div>
@@ -167,18 +170,13 @@ export default function AdminOrderDetail () {
                         <h3 className="my-2">Updated at: {new Date(order.updateDate).toDateString()} | {new Date(order.updateDate).toLocaleTimeString()} </h3>
                         <div className="p-5">
                             <ol class="relative border-s border-gray-200 dark:border-gray-700">
-                            {orderStatus.map((item, key) => {
-                                if (shouldStop) return null;
-                                if (item.status === order.orderStatus) shouldStop = true;
-
-                                return (
-                                    <li key={key} class="mb-10 ms-4">
-                                        <div class="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
-                                        <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{item.status}</h3>
-                                        <p class="text-base font-normal text-gray-500 dark:text-gray-400">{item.description}</p>
-                                    </li>
-                                );
-                            })}
+                            {currentStatus.map((item, key) => (
+                                <li key={key} class="mb-10 ms-4">
+                                    <div class="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">{item.status.status} <span className="font-light">at {new Date(item.updateAt).toLocaleDateString()} | {new Date(item.updateAt).toLocaleTimeString()}</span> </h3>
+                                    <p class="text-base font-normal text-gray-500 dark:text-gray-400">{item.status.statusDescription}</p>
+                                </li>
+                            ))}
                             </ol>
                         </div>
                     </div>
