@@ -16,6 +16,7 @@ import AdminOrderProcessed from './components/pages/AdminOrderProcessed';
 import AdminOrderOnDelivery from './components/pages/AdminOrderOnDelivery';
 import AdminOrderCanceled from './components/pages/AdminOrderCanceled';
 import AdminOrderFinished from './components/pages/AdminOrderFinished';
+import AdminAllUsers from './components/pages/AdminAllUsers';
 
 export default function App() {
     return (
@@ -37,6 +38,7 @@ export default function App() {
                     <Route path="/admin/order/ondelivery" Component={AdminOrderOnDelivery}/>
                     <Route path="/admin/order/canceled" Component={AdminOrderCanceled}/>
                     <Route path="/admin/order/finish" Component={AdminOrderFinished}/>
+                    <Route path="/admin/users" Component={AdminAllUsers}/>
                     {/* <Route path="/admin/add-product" Component={AdminAddProductForm}/> */}
                     {/* <Route path="/admin/add-item/:id" Component={AdminAddProductItemForm}/> */}
                 </Routes>

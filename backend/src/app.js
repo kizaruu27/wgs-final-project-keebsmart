@@ -65,13 +65,116 @@ app.post('/product/images', upload.array('images', 20), (req, res) => {
 // API for see all users
 app.get('/users', accessValidation, async (req, res) => {
     try {
-        const users = await prisma.user.findMany();
+        const users = await prisma.user.findMany({
+            include: {
+                orders: true
+            },
+            orderBy: {
+                createdAt: 'desc'
+            }
+        });
         res.json({
-            data: {users},
+            users,
             msg: 'Get all users success'
         })
     } catch (error) {
         console.log(error.messege);
+    }
+});
+
+// API for change user status
+app.patch('/user/:id', accessValidation, async (req, res) => {
+    try {
+        const { status } = req.body;
+        const { id } = req.params;
+        const updatedUser = await prisma.user.update({
+            data: {
+                isActive: status
+            },
+            where: {
+                id
+            }
+        });
+
+        res.json({
+            updatedUser,
+            msg: 'User status chaged!'
+        })
+    } catch (error) {
+        console.error(error);
+        res.json(error);
+    }
+});
+
+// API for delete user
+app.delete('/user/:id', accessValidation, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const targetUser = await prisma.user.findUnique({
+            where: {
+                id
+            }
+        });
+
+        const userAddress = await prisma.userAddress.findMany({
+            where: {
+                userId: targetUser.id
+            }
+        });
+
+        const orders = await prisma.orders.findMany({
+            where: {
+                userId: targetUser.id
+            }
+        })
+
+        
+
+        if (targetUser) {
+            const currentStatus = await prisma.currentStatus.deleteMany({
+                where: {
+                    orderId: {
+                        in: orders.map(item => item.orderId)
+                    }
+                }
+            })
+
+            const deleteOrders = await prisma.orders.deleteMany({
+                where: {
+                    userId: targetUser.id
+                }
+            })
+
+            const shippping = await prisma.shipping.deleteMany({
+                where: {
+                    orders: {
+                        in: userAddress.map(item => item.id)
+                    }
+                }
+            })
+
+            const deleteAddress = await prisma.userAddress.deleteMany({
+                where: {
+                    userId: targetUser.id
+                }
+            });
+        }
+
+        
+
+        const deletedUser = await prisma.user.delete({
+            where: {
+                id
+            }
+        })
+
+        res.json({
+            deletedUser,
+            msg: 'User deleted!'
+        })
+    } catch (error) {
+        console.log(error);
+        res.json(error);
     }
 })
 
@@ -833,7 +936,7 @@ app.get('/cart', async (req, res) => {
     }
 });
 
-// API for get user card
+// API for get user cart
 app.get('/user/cart', accessValidation, async (req, res) => {
     try {
         const userId = req.userId;

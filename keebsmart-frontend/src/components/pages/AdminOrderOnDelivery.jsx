@@ -5,9 +5,12 @@ import DashboardSideMenu from "../Layouts/DashboardSideMenu";
 import { getOrders, deleteOrder } from "../../server/orderController";
 import { useEffect, useState } from "react";
 import { GoToPage } from "../../server/pageController";
+import DeleteModal from "../Layouts/DeleteModal";
 
 export default function AdminOrderOnDelivery () {
     const [orders, setOrders] = useState([]);
+    const [onModalShow, setOnModalShow] = useState(false);
+    const [deleteOrderId, setDeleteOrderId] = useState(0);
     
     const changeStatusColor = (status) => {
         let color = '';
@@ -46,10 +49,15 @@ export default function AdminOrderOnDelivery () {
         return color;
     }
 
+    const setDelete = (id) => {
+        setOnModalShow(true);
+        setDeleteOrderId(id)
+    }
+
     const onDeleteOrder = (id) => {
         deleteOrder(id, (data) => {
             console.log(data);
-            GoToPage('/admin/orders');
+            GoToPage('/admin/order/ondelivery');
         })
     }
 
@@ -72,6 +80,7 @@ export default function AdminOrderOnDelivery () {
             <div className="mb-4 dark:bg-gray-800">
                     <div className="bg-white rounded-xl shadow-md p-7">
                         <h1 className='font-medium text-gray-500 text-2xl my-5'>On Delivery Orders</h1>
+                        <h3 className='font-light text-gray-500 text-lg my-3'>Total orders: {orders.length}</h3>
                         <div class="relative bg-white overflow-x-auto sm:rounded-lg" style={{height: 450}}>
                             <table class="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
                                 <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
@@ -128,12 +137,13 @@ export default function AdminOrderOnDelivery () {
                                             </td>
                                             <td class="px-6 py-4">
                                                 <span onClick={() => GoToPage(`/admin/order/${order.orderId}`)} class="bg-yellow-100 rounded-xl text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 cursor-pointer">detail</span>
-                                                <span onClick={() => onDeleteOrder(order.orderId)} className="bg-red-100 rounded-xl text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 cursor-pointer">delete</span>
+                                                <span onClick={() => setDelete(order.orderId)} className="bg-red-100 rounded-xl text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 cursor-pointer">delete</span>
                                             </td>
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
+                            <DeleteModal onShow={onModalShow} onClose={() => setOnModalShow(false)} onConfirm={() => onDeleteOrder(deleteOrderId)} />
                         </div>
                     </div>
                 </div>

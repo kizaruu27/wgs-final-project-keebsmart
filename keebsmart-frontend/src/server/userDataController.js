@@ -1,9 +1,23 @@
 import axios from "axios";
 import { urlEndpoint } from "./url";
+const token = localStorage.getItem('token');
+
+export const getAllUser = async (onSuccess) => {
+    try {
+        const users = await axios.get(`${urlEndpoint}/users`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+
+        onSuccess(users);
+    } catch (error) {
+        console.log(error);
+    }
+}
 
 export const getUserData = async (onSuccessGetUserData, onFailedGetUserData, onTokenEmpty) => {
     try {
-        const token = localStorage.getItem('token');
         if (!token) onTokenEmpty();
 
         const response = await axios.get(`${urlEndpoint}/user`, {
@@ -16,5 +30,21 @@ export const getUserData = async (onSuccessGetUserData, onFailedGetUserData, onT
         onSuccessGetUserData(userData);
     } catch (error) {
         onFailedGetUserData(error);
+    }
+}
+
+export const changeUserStatus = async (id, status, onSuccess) => {
+    try {
+        const user = await axios.patch(`${urlEndpoint}/user/${id}`, {
+            status
+        }, 
+        {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        onSuccess(user.data);
+    } catch (error) {
+        console.log(error);
     }
 }
