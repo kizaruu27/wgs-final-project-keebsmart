@@ -4,7 +4,7 @@ import { jwtDecode } from 'jwt-decode';
 
 const token = localStorage.getItem('token');
 
-export const userLogin = async (email, password, onAdminLogin, onSuperAdminLogin,  onCustomerLogin, onLoginFailed) => {
+export const userLogin = async (email, password, onAdminLogin, onSuperAdminLogin, onCourierLogin,  onCustomerLogin, onLoginFailed) => {
     try {
         const response = await axios.post(`${urlEndpoint}/login`, {
             email, password
@@ -22,6 +22,8 @@ export const userLogin = async (email, password, onAdminLogin, onSuperAdminLogin
                 onCustomerLogin();
             case 'super-admin':
                 onSuperAdminLogin();
+            case 'courier':
+                onCourierLogin();
             default:
                 break;
         }

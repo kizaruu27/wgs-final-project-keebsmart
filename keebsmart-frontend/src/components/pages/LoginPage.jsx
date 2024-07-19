@@ -39,6 +39,13 @@ export default function LoginPage() {
         GoToPage('/admin', 1500);
     }
 
+    const onCourierLogin = () => {
+        setAlertType('success');
+        setIsClick(true);
+        setAlertMsg('Login as courier successfull!');
+        GoToPage('/courier', 1500);
+    }
+
     const onLoginFailed = () => {
         setAlertMsg('Login failed! Password or Email incorrect!');
         setAlertType('error');
@@ -47,7 +54,7 @@ export default function LoginPage() {
 
     const login = (e) => {
         e.preventDefault();
-        userLogin(email, password, onAdminLogin, onSuperAdminLogin, onCustomerLogin, onLoginFailed)
+        userLogin(email, password, onAdminLogin, onSuperAdminLogin, onCourierLogin,  onCustomerLogin, onLoginFailed)
     };
 
     // useEffect(() => {
