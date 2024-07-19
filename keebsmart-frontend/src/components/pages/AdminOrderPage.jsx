@@ -63,7 +63,7 @@ export default function AdminOrderPage() {
 
     useEffect(() => {
         getOrders((response) => {
-            setOrders(response.data.orders);
+            setOrders(response.orders);
             console.dir(orders.map(order => order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1])
             );  
         }, (error) => {
@@ -132,7 +132,7 @@ export default function AdminOrderPage() {
                                                 Rp. {order.totalPrice}
                                             </td>
                                             <td class="px-6 py-4 text-nowrap">
-                                                <span className={`${changeStatusColor(order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1])} rounded-xl text-xs font-medium me-2 px-2.5 py-0.5`}>{order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1]}</span>
+                                                <span className={`${changeStatusColor(order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1])} rounded-xl text-xs font-medium me-2 px-2.5 py-0.5`}>{order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1] === 'Checkout Success' ? 'Waiting Confirmation' : order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1]}</span>
                                             </td>
                                             <td class="px-6 py-4">
                                                 <span onClick={() => GoToPage(`/admin/order/${order.orderId}`)} class="bg-yellow-100 rounded-xl text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 cursor-pointer">detail</span>

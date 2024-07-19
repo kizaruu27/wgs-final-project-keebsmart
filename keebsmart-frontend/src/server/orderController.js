@@ -41,7 +41,7 @@ export const orderStatus = [
 export const getOrders = async (setOrders, onFailed) => {
     try {
         const orders = await axios.get(`${urlEndpoint}/orders`);
-        setOrders(orders);
+        setOrders(orders.data);
     } catch (error) {
         onFailed(error);
     }

@@ -63,7 +63,7 @@ export default function AdminOrderCanceled () {
 
     useEffect(() => {
         getOrders((response) => {
-            setOrders(response.data.orders.filter(order => order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1] === 'Canceled'));
+            setOrders(response.orders.filter(order => order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1] === 'Canceled'));
             console.dir(
                 orders.filter(order => order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1] === 'On Process' )
             );  

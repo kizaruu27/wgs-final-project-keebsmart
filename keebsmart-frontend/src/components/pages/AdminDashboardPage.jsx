@@ -1,17 +1,14 @@
 import { getUserData } from '../../server/userDataController';
 import { useEffect, useState } from 'react';
 import { GoToPage } from '../../server/pageController';
-import Logo from '../elements/Logo';
-import Chart from "react-apexcharts";
 import DashboardFragment from '../fragments/DashboardFragment';
 import DashboardSideMenu from '../Layouts/DashboardSideMenu';
 import DashboardContent from '../fragments/DashboardContent';
-import DashboardHeader from '../Layouts/DashboardHeader';
-import DashboardSummary from '../Layouts/DashboardSummary';
 import DonutChart from '../elements/DonutChart';
 import LineChart from '../elements/LineChart';
 import DashboardNavbar from '../Layouts/DashboardNavbar';
 import { getSalesStatistic, getAllProducts } from '../../server/productController';
+import { getOrders } from '../../server/orderController';
 
 export default function AdminDashboardPage() {
     const [username, setUsername] = useState('');
@@ -35,6 +32,9 @@ export default function AdminDashboardPage() {
 
     // Data all active products
     const [totalActiveProducts, setTotalActiveProducts] = useState(0);
+
+    // Data for total income
+    const [income, setIncome] = useState(0);
 
     const onGetUserSuccess = (data) => {
         setUsername(data.name);
@@ -81,6 +81,13 @@ export default function AdminDashboardPage() {
         })
     }, [0]);
 
+    useState(() => {
+        getOrders((data) => {
+            setIncome(data.orders.filter(order => order.currentStatus[order.currentStatus.length - 1].status.status === 'Finish').map(order => order.totalPrice).reduce((acc, accValue) => acc + accValue, 0));
+            console.dir(data.orders.filter(order => order.currentStatus[order.currentStatus.length - 1].status.status === 'Finish').map(order => order.totalPrice).reduce((acc, accValue) => acc + accValue, 0));
+        })
+    }, [0])
+
     return (
         <DashboardFragment>
             {/* Navbar */}
@@ -97,7 +104,7 @@ export default function AdminDashboardPage() {
                         <div>
                             <div class="w-full flex flex-col gap-2">
                                 <h3 class="text-xl font-normal text-gray-500 dark:text-gray-400">Total Income</h3>
-                                <span class="text-2xl font-bold leading-none text-gray-900 sm:text-3xl dark:text-white">Rp. 3.000.000</span>
+                                <span class="text-2xl font-bold leading-none text-gray-900 sm:text-3xl dark:text-white">Rp. {income}</span>
                                 <p class="flex items-center text-lg text-wrap font-normal text-gray-500 dark:text-gray-400">
                                     Total income from solded products so far
                                 </p>
