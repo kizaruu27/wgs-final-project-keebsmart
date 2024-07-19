@@ -20,7 +20,7 @@ const SECRET = process.env.JWT_SECRET;
 // Middleware for authenticate with JWT
 const accessValidation = (req, res, next) => {
     const token = req.headers.authorization?.split(' ')[1];
-    if (!token) res.status(401).json({error: 'Token not found! Please add a token!'});
+    if (!token) return res.status(401).json({error: 'Token not found! Please add a token!'});
 
     try {
         const decoded = jwt.verify(token, SECRET);
@@ -215,6 +215,62 @@ app.post('/registration', async (req, res) => {
 });
 
 // API for admin registration
+app.post('/registration/admin', accessValidation, async (req, res) => {
+    try {
+        const {name, email, password, phoneNumber} = req.body;
+    
+        // Validate email
+        const similarEmail = await prisma.user.findUnique({
+            where: {
+                email
+            }
+        });
+    
+        if (similarEmail) {
+            return res.json({
+                msg: 'Email sudah digunakan! Silahkan gunakan email yg berbeda!'
+            })
+        };
+
+        const hashPassword = await bcrypt.hash(password, 10);
+    
+        const newAdmin = await prisma.user.create({
+            data: {
+                name, email, password: hashPassword, phoneNumber, isActive: true, access: 'admin'
+            }
+        });
+
+        res.status(201);
+        res.json({
+            newAdmin,
+            msg: 'Akun berhasil dibuat!'
+        })
+    } catch (error) {
+        console.log(error);
+    }
+});
+
+// API for delete admin
+app.delete('/delete/admin/:id', accessValidation, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedAdmin = await prisma.user.delete({
+            where: {
+                id
+            }
+        });
+
+        res.json({
+            deletedAdmin,
+            msg: 'Admin successfully deleted'
+        });
+    } catch (error) {
+        res.json(error);
+        console.log(error);
+    }
+})
+
+// API for admin registration
 app.post('/admin/registration', async (req, res) => {
     try {
         const {name, email, password, phoneNumber} = req.body;
@@ -270,7 +326,7 @@ app.post('/login', async (req, res) => {
     const payload = {
         userId: user.id,
         name: user.name,
-        access: user.access
+        access: user.access,
     }
     const expiresIn = 60 * 60 * 24;
     const token = jwt.sign(payload, SECRET, {expiresIn});
@@ -281,6 +337,16 @@ app.post('/login', async (req, res) => {
         msg: 'Login Berhasil!'
     })
 });
+
+// API for logout
+app.post('/logout', accessValidation, (req, res) => {
+    try {
+        res.json('Logout success');
+    } catch (error) {
+        console.log(error);
+        res.json(error.messege);
+    }
+})
 
 // API for get login user data
 app.get('/user', accessValidation, async (req, res) => {
@@ -336,15 +402,6 @@ app.get('/product/:id', async (req, res) => {
                                 variations: true
                             }
                         },
-                        productLog: {
-                            include: {
-                                createdBy: {
-                                    select: {
-                                        name: true
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
             },
