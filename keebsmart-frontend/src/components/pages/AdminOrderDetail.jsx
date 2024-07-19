@@ -40,6 +40,9 @@ export default function AdminOrderDetail () {
             case 'On Packing':
                 setStatusColor('bg-blue-100 text-blue-800')
                 break;
+            case 'Waiting Courier For Pick Up':
+                setStatusColor('bg-blue-100 text-blue-800')
+                break;
             case 'Courier Pick Up':
                 setStatusColor('bg-blue-100 text-blue-800')
                 break;
@@ -126,10 +129,10 @@ export default function AdminOrderDetail () {
                             <h1 className="font-medium text-2xl">Status</h1>
                             <span className={`${statusColor} text-center rounded-xl text-xs font-medium me-2 px-2.5 py-0.5 w-40`}>{status === 'Checkout Success' ? 'Waiting Confirmation' : status}</span>
                         </div>
-                        <div className="p-5 flex flex-col gap-3 ">
+                        {/* <div className="p-5 flex flex-col gap-3 ">
                             <h1 className="font-medium text-2xl">Shipment</h1>
                             <p className="text-lg font-normal text-gray-500">{shipping.shipmentName}</p>
-                        </div>
+                        </div> */}
                     </div>  
                     <div className="bg-white rounded-xl shadow-md col-span-2">
                         <h1 className="font-medium text-2xl my-3 px-5">Items</h1>

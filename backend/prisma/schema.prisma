@@ -89,7 +89,7 @@ model User {
 }
 
 model UserAddress {
-  id        Int        @id @default(autoincrement())
+  id        Int      @id @default(autoincrement())
   userId    String
   street    String
   kelurahan String
@@ -99,8 +99,7 @@ model UserAddress {
   postCode  Int
   isDefault Boolean
   orders    Orders[]
-  shipment  Shipping[]
-  user      User       @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
 }
 
 model PaymentMethods {
@@ -122,13 +121,12 @@ model Cart {
 }
 
 model Shipping {
-  id           String      @id @default(uuid())
-  shipmentName String      @default("KeebsMart Express")
+  id           String @id @default(uuid())
+  shipmentName String @default("KeebsMart Express")
   userId       String
-  addressId    Int
-  orders       Orders[]
-  address      UserAddress @relation(fields: [addressId], references: [id])
-  user         User        @relation(fields: [userId], references: [id])
+  orderId      String @unique
+  order        Orders @relation(fields: [orderId], references: [orderId])
+  user         User   @relation(fields: [userId], references: [id])
 }
 
 model Orders {
@@ -137,15 +135,15 @@ model Orders {
   orderDate       DateTime        @default(now())
   paymentMethodId Int
   addressId       Int
-  shippingId      String
+  shippingId      String?
   orderTotal      Int
   totalPrice      Int
   orderNotes      String
   updateDate      DateTime        @default(now())
   address         UserAddress     @relation(fields: [addressId], references: [id])
   paymentMethod   PaymentMethods  @relation(fields: [paymentMethodId], references: [id])
-  shipping        Shipping        @relation(fields: [shippingId], references: [id])
   user            User            @relation(fields: [userId], references: [id])
+  shipping        Shipping?
   currentStatus   currentStatus[]
   carts           Cart[]          @relation("CartToOrders")
 }

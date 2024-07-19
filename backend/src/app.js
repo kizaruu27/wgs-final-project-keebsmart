@@ -982,6 +982,52 @@ app.get('/order/:id', accessValidation, async (req, res) => {
     }
 });
 
+// API for create new shipment
+app.post('/shipment', accessValidation, async (req, res) => {
+    try {
+        const { userId, orderId } = req.body;
+        const newShipment = await prisma.shipping.create({
+            data: {
+                userId, orderId
+            }
+        })
+        res.status(201).json({
+            newShipment,
+            msg: 'New Shipment Added'
+        })
+    } catch (error) {
+        console.log(error);
+        res.json(error);
+    }
+})
+
+// API for get all shipments
+app.get('/shipments', accessValidation, async (req, res) => {
+    try {
+        const shipments = await prisma.shipping.findMany({
+            include: {
+                order: {
+                    include: {
+                        currentStatus: {
+                            include: {
+                                status: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        res.json({
+            shipments,
+            msg: 'Get shipment data successfull'
+        })
+    } catch (error) {
+        console.log(error);
+        res.json(error);
+    }
+})
+
 // API for get all cart
 app.get('/cart', async (req, res) => {
     try {
@@ -1059,7 +1105,7 @@ app.get('/cart/:id', async (req, res) => {
 app.post('/order', accessValidation, async (req, res) => {
     try {
         const userId = req.userId;
-        const { targetedCartIds, paymentMethodId, addressId, shippingId, orderNotes } = req.body;
+        const { targetedCartIds, paymentMethodId, addressId, orderNotes } = req.body;
         
         const targetCarts = await prisma.cart.findMany({
             where: {
@@ -1086,7 +1132,6 @@ app.post('/order', accessValidation, async (req, res) => {
                 userId,
                 paymentMethodId,
                 addressId,
-                shippingId,
                 orderTotal,
                 totalPrice,
                 orderNotes,

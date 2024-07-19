@@ -24,6 +24,9 @@ export default function AdminOrderPage() {
             case 'On Packing':
                 color = 'bg-blue-100 text-blue-800';
                 break;
+            case 'Waiting Courier For Pick Up':
+                color = 'bg-blue-100 text-blue-800';
+                break;
             case 'Courier Pick Up':
                 color = 'bg-blue-100 text-blue-800';
                 break;
