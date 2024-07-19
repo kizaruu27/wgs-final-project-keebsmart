@@ -32,6 +32,13 @@ export default function LoginPage() {
         GoToPage('/', 1500);
     }
 
+    const onSuperAdminLogin = () => {
+        setAlertType('success');
+        setIsClick(true);
+        setAlertMsg('Login as super admin successfull!');
+        GoToPage('/admin', 1500);
+    }
+
     const onLoginFailed = () => {
         setAlertMsg('Login failed! Password or Email incorrect!');
         setAlertType('error');
@@ -40,7 +47,7 @@ export default function LoginPage() {
 
     const login = (e) => {
         e.preventDefault();
-        userLogin(email, password, onAdminLogin, onCustomerLogin, onLoginFailed)
+        userLogin(email, password, onAdminLogin, onSuperAdminLogin, onCustomerLogin, onLoginFailed)
     };
 
     // useEffect(() => {

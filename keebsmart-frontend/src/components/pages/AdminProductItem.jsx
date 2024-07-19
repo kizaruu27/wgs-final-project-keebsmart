@@ -322,9 +322,6 @@ export default function AdminProductItem() {
                                         Manufacturer
                                     </th>
                                     <th scope="col" class="px-6 py-3">
-                                        Added By
-                                    </th>
-                                    <th scope="col" class="px-6 py-3">
                                         Price
                                     </th>
                                     <th scope="col" class="px-6 py-3">
@@ -355,9 +352,6 @@ export default function AdminProductItem() {
                                         </td>
                                         <td class="px-6 py-4">
                                             {item.manufacturer}
-                                        </td>
-                                        <td class="px-6 py-4">
-                                            {item.productLog.createdBy.name}
                                         </td>
                                         <td class="px-6 py-4 text-sm text-nowrap">
                                             Rp. {item.price}

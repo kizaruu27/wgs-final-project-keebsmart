@@ -48,3 +48,16 @@ export const changeUserStatus = async (id, status, onSuccess) => {
         console.log(error);
     }
 }
+
+export const deleteAdmin = async (id, onSuccess) => {
+    try {
+        const response = await axios.delete(`${urlEndpoint}/delete/admin/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        onSuccess(response.data);
+    } catch (error) {
+        console.log(error);
+    }
+}
