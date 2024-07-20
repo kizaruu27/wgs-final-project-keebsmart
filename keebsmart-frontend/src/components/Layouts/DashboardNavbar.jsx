@@ -4,7 +4,7 @@ export default function DashboardNavbar({username, userEmail}) {
     return (
         <nav className="z-50 fixed top-0 w-screen bg-white border-gray-200 dark:bg-gray-900">
                 <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-                    <a href="/admin" className="flex items-center space-x-3 rtl:space-x-reverse">
+                    <a href="#" className="flex items-center space-x-3 rtl:space-x-reverse">
                         <Logo textStyle='text-xl font-medium' />
                     </a>
                     <div className="flex gap-3 items-center md:order-2 space-x-3 md:space-x-0 rtl:space-x-reverse">
