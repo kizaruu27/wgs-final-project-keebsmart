@@ -3,12 +3,11 @@ import DashboardNavbar from "../../../Layouts/DashboardNavbar"
 import DashboardCourierSideMenu from "../../../Layouts/DashboardCourierSideMenu"
 import DashboardContent from "../../../fragments/DashboardContent"
 import { useEffect, useState } from "react"
-import { getShipments } from "../../../../server/shipmentController"
+import { getOnGoingShipment } from "../../../../server/shipmentController"
 import ShipmentTable from "../../../Layouts/Courier/All Shipment Table/ShipmentTable"
 import { getUserData } from "../../../../server/userDataController"
-import { GoToPage } from "../../../../server/pageController"
 
-export default function CourierAllShipments() {
+export default function CourierOnGoingDeliveryPage() {
     const [shipments, setShipments] = useState([]);
     const [userData, setUserData] = useState([]);
 
@@ -20,15 +19,17 @@ export default function CourierAllShipments() {
             console.log(error);
         }, () => {
             console.log('Token Empty');
-        })
-    }, [0])
+        });
+    }, []);
 
     useEffect(() => {
-        getShipments((data) => {
-            console.log(data.shipments.filter(shipment => shipment.userId === userData.id));
-            setShipments(data.shipments); 
-        })
-    }, [0]);
+        if (userData) {
+            getOnGoingShipment((data) => {
+                console.log(data.shipment);
+                setShipments(data.shipment.filter(item => item.userId === userData.id));
+            })
+        }
+    }, [userData]);
 
     
 
@@ -37,7 +38,7 @@ export default function CourierAllShipments() {
         <DashboardNavbar />
         <DashboardCourierSideMenu />
         <DashboardContent>
-            <ShipmentTable shipments={shipments.filter(shipment => shipment.userId === userData.id)} title='My Shipments' />
+            <ShipmentTable shipments={shipments} title='On Going Delivery' />
         </DashboardContent>
     </DashboardFragment>
     )

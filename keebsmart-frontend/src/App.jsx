@@ -21,6 +21,8 @@ import SuperAdminAllAdminPage from './components/pages/SuperAdminAllAdminPage';
 import CourierDashboardPage from './components/pages/CourierDashboardPage';
 import CourierAllShipments from './components/pages/Courier/Courier All Shipment Page/CourierAllShipments';
 import ShipmentDetail from './components/pages/Courier/Shipment Detail Page/ShipmentDetail';
+import CourierOnGoingDeliveryPage from './components/pages/Courier/Courier On Going Delivery Page/CourierOnGoingDeliveryPage';
+import CourierFinishedDeliveryPage from './components/pages/Courier/Courier Finished Delivery Page/CourierFinishedDeliveryPage';
 
 export default function App() {
     return (
@@ -47,6 +49,8 @@ export default function App() {
                     <Route path="/courier" Component={CourierDashboardPage}/>
                     <Route path="/courier/shipments" Component={CourierAllShipments}/>
                     <Route path="/courier/shipment/:id" Component={ShipmentDetail}/>
+                    <Route path="/courier/shipment/ongoing" Component={CourierOnGoingDeliveryPage}/>
+                    <Route path="/courier/shipment/delivered" Component={CourierFinishedDeliveryPage}/>
                     {/* <Route path="/admin/add-product" Component={AdminAddProductForm}/> */}
                     {/* <Route path="/admin/add-item/:id" Component={AdminAddProductItemForm}/> */}
                 </Routes>

@@ -1028,6 +1028,82 @@ app.get('/shipments', accessValidation, async (req, res) => {
     }
 });
 
+// API for get shipments by status
+app.get('/shipments/ongoing', accessValidation, async (req, res) => {
+    try {
+        const shipments = await prisma.shipping.findMany({
+            include: {
+                order: {
+                    include: {
+                        currentStatus: {
+                            include: {
+                                status: true
+                            }
+                        },
+                        address: true
+                    }
+                }
+            }
+        })
+
+        const newShipment = shipments.map(item => {
+            const data = {
+                userId: item.userId,
+                shipmentName: item.shipmentName,
+                id: item.id,
+                currentStatus: item.order.currentStatus[item.order.currentStatus.length - 1].status.status,
+                address: item.order.address
+            }
+            return data;
+        })
+
+        res.json({
+            shipment: newShipment.filter(item => item.currentStatus === 'Courier Pick Up' || item.currentStatus ==='On Delivery')
+        })
+    } catch (error) {
+        console.log(error);
+        res.json(error);
+    }
+});
+
+// API for get finished delivery
+app.get('/shipments/finished', accessValidation, async (req, res) => {
+    try {
+        const shipments = await prisma.shipping.findMany({
+            include: {
+                order: {
+                    include: {
+                        currentStatus: {
+                            include: {
+                                status: true
+                            }
+                        },
+                        address: true
+                    }
+                }
+            }
+        })
+
+        const newShipment = shipments.map(item => {
+            const data = {
+                userId: item.userId,
+                shipmentName: item.shipmentName,
+                id: item.id,
+                currentStatus: item.order.currentStatus[item.order.currentStatus.length - 1].status.status,
+                address: item.order.address
+            }
+            return data;
+        })
+
+        res.json({
+            shipment: newShipment.filter(item => item.currentStatus === 'Delivered')
+        })
+    } catch (error) {
+        console.log(error);
+        res.json(error);
+    }
+})
+
 // API for get shipment detail
 app.get('/shipment/:id', accessValidation, async (req, res) => {
     try {
