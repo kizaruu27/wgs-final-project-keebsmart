@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 import { setOrderStatus } from "../../server/orderController";
 import { GoToPage } from "../../server/pageController";
-import { createNewShipment } from "../../server/shipmentController";
 
-export default function SetOrderButton({status, orderId, paymentMethod}) {
+export default function SetOrderButton({status, orderId, paymentMethod, access, redirect}) {
     const [newStatus, setNewStatus] = useState('');
     const [btnText, setBtnText] = useState(''); 
     const [btnColor, setBtnColor] = useState(''); 
@@ -12,7 +11,7 @@ export default function SetOrderButton({status, orderId, paymentMethod}) {
     const setStatus = (orderStatus) => {
         setOrderStatus(orderId, orderStatus, (data) => {
             console.log(data);
-            GoToPage(`/admin/order/${orderId}`, 100);
+            GoToPage(redirect, 100);
         })
     } 
 
@@ -46,7 +45,11 @@ export default function SetOrderButton({status, orderId, paymentMethod}) {
                 setBtnText('Deliver');
                 setNewStatus('On Delivery');
                 setBtnColor('bg-blue-500 hover:bg-blue-800');
-                setBtnIsDisabled(true);
+                if (access === 'courier') {
+                    setBtnIsDisabled(false);
+                } else {
+                    setBtnIsDisabled(true);
+                }
                 break;
             case 'On Delivery':
                 if (paymentMethod === 'Cash On Delivery') {
@@ -57,19 +60,28 @@ export default function SetOrderButton({status, orderId, paymentMethod}) {
                     setNewStatus('Delivered');
                 }
                 setBtnColor('bg-blue-500 hover:bg-blue-800');
-                setBtnIsDisabled(true);
+                if (access === 'courier') {
+                    setBtnIsDisabled(false);
+                } else {
+                    setBtnIsDisabled(true);
+                }
                 break;
             case 'Cash On Delivery Paid':
                 setBtnText('Finish Deliver');
                 setNewStatus('Delivered');
                 setBtnColor('bg-green-500 hover:bg-green-800');
-                setBtnIsDisabled(true);
+                if (access === 'courier') {
+                    setBtnIsDisabled(false);
+                } else {
+                    setBtnIsDisabled(true);
+                }
                 break;
             case 'Delivered':
                 setBtnText('Confirm Order');
                 setNewStatus('Finish');
                 setBtnColor('bg-green-500 hover:bg-green-800');
                 setBtnIsDisabled(true);
+
                 break;
             case 'Canceled':
                 setBtnText('Order Canceled');

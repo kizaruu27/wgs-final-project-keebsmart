@@ -29,4 +29,18 @@ export const getShipments = async (onSuccess) => {
     } catch (error) {
         console.log(error);
     }
+};
+
+export const getShipmentDetail = async (id, onSucces) => {
+    try {
+        const response = await axios.get(`${urlEndpoint}/shipment/${id}`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        onSucces(response.data);
+    } catch (error) {
+        console.log(error);
+    }
 }

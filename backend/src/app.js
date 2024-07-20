@@ -1026,6 +1026,63 @@ app.get('/shipments', accessValidation, async (req, res) => {
         console.log(error);
         res.json(error);
     }
+});
+
+// API for get shipment detail
+app.get('/shipment/:id', accessValidation, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const shipment = await prisma.shipping.findUnique({
+            where: {
+                id
+            },
+            include: {
+                order: {
+                    include: {
+                        currentStatus: {
+                            include: {
+                                status: true
+                            }
+                        },
+                        user: true,
+                        address: true,
+                        paymentMethod: true,
+                        carts: {
+                            include:{
+                                productItem: {
+                                    include: {
+                                        product: true,
+                                        variationOption: {
+                                            include: {
+                                                variations: true
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        const currentStatus = shipment.order.currentStatus[shipment.order.currentStatus.length - 1].status.status;
+        const lastUpdate = shipment.order.currentStatus[shipment.order.currentStatus.length - 1].updateAt;
+        const allStatus = shipment.order.currentStatus.map(item => item);
+        const buyer = shipment.order.user;
+
+        res.json({
+            buyer,
+            shipment,
+            allStatus,
+            currentStatus,
+            lastUpdate,
+            msg: 'Get shipment detail successfully'
+        });
+    } catch (error) {
+        res.json(error);
+        console.log(error);
+    }
 })
 
 // API for get all cart
