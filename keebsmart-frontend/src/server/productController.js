@@ -54,10 +54,10 @@ export const getAllProducts = async (setProducts) => {
 export const getProductDetail = async (id, setProduct, setProductItems, setCategory, setImage, onGetStatistic) => {
     try {
         const response = (await axios.get(`${urlEndpoint}/product/${id}`)).data;
-        setProduct(response);
-        setProductItems(response.productItem);
-        setImage(response.productImage.imagePreviewUrl);
-        setCategory(response.category.categoryName);
+        if(setProductItems) setProduct(response);
+        if (setProductItems) setProductItems(response.productItem);
+        if (setImage) setImage(response.productImage.imagePreviewUrl);
+        if (setCategory) setCategory(response.category.categoryName);
         
         const items = response.productItem;
         const soldItem = items.map(item => item.sold);
@@ -66,8 +66,6 @@ export const getProductDetail = async (id, setProduct, setProductItems, setCateg
         if (onGetStatistic) {
             onGetStatistic(soldItem, variationItem);
         }
-
-
     } catch (error) {
         console.log(error);
     }

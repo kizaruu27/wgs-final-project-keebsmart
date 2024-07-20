@@ -1,6 +1,27 @@
 import Logo from "../elements/Logo";
+import { useState, useEffect } from "react";
+import { getUserData } from "../../server/userDataController";
 
-export default function DashboardNavbar({username, userEmail}) {
+export default function DashboardNavbar() {
+    const [username, setUsername] = useState('');
+    const [userEmail, setUserEmail] = useState('');
+
+    const onGetUserSuccess = (data) => {
+        setUsername(data.name);
+        setUserEmail(data.email);
+    }
+    const onTokenEmpty = () => GoToPage('/login');
+
+    const onGetUserFailed = (error) => {
+        // handling error
+        GoToPage('/login');
+        console.log(error);
+    }
+
+    useEffect(() => {
+        getUserData(onGetUserSuccess, onGetUserFailed, onTokenEmpty);
+    }, [0]);
+
     return (
         <nav className="z-50 fixed top-0 w-screen bg-white border-gray-200 dark:bg-gray-900">
                 <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">

@@ -54,7 +54,7 @@ export default function LoginPage() {
 
     const login = (e) => {
         e.preventDefault();
-        userLogin(email, password, onAdminLogin, onSuperAdminLogin, onCourierLogin,  onCustomerLogin, onLoginFailed)
+        userLogin(email, password, onAdminLogin, onSuperAdminLogin, onCourierLogin, onCustomerLogin, onLoginFailed)
     };
 
     // useEffect(() => {

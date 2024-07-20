@@ -20,10 +20,13 @@ export const userLogin = async (email, password, onAdminLogin, onSuperAdminLogin
                 break;
             case 'customer':
                 onCustomerLogin();
+                break;
             case 'super-admin':
                 onSuperAdminLogin();
+                break;
             case 'courier':
-                onCourierLogin();
+                onCourierLogin(payload.access);
+                break;
             default:
                 break;
         }
