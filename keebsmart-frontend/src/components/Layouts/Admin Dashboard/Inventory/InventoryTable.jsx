@@ -4,6 +4,7 @@ import { useState } from "react";
 import { getInventoryDetail } from "../../../../server/inventoryController";
 import DeleteModal from "../../Modals/DeleteModal";
 import InventoryEditModalForm from "./InventoryEditModalForm";
+import { GoToPage } from "../../../../server/pageController";
 
 export default function InventoryTable({inventory, onClickDelete}) {
     const [openModal, setOpenModal] = useState(false);
@@ -72,7 +73,7 @@ export default function InventoryTable({inventory, onClickDelete}) {
                             <Table.Cell>
                                 <span onClick={() => onDetailClick(item.id)} className="cursor-pointer bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl dark:bg-green-900 dark:text-green-300">Detail</span>
                                 <span onClick={() => setDelete(item.id)} className="cursor-pointer bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl dark:bg-green-900 dark:text-green-300">Delete</span>
-                                <span onClick={() => setEdit(item.id)} className="cursor-pointer bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl dark:bg-green-900 dark:text-green-300">Edit</span>
+                                <span onClick={() => GoToPage(`/admin/inventory/update/${item.id}`)} className="cursor-pointer bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl dark:bg-green-900 dark:text-green-300">Edit</span>
                             </Table.Cell>
                         </Table.Row>
                     ))}
@@ -80,7 +81,6 @@ export default function InventoryTable({inventory, onClickDelete}) {
             </Table>
             <InventoryDetailModal openModal={openModal} setOpenModal={setOpenModal} inventory={selectedInventory} category={selectedCategory} specs={selectedSpecs} user={selectedUser} item={selectedItem} />
             <DeleteModal openConfirmationModal={openDeleteModal} setOpenConfirmationModal={setOpenDeleteModal} msg='Are you sure want to delete this inventory?' onClickDelete={() => onClickDelete(deletedInventoryId)} />
-            <InventoryEditModalForm openModal={openEditModal} setOpenModal={setOpenEditModal} inventory={selectedInventory} category={selectedCategory} specs={selectedSpecs} user={selectedUser} item={selectedItem} setSelectedItem={setSelectedItem} setSelectedSpecs={setSelectedSpecs}/>
         </>
     )
 }

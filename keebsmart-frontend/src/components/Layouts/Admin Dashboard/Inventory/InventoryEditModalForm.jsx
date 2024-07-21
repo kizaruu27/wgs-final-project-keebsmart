@@ -59,20 +59,9 @@ export default function InventoryEditModalForm({openModal, setOpenModal, invento
 
     // remove specs fields
     const removeSpecsFields = (key) => {
-        if (specsFields.length !== 0) {
-            setSpecsFields(specs);
-            let data = [...specsFields];
+        let data = [...specsFields];
             data.splice(key, 1);
             setSpecsFields(data);
-            
-            console.log('specs != 0');
-        } else {
-
-            let data = [...specsFields];
-            data.splice(key, 1);
-            setSpecsFields(data);
-            console.log('specs == 0');
-        }
     }
 
     // remove item fields
