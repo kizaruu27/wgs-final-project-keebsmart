@@ -7,6 +7,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Inventory {
+  id          Int             @id @default(autoincrement())
+  productName String
+  brand       String
+  categoryId  Int
+  specs       String[]
+  description String
+  userId      String
+  category    ProductCategory @relation(fields: [categoryId], references: [id])
+  createdBy   User            @relation(fields: [userId], references: [id])
+  item        InventoryItem[]
+}
+
+model InventoryItem {
+  id            Int        @id @default(autoincrement())
+  inventoryId   Int
+  qty           Int
+  variation     String
+  variationId   Int
+  inventory     Inventory  @relation(fields: [inventoryId], references: [id])
+  variationName Variations @relation(fields: [variationId], references: [id])
+}
+
 model Products {
   id           Int             @id @default(autoincrement())
   productName  String
@@ -32,6 +55,7 @@ model ProductImage {
 model ProductCategory {
   id           Int          @id @default(autoincrement())
   categoryName String
+  inventory    Inventory[]
   products     Products[]
   variations   Variations[]
 }
@@ -58,6 +82,7 @@ model Variations {
   id            Int                @id @default(autoincrement())
   categoryId    Int
   variationName String
+  inventoryItem InventoryItem[]
   options       VariationOptions[]
   category      ProductCategory    @relation(fields: [categoryId], references: [id])
 }
@@ -81,6 +106,7 @@ model User {
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
   cart        Cart[]
+  inventory   Inventory[]
   messeges    Messeges[]
   orders      Orders[]
   ProductLog  ProductLog[]

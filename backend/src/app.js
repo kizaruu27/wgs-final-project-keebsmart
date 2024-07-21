@@ -367,6 +367,167 @@ app.get('/user', accessValidation, async (req, res) => {
     
 })
 
+// INVENTORY
+// API for post new inventory
+app.post('/inventory', accessValidation, async (req, res) => {
+    const { productName, brand, categoryId, specs, description,items } = req.body;
+    const userId = req.userId;
+    try {
+        const newInventory = await prisma.inventory.create({
+            data: {
+                productName, brand, categoryId, specs, description, userId,
+                item: {
+                    create: items
+                }
+            }
+        })
+
+        res.json({
+            newInventory,
+            msg: 'Success add new stuff in inventory!'
+        })
+    } catch (error) {
+        res.json(error);
+        console.log(error);
+    }
+});
+
+// API for get new inventory
+app.get('/inventory', accessValidation, async (req, res) => {
+    try {
+        const inventory = await prisma.inventory.findMany({
+            include: {
+                category: true,
+                createdBy: true,
+                item: true
+            }
+        });
+
+        res.json({
+            inventory,
+            msg: 'Get inventory success'
+        });
+    } catch (error) {
+        res.json(error);
+        console.log(error);
+    }
+});
+
+// Get inventory detail by id
+app.get('/inventory/:id', accessValidation, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const inventory = await prisma.inventory.findUnique({
+            include: {
+                category: true,
+                createdBy: true,
+                item: {
+                    include: {
+                        variationName: true
+                    }
+                }
+            },
+            where: {
+                id: Number(id)
+            }
+        });
+
+        res.json({
+            inventory,
+            msg: 'Get inventory success'
+        });
+    } catch (error) {
+        res.json(error);
+        console.log(error);
+    }
+});
+
+// API for delete inventory
+app.delete('/inventory/:id', accessValidation, async (req, res) => {
+    const { id } = req.params;
+    try {
+        // delete the inventory item first
+        try {
+            const deletedInventoryItem = await prisma.inventoryItem.deleteMany({
+                where: {
+                    inventoryId: Number(id)
+                }
+            });
+        } catch (error) {
+            console.error(error);
+            return res.json(error);
+        }
+
+        // delete the inventory
+        try {
+            const deletedInventory = await prisma.inventory.delete({
+                where: {
+                    id: Number(id)
+                }
+            })
+            res.json({
+                deletedInventory,
+                msg: 'Delete inventory successfull'
+            })
+
+        } catch (error) {
+            console.error(error);
+            return res.json(error);
+        }
+    } catch (error) {
+        res.json(error);
+        console.log(error);
+    }
+});
+
+// API for update inventory
+app.put('/inventory/:id', accessValidation, async (req, res) => {
+    const { id } = req.params;
+    const { productName, brand, categoryId, specs, description, items } = req.body;
+    try {
+        const updatedInventory = await prisma.inventory.update({
+            where: {
+                id: Number(id)
+            },
+            data: {
+                productName, brand, categoryId, specs, description,
+            }
+        });
+
+        const updatedInventoryItem = await prisma.inventoryItem.deleteMany({
+            where: {
+                inventoryId: Number(id)
+            }
+        });
+
+        const newItems = items.map(item => ({
+            inventoryId: Number(id),
+            qty: item.qty,
+            variation: item.variation,
+            variationId: item.variationId,
+        }));
+
+        const updatedItem = await prisma.inventoryItem.createMany({
+            data: newItems,
+        });
+
+        res.json({updatedInventory, updatedItem})
+    } catch (error) {
+        res.json(error);
+        console.log(error);
+    }
+})
+
+// API for get variation data
+app.get('/variations', async (req, res) => {
+    try {
+        const variations = await prisma.variations.findMany();
+        res.json(variations);
+    } catch (error) {
+        console.log(error);
+    }
+})
+
 // API for get all products
 app.get('/products', async (req, res) => {
     try {

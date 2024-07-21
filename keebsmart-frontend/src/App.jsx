@@ -21,6 +21,7 @@ import CourierAllShipments from './components/pages/Courier/Courier All Shipment
 import ShipmentDetail from './components/pages/Courier/Shipment Detail Page/ShipmentDetail';
 import CourierOnGoingDeliveryPage from './components/pages/Courier/Courier On Going Delivery Page/CourierOnGoingDeliveryPage';
 import CourierFinishedDeliveryPage from './components/pages/Courier/Courier Finished Delivery Page/CourierFinishedDeliveryPage';
+import AdminInventoryPage from './components/pages/Dashboard/Admin Inventory Page/AdminInventoryPage';
 
 export default function App() {
     return (
@@ -49,6 +50,8 @@ export default function App() {
                     <Route path="/courier/shipment/:id" Component={ShipmentDetail}/>
                     <Route path="/courier/shipment/ongoing" Component={CourierOnGoingDeliveryPage}/>
                     <Route path="/courier/shipment/delivered" Component={CourierFinishedDeliveryPage}/>
+                    <Route path="/admin/inventory" Component={AdminInventoryPage}/>
+                    <Route path="/admin/inventory" Component={AdminInventoryPage}/>
                 </Routes>
             </Router>
         </>
