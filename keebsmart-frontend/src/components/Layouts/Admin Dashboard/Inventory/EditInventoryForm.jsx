@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { getInventoryDetail } from "../../../../server/inventoryController"
+import { getInventoryDetail, updateInventory } from "../../../../server/inventoryController"
 import { useParams } from "react-router-dom"
 import DashboardFragment from "../../../fragments/DashboardFragment";
 import DashboardNavbar from "../../DashboardNavbar";
@@ -7,6 +7,7 @@ import DashboardSideMenu from "../../DashboardSideMenu";
 import DashboardContent from "../../../fragments/DashboardContent";
 import { getAllCategory } from "../../../../server/productController";
 import { getVariations } from "../../../../server/variationController";
+import { GoToPage } from "../../../../server/pageController";
 
 export default function EditInventoryForm() {
     const { id } = useParams();
@@ -40,6 +41,7 @@ export default function EditInventoryForm() {
     useEffect(() => {
         getVariations((data) => {
             setVariationOption(data);
+            console.log(data);
         })
     }, [])
 
@@ -74,7 +76,11 @@ export default function EditInventoryForm() {
         let newItem = {
             qty: 0,
             variation: '',
-            variationId: 0
+            variationId: 0,
+            variationName: {
+                id: 0,
+                variationName: 'Selet variant type'
+            }
         };
         setItemFields([...itemFields, newItem]);
     }
@@ -85,22 +91,43 @@ export default function EditInventoryForm() {
         setItemFields(data);
     }
 
+    const postUpdateInventory = (e) => {
+        e.preventDefault();
+        const data = {
+            productName: productName, 
+            brand, 
+            categoryId: category.id,
+            specs: specsFields,
+            description,
+            items: itemFields.map(item => ({
+                qty: item.qty,
+                variation: item.variation,
+                variationId: Number(item.variationId)
+            }))
+        }
+        // console.log(data);
+        updateInventory(id, data, (data) => {
+            console.log(data);
+            GoToPage('/admin/inventory')
+        })
+    }
+
     return (
         <DashboardFragment>
             <DashboardNavbar />
             <DashboardSideMenu />
             <DashboardContent>
             <div className="space-y-6">
-                <form className="bg-white p-5 rounded-xl shadow-md">
+                <form className="bg-white p-5 rounded-xl shadow-md" onSubmit={e => postUpdateInventory(e)} >
                     <h1 className="mb-8 text-center text-2xl font-semibold">Edit Inventory</h1>
                     <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
                         <div className="sm:col-span-2">
                             <label htmlFor="product_name" className="block mb-2 text-sm font-medium text-gray-900">Product Name</label>
-                            <input defaultValue={productName} type="text" name="product_name" id="product_name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Insert Product Name" required="" />
+                            <input onChange={e => setProductName(e.target.value)} defaultValue={productName} type="text" name="product_name" id="product_name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Insert Product Name" required="" />
                         </div>
                         <div className="w-full">
                             <label htmlFor="brand" className="block mb-2 text-sm font-medium text-gray-900">Brand</label>
-                            <input defaultValue={brand} type="text" name="brand" id="brand" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Product brand" required="" />
+                            <input onChange={e => setBrand(e.target.value)} defaultValue={brand} type="text" name="brand" id="brand" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Product brand" required="" />
                         </div>
                         <div>
                             <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900">Category</label>
@@ -135,6 +162,7 @@ export default function EditInventoryForm() {
                                             <label htmlFor="variationId" className="block mb-2 text-sm font-medium text-gray-900">Variant</label>
                                             <div className="grid grid-cols-2 gap-2">
                                                 <select onChange={e => onItemChange(key, e)} id="variationId" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="variationId">
+                                                    
                                                     <option defaultValue={variant.variationName.id}>{variant.variationName.variationName}</option> 
                                                     {variationOption.map((item, key) => (
                                                         <option key={key} value={item.id}>{item.variationName}</option>

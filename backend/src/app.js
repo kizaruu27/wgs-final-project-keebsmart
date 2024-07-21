@@ -511,7 +511,7 @@ app.put('/inventory/:id', accessValidation, async (req, res) => {
             data: newItems,
         });
 
-        res.json({updatedInventory, updatedItem})
+        res.json({updatedInventory, updatedItem, msg: 'Update success'})
     } catch (error) {
         res.json(error);
         console.log(error);
