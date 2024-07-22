@@ -11,7 +11,7 @@ const config = {
 export const getAllinventory = async (onSuccess) => {
     try {
         const response = await axios.get(`${urlEndpoint}/inventory`, config);
-        onSuccess(response.data);
+        onSuccess(response.data.inventory);
     } catch (error) {
         console.log(error);
     }

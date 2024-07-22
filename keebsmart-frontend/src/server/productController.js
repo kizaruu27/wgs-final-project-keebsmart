@@ -11,18 +11,23 @@ export const getAllCategory = async (setCategories) => {
     }
 }
 
-export const addNewProduct = async (productName, description, brand, categoryId, imagePreview, images, onSuccess, onFailed) => {
+export const addNewProduct = async (inventoryId, productName, description, brand, categoryId, specs, imagePreviewUrl, imageUrls, onSuccess, onFailed) => {
     try {
         const token = localStorage.getItem('token');
         const formData = new FormData();
+        formData.append('inventoryId', inventoryId);
         formData.append('productName', productName);
         formData.append('description', description);
         formData.append('brand', brand);
         formData.append('categoryId', categoryId);
-        formData.append('imagePreview', imagePreview);
+        formData.append('imagePreview', imagePreviewUrl);
 
-        for (let i = 0; i < images.length; i++) {
-            formData.append('images', images[i]);
+        for (let i = 0; i < imageUrls.length; i++) {
+            formData.append('images', imageUrls[i]);
+        }
+
+        for (let i = 0; i < specs.length; i++) {
+            formData.append('specs', specs[i]);
         }
 
         const response = await axios.post(`${urlEndpoint}/product`, formData, {
@@ -34,8 +39,7 @@ export const addNewProduct = async (productName, description, brand, categoryId,
 
         if (response.status !== 201) return onFailed('Add product failed!');
 
-        console.log(response);
-        onSuccess();
+        onSuccess(response);
     } catch (error) {
         onFailed(error);
     }

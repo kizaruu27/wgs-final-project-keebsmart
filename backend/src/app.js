@@ -627,13 +627,16 @@ app.post('/product', accessValidation, upload.fields([
 ]), 
     async (req, res) => {
         try {
-            const { productName, description, brand, categoryId } = req.body;
+            const { inventoryId, productName, description, brand, categoryId, specs } = req.body;
             const imagePreviewUrl = `http://localhost:${PORT}/images/${req.files['imagePreview'][0].filename}`;
             const imageUrls = req.files['images'].map(file => `http://localhost:${PORT}/images/${file.filename}`);
 
             const newProduct = await prisma.products.create({
                 data: {
-                    productName, description, brand, categoryId: Number(categoryId),
+                    inventoryId: Number(inventoryId),
+                    productName, description, brand, 
+                    categoryId: Number(categoryId), 
+                    specs,
                     productImage: {
                         create: {
                             imagePreviewUrl, imageUrls
@@ -642,15 +645,24 @@ app.post('/product', accessValidation, upload.fields([
                 }
             });
 
+            const updateInventory = await prisma.inventory.update({
+                data: {
+                    isUsed: true
+                },
+                where: {
+                    id: Number(inventoryId)
+                }
+            });
+
             res.status(201);
             res.json({
                 product: newProduct,
+                updateInventory,
                 msg: 'Product berhasil ditambah!'
             });
         } catch (error) {
-            res.json({
-                error
-            })
+            console.log(error);
+            res.json(error);
         }
 });
 

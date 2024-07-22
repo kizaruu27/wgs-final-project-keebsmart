@@ -15,9 +15,11 @@ model Inventory {
   specs       String[]
   description String
   userId      String
+  isUsed      Boolean         @default(false)
   category    ProductCategory @relation(fields: [categoryId], references: [id])
   createdBy   User            @relation(fields: [userId], references: [id])
   item        InventoryItem[]
+  product     Products?
 }
 
 model InventoryItem {
@@ -39,9 +41,11 @@ model Products {
   isActive     Boolean?        @default(false)
   soldTotal    Int?            @default(0)
   specs        String[]        @db.VarChar
+  inventoryId  Int             @unique
   productImage ProductImage?
   productItem  ProductItem[]
   category     ProductCategory @relation(fields: [categoryId], references: [id])
+  inventory    Inventory       @relation(fields: [inventoryId], references: [id])
 }
 
 model ProductImage {
