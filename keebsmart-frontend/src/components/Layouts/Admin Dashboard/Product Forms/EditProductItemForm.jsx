@@ -9,7 +9,8 @@ import { GoToPage } from "../../../../server/pageController";
 
 export default function EditProductItemForm () {
     const { id } = useParams();
-    const [inventoryQty, setInventoryQty] = useState('');
+    const [inventoryItem, setInventoryItem] = useState([]);
+    
     const [itemQty, setItemQty] = useState('');
     const [price, setPrice] = useState('');
     const [status, setStatus] = useState('');
@@ -20,14 +21,17 @@ export default function EditProductItemForm () {
 
     useEffect(() => {
         getProductItemDetail(id, (data) => {
-            console.log(data);
+            setProductName(data.product.productName);
+            setProductVariant(data.variationOption.variationValue);
             setItemQty(data.qty);
             setPrice(data.price);
-            setStatus(data.status);
+            setStatus(data.status); 
             setManufacturer(data.manufacturer);
-            setInventoryQty(data.inventoryItem.qty);
-            setProductName(data.inventoryItem.inventory.productName);
-            setProductVariant(data.inventoryItem.variation);
+            setInventoryItem(data.product.inventory.item.filter(item => item.variation === data.variationOption.variationValue)[0]);
+            console.log(data.product.inventory.item.filter(item => item.variation === data.variationOption.variationValue)[0]);
+            
+            // setProductName(data.inventoryItem.inventory.productName);
+            // setProductVariant(data.inventoryItem.variation);
         })
     }, []);
 
@@ -53,7 +57,7 @@ export default function EditProductItemForm () {
                             <div>
                                 <label htmlFor="qty">Qty</label>
                                 <input onChange={e => setItemQty(e.target.value)} defaultValue={itemQty} type="number" id="qty" className="my-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-                                <p className="text-sm text-gray-500">Qty: {inventoryQty}</p>
+                                <p className="text-sm text-gray-500">Qty: {inventoryItem.qty}</p>
                             </div>
                             <div>
                                 <label htmlFor="price">Price</label>

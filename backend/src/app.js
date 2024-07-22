@@ -446,40 +446,32 @@ app.get('/inventory/:id', accessValidation, async (req, res) => {
 app.delete('/inventory/:id', accessValidation, async (req, res) => {
     const { id } = req.params;
     try {
-        await prisma.productItem.deleteMany({
-            where: {
-                inventoryItemId: {
-                in: (await prisma.inventoryItem.findMany({
-                    where: {
-                    inventoryId: Number(id),
-                    },
-                    select: {
-                    id: true,
-                    },
-                })).map(item => item.id),
-                },
-            },
-        });
+        // const products = await prisma.products.findUnique({
+        //     where: {
+        //         inventoryId: Number(id)
+        //     }
+        // });
 
-        const products = await prisma.products.findUnique({
-            where: {
-                inventoryId: Number(id)
-            }
-        });
+        // if (products) {
+        //     await prisma.productItem.deleteMany({
+        //         where: {
+        //             productId: products.id
+        //         }
+        //     })
+    
+        //     await prisma.productImage.delete({
+        //         where: {
+        //             productId: products.id
+        //         }
+        //     })
 
-        await prisma.productImage.delete({
-            where: {
-                productId: products.id
-            }
-        })
-
-        // delete products
-        await prisma.products.delete({
-            where: {
-                inventoryId: Number(id)
-            }
-        });
-
+        //     // delete products
+        //     await prisma.products.delete({
+        //         where: {
+        //             inventoryId: Number(id)
+        //         }
+        //     });
+        // }
 
         // Delete the inventory items
         await prisma.inventoryItem.deleteMany({
@@ -487,18 +479,18 @@ app.delete('/inventory/:id', accessValidation, async (req, res) => {
                 inventoryId: Number(id),
             },
         });
-  
+   
       // Delete the inventory
-      const deletedInventory = await prisma.inventory.delete({
-        where: {
-            id: Number(id),
-        },
-    });
+        const deletedInventory = await prisma.inventory.delete({
+            where: {
+                id: Number(id),
+            },
+        });
   
-      res.json({
-        deletedInventory,
-        msg: 'Delete inventory successful',
-      });
+        res.json({
+            deletedInventory,
+            msg: 'Delete inventory successful',
+        });
     } catch (error) {
         res.json(error);
         console.log(error);
@@ -518,6 +510,27 @@ app.put('/inventory/:id', accessValidation, async (req, res) => {
                 productName, brand, categoryId, specs, description,
             }
         });
+
+        const products = await prisma.products.findUnique({
+            where: {
+                inventoryId: updatedInventory.id
+            }
+        })
+
+        if (products) {
+            await prisma.products.update({
+                where: {
+                    inventoryId: updatedInventory.id
+                },
+                data: {
+                    productName: updatedInventory.productName,
+                    description: updatedInventory.description,
+                    brand: updatedInventory.brand,
+                    categoryId: updatedInventory.categoryId,
+                    specs: updatedInventory.specs
+                }
+            })
+        }
 
         const updatedInventoryItem = await prisma.inventoryItem.deleteMany({
             where: {
@@ -743,7 +756,6 @@ app.post('/product/item/add', accessValidation, upload.array('images', 10), asyn
                 qty: Number(qty),
                 status,
                 manufacturer,
-                inventoryItemId: inventoryItem.id,
                 imageURLs
             }
         });
@@ -752,7 +764,6 @@ app.post('/product/item/add', accessValidation, upload.array('images', 10), asyn
         const updatedInventoryItem = await prisma.inventoryItem.update({
             data: {
                 qty: inventoryItem.qty - Number(qty),
-                isUsed: true
             },
             where: {
                 id: inventoryItem.id
@@ -958,27 +969,27 @@ app.put('/product/item/update/:id', accessValidation, upload.array('images', 10)
         const diff = updatedProductItemQty - currentProductItemQty;
 
         // get inventory item
-        const inventoryItem = await prisma.inventoryItem.findUnique({
-            where: {
-                id: updatedProductItem.inventoryItemId
-            }
-        });
-        const inventoryCurrentQty = inventoryItem.qty;
+        // const inventoryItem = await prisma.inventoryItem.findUnique({
+        //     where: {
+        //         id: updatedProductItem.inventoryItemId
+        //     }
+        // });
+        // const inventoryCurrentQty = inventoryItem.qty;
 
         // update inventory item qty
-        const updatedInventoryItemQty = await prisma.inventoryItem.update({
-            where: {
-                id: updatedProductItem.inventoryItemId
-            },
-            data: {
-                qty: inventoryCurrentQty - diff
-            }
-        });
+        // const updatedInventoryItemQty = await prisma.inventoryItem.update({
+        //     where: {
+        //         id: updatedProductItem.inventoryItemId
+        //     },
+        //     data: {
+        //         qty: inventoryCurrentQty - diff
+        //     }
+        // });
 
         res.status(201);
         res.json({
             updatedProductItem,
-            updatedInventoryItem: updatedInventoryItemQty,
+            // updatedInventoryItem: updatedInventoryItemQty,
             msg: 'Product item berhasil diubah!'
         });
     } catch (error) {
@@ -1056,24 +1067,24 @@ app.delete('/product/item/:id', accessValidation,  async (req, res) => {
         }
 
         // update the inventory qty
-        const inventoryItem = await prisma.inventoryItem.findUnique({
-            where: {
-                id: deleteProductItem.inventoryItemId
-            }
-        })
+        // const inventoryItem = await prisma.inventoryItem.find({
+        //     where: {
+        //         id: deleteProductItem.inventoryItemId
+        //     }
+        // })
 
-        if (inventoryItem) {
-            await prisma.inventoryItem.update({
-                where: {
-                    id: deleteProductItem.inventoryItemId
-                },
-                data: {
-                    qty: inventoryItem.qty + deleteProductItem.qty,
-                    isUsed: false
-                }
-            })
-        }
-    
+        // if (inventoryItem) {
+        //     await prisma.inventoryItem.update({
+        //         where: {
+        //             id: deleteProductItem.inventoryItemId
+        //         },
+        //         data: {
+        //             qty: inventoryItem.qty + deleteProductItem.qty,
+        //             isUsed: false
+        //         }
+        //     })
+        // }
+
         res.json({
             deleteProductItem,
             productVariation,
@@ -1096,9 +1107,18 @@ app.get('/product/item/:id', async (req, res) => {
                 id: Number(id)
             },
             include: {
-                inventoryItem: {
+                product: {
                     include: {
-                        inventory: true
+                        inventory: {
+                            include: {
+                                item: true
+                            }
+                        }
+                    }
+                },
+                variationOption: {
+                    include: {
+                        variations: true
                     }
                 }
             }
@@ -1117,6 +1137,12 @@ app.delete('/product/:id', accessValidation, async (req, res) => {
     const userId = req.userId;
 
     try {
+        const products = await prisma.products.findUnique({
+            where: {
+                id: Number(id)
+            }
+        })
+
         const productImage = await prisma.productImage.findFirst({
             where: {
                 productId: Number(id)
@@ -1145,20 +1171,21 @@ app.delete('/product/:id', accessValidation, async (req, res) => {
             })
         }
 
+        const updateInventory = await prisma.inventory.update({
+            where: {
+                id: products.inventoryId
+            },
+            data: {
+                isUsed: false
+            }
+        })
+
         const deleteProduct = await prisma.products.delete({
             where: {
                 id: Number(id)
             }
         });
 
-        if (deleteProduct) {
-            await prisma.productLog.create({
-                data: {
-                    userId,
-                    process: `Delete product ${deleteProduct.productName}`
-                }
-            })
-        }
         res.json('Product Berhasil Dihapus!');
 
     } catch (error) {

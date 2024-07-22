@@ -19,6 +19,7 @@ export default function EditInventoryForm() {
     const [allCategories, setAllCategories] = useState([]);
     const [itemFields, setItemFields] = useState([]);
     const [variationOption, setVariationOption] = useState([]);
+    const [categoryId, setCategoryId] = useState(0);
 
     useEffect(() => {
         getAllCategory((data) => {
@@ -32,6 +33,7 @@ export default function EditInventoryForm() {
             setProductName(data.productName);
             setBrand(data.brand);
             setCategory(data.category);
+            setCategoryId(data.category.id);
             setSpecsFields(data.specs);
             setDescription(data.description);
             setItemFields(data.item);
@@ -96,19 +98,20 @@ export default function EditInventoryForm() {
         const data = {
             productName: productName, 
             brand, 
-            categoryId: category.id,
+            categoryId: Number(categoryId),
             specs: specsFields,
             description,
             items: itemFields.map(item => ({
-                qty: item.qty,
+                qty: Number(item.qty),
                 variation: item.variation,
                 variationId: Number(item.variationId)
             }))
-        }
-        // console.log(data);
+        };
+
+        console.log(data.categoryId);
         updateInventory(id, data, (data) => {
             console.log(data);
-            GoToPage('/admin/inventory')
+            GoToPage('/admin/inventory', 100);
         })
     }
 
@@ -131,8 +134,8 @@ export default function EditInventoryForm() {
                         </div>
                         <div>
                             <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900">Category</label>
-                            <select id="variationId" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" onChange={e => setCategory(e.target.value)}>
-                                <option defaultValue={category.id}>-- {category.categoryName} --</option>
+                            <select id="variationId" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" onChange={e => setCategoryId(e.target.value)}>
+                                <option value={categoryId}>-- {category.categoryName} --</option>
                                 {allCategories.map((cat, key) => (
                                     <option key={key} value={cat.id}>{cat.categoryName}</option>
                                 ))}
