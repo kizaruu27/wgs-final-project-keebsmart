@@ -23,6 +23,7 @@ import CourierOnGoingDeliveryPage from './components/pages/Courier/Courier On Go
 import CourierFinishedDeliveryPage from './components/pages/Courier/Courier Finished Delivery Page/CourierFinishedDeliveryPage';
 import AdminInventoryPage from './components/pages/Dashboard/Admin Inventory Page/AdminInventoryPage';
 import EditInventoryForm from './components/Layouts/Admin Dashboard/Inventory/EditInventoryForm';
+import EditProductItemForm from './components/Layouts/Admin Dashboard/Product Forms/EditProductItemForm';
 
 export default function App() {
     return (
@@ -54,6 +55,7 @@ export default function App() {
                     <Route path="/admin/inventory" Component={AdminInventoryPage}/>
                     <Route path="/admin/inventory" Component={AdminInventoryPage}/>
                     <Route path="/admin/inventory/update/:id" Component={EditInventoryForm}/>
+                    <Route path="/admin/product/update/:id" Component={EditProductItemForm}/>
                 </Routes>
             </Router>
         </>

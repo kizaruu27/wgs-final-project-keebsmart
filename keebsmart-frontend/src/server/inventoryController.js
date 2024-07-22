@@ -55,3 +55,12 @@ export const updateInventory = async (id, data, onSucces) => {
         console.log(error);
     }
 }
+
+export const getInventoryItem = async (id, onSuccess) => {
+    try {
+        const response = await axios.get(`${urlEndpoint}/inventory/item/${id}`, config);
+        onSuccess(response.data);
+    } catch (error) {
+        console.log(error);
+    }
+}

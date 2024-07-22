@@ -55,10 +55,19 @@ export const getAllProducts = async (setProducts) => {
     }
 };
 
+export const getProductById = async (id, onSucces) => {
+    try {
+        const response = await axios.get(`${urlEndpoint}/product/${id}`);
+        onSucces(response.data);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 export const getProductDetail = async (id, setProduct, setProductItems, setCategory, setImage, onGetStatistic) => {
     try {
         const response = (await axios.get(`${urlEndpoint}/product/${id}`)).data;
-        if(setProductItems) setProduct(response);
+        if (setProductItems) setProduct(response);
         if (setProductItems) setProductItems(response.productItem);
         if (setImage) setImage(response.productImage.imagePreviewUrl);
         if (setCategory) setCategory(response.category.categoryName);
@@ -85,7 +94,7 @@ export const getProductVariation = async (id, setVariation) => {
     }
 }
 
-export const addProductItem = async (productId, qty, images, price, manufacturer, status, process, variationValue, variationId, onSuccess, onFailed) => {
+export const addProductItem = async ( productId, price, qty, status, manufacturer, inventoryItemId, images, onSuccess, onFailed) => {
     try {
         const token = localStorage.getItem('token');
         const formData = new FormData();
@@ -94,9 +103,7 @@ export const addProductItem = async (productId, qty, images, price, manufacturer
         formData.append('price', price);
         formData.append('manufacturer', manufacturer);
         formData.append('status', status);
-        formData.append('process', process);
-        formData.append('variationValue', variationValue);
-        formData.append('variationId', variationId);
+        formData.append('inventoryItemId', inventoryItemId);
 
         for (let i = 0; i < images.length; i++) {
             formData.append('images', images[i]);
@@ -109,9 +116,8 @@ export const addProductItem = async (productId, qty, images, price, manufacturer
             }
         });
 
-        if (response.status !== 201) return console.log('Add product failed!');
-        console.log(response);
-        onSuccess('Add product item successfull');
+        if (response.status !== 201) return console.error('Add product item failed!');
+        onSuccess(response);
 
     } catch (error) {
         onFailed(error);
@@ -178,15 +184,15 @@ export const deleteProduct = async (productId, onDelete, onFailed) => {
     }
 }
 
-export const deleteProductItem = async (productItemId, onDelete, onFailed) => {
+export const deleteProductItem = async (id, onSuccess, onFailed) => {
     try {
         const token = localStorage.getItem('token');
-        const response = await axios.delete(`${urlEndpoint}/product/item/${productItemId}`, {
+        const response = await axios.delete(`${urlEndpoint}/product/item/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`
             }
         });
-        onDelete('Success delete product item');
+        onSuccess(response.data);
     } catch (error) {
         console.log(error);
         onFailed(error);
@@ -223,32 +229,25 @@ export const updateProduct = async (id, productName, description, brand, categor
     }
 }
 
-export const updateProductItem = async (id, qty, images, price, manufacturer, status, variationValue, variationId, onSuccess, onFailed) => {
+export const updateProductItem = async (id, qty, price, manufacturer, status, onSuccess, onFailed) => {
     try {
         const token = localStorage.getItem('token');
-        const formData = new FormData();
-        formData.append('qty', qty);
-        formData.append('price', price);
-        formData.append('manufacturer', manufacturer);
-        formData.append('status', status);
-        formData.append('variationValue', variationValue);
-        formData.append('variationId', variationId);
-
-        for (let i = 0; i < images.length; i++) {
-            formData.append('images', images[i]);
+        const data = {
+            price,
+            qty,
+            status,
+            manufacturer
         }
 
-        const response = await axios.put(`${urlEndpoint}/product/item/update/${id}`, formData, {
+        const response = await axios.put(`${urlEndpoint}/product/item/update/${id}`, data, {
             headers: {
                 Authorization: `Bearer ${token}`,
-                'Content-Type': 'multipart/form-data'
             }
         });
 
         if (response.status !== 201) return console.log('Edit product failed!');
-        console.log(response);
-        onSuccess('Edit product item successfull');
 
+        onSuccess(response.data);
     } catch (error) {
         onFailed(error);
     }
@@ -276,6 +275,15 @@ export const getSalesStatistic = async (onSuccess) => {
     try {
         const sales = await axios.get(`${urlEndpoint}/sales`);
         onSuccess(sales)
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const getProductItemDetail = async (id, onSucces) => {
+    try {
+        const response = await axios.get(`${urlEndpoint}/product/item/${id}`);
+        onSucces(response.data);
     } catch (error) {
         console.log(error);
     }

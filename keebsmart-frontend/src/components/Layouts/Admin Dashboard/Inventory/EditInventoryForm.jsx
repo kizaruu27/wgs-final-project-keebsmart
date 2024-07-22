@@ -69,7 +69,7 @@ export default function EditInventoryForm() {
         let data = [...itemFields];
         data[key][e.target.name] = e.target.value;
         setItemFields(data);
-        console.log(data);
+        console.log(itemFields);
     }
 
     const addItemFields = () => {

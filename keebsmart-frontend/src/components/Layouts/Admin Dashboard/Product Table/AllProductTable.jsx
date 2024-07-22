@@ -48,7 +48,6 @@ export default function AllProductTable({products, activateProduct, setDelete, s
                         <td className="px-6 py-4">
                             <span onClick={() => GoToPage(`/admin/product/${product.id}`)} className="cursor-pointer rounded-xl bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 dark:bg-yellow-900 dark:text-yellow-300">detail</span>
                             <span onClick={() => setDelete(product.id)} data-modal-target="popup-modal" data-modal-toggle="popup-modal" className="cursor-pointer bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl dark:bg-red-900 dark:text-red-300">delete</span>
-                            <span onClick={() => setEdit(product)} className="cursor-pointer bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl dark:bg-red-900 dark:text-red-300">edit</span>
                         </td>
                     </tr>
                 ))}

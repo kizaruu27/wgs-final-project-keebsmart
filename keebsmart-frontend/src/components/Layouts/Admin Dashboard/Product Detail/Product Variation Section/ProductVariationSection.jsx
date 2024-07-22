@@ -1,5 +1,6 @@
 import { useState } from "react";
 import AddProductVariationModal from "../../Product Forms/AddProductVariationModal";
+import { GoToPage } from "../../../../../server/pageController";
 
 export default function ProductVariationSection({productItems, setEdit, setDelete}) {
     const [openAddVariationModal, setOpenAddVariationModal] = useState(false);
@@ -71,7 +72,7 @@ export default function ProductVariationSection({productItems, setEdit, setDelet
                                     {item.status === 'in stock' ? <span className="bg-green-100 rounded-xl text-green-800 text-xs font-medium me-2 p-1.5 dark:bg-green-900 dark:text-green-300 text-nowrap">in stock</span> :  <span className="bg-red-100 rounded-xl text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 dark:bg-green-900 dark:text-green-300 text-nowrap">empty</span>}
                                 </td>
                                 <td className="px-6 py-4">
-                                    <span onClick={() => setEdit(item)} className="cursor-pointer bg-yellow-100 rounded-xl text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 dark:bg-green-900 dark:text-green-300">edit</span>
+                                    <span onClick={() => GoToPage(`/admin/product/update/${item.id}`)} className="cursor-pointer bg-yellow-100 rounded-xl text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 dark:bg-green-900 dark:text-green-300">edit</span>
                                     <span onClick={() => setDelete(item.id)} data-modal-target="confirmation-modal" data-modal-toggle="confirmation-modal" className="cursor-pointer bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl inline dark:bg-red-900 dark:text-red-300">delete</span>
                                 </td>
                             </tr>

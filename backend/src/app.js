@@ -446,34 +446,59 @@ app.get('/inventory/:id', accessValidation, async (req, res) => {
 app.delete('/inventory/:id', accessValidation, async (req, res) => {
     const { id } = req.params;
     try {
-        // delete the inventory item first
-        try {
-            const deletedInventoryItem = await prisma.inventoryItem.deleteMany({
-                where: {
-                    inventoryId: Number(id)
-                }
-            });
-        } catch (error) {
-            console.error(error);
-            return res.json(error);
-        }
+        await prisma.productItem.deleteMany({
+            where: {
+                inventoryItemId: {
+                in: (await prisma.inventoryItem.findMany({
+                    where: {
+                    inventoryId: Number(id),
+                    },
+                    select: {
+                    id: true,
+                    },
+                })).map(item => item.id),
+                },
+            },
+        });
 
-        // delete the inventory
-        try {
-            const deletedInventory = await prisma.inventory.delete({
-                where: {
-                    id: Number(id)
-                }
-            })
-            res.json({
-                deletedInventory,
-                msg: 'Delete inventory successfull'
-            })
+        const products = await prisma.products.findUnique({
+            where: {
+                inventoryId: Number(id)
+            }
+        });
 
-        } catch (error) {
-            console.error(error);
-            return res.json(error);
-        }
+        await prisma.productImage.delete({
+            where: {
+                productId: products.id
+            }
+        })
+
+        // delete products
+        await prisma.products.delete({
+            where: {
+                inventoryId: Number(id)
+            }
+        });
+
+
+        // Delete the inventory items
+        await prisma.inventoryItem.deleteMany({
+            where: {
+                inventoryId: Number(id),
+            },
+        });
+  
+      // Delete the inventory
+      const deletedInventory = await prisma.inventory.delete({
+        where: {
+            id: Number(id),
+        },
+    });
+  
+      res.json({
+        deletedInventory,
+        msg: 'Delete inventory successful',
+      });
     } catch (error) {
         res.json(error);
         console.log(error);
@@ -512,6 +537,23 @@ app.put('/inventory/:id', accessValidation, async (req, res) => {
         });
 
         res.json({updatedInventory, updatedItem, msg: 'Update success'})
+    } catch (error) {
+        res.json(error);
+        console.log(error);
+    }
+});
+
+// Get inventory item  by id
+app.get('/inventory/item/:id', accessValidation, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const inventoryItem = await prisma.inventoryItem.findUnique({
+            where: {
+                id: Number(id)
+            }
+        });
+
+        res.json(inventoryItem);
     } catch (error) {
         res.json(error);
         console.log(error);
@@ -563,6 +605,11 @@ app.get('/product/:id', async (req, res) => {
                                 variations: true
                             }
                         },
+                    }
+                },
+                inventory: {
+                    include: {
+                        item: true
                     }
                 }
             },
@@ -670,43 +717,59 @@ app.post('/product', accessValidation, upload.fields([
 app.post('/product/item/add', accessValidation, upload.array('images', 10), async (req, res) => {
     try {
         const imageURLs = req.files.map(file => `http://localhost:${PORT}/images/${file.filename}`);
-        const { productId, qty, price, manufacturer, status, process, variationValue, variationId } = req.body;
-        const id = req.userId;
+        const { productId, price, qty, status, manufacturer, inventoryItemId } = req.body;
 
-        const productLog = await prisma.productLog.create({
-            data: {
-                userId: id, 
-                process
+        // get inventory item
+        const inventoryItem = await prisma.inventoryItem.findUnique({
+            where: {
+                id: Number(inventoryItemId)
             }
         });
 
-        const variationOption = await prisma.variationOptions.create({
+        // create variation option
+        const newVariationOption = await prisma.variationOptions.create({
             data: {
-                variationValue, 
-                variationId: Number(variationId)
+                variationValue: inventoryItem.variation,
+                variationId: inventoryItem.variationId
+            }
+        });
+
+        // create new product item
+        const newProductItem = await prisma.productItem.create({
+            data: {
+                productId: Number(productId),
+                variationOptionId: newVariationOption.id,
+                price: Number(price),
+                qty: Number(qty),
+                status,
+                manufacturer,
+                inventoryItemId: inventoryItem.id,
+                imageURLs
+            }
+        });
+
+        // update inventory item
+        const updatedInventoryItem = await prisma.inventoryItem.update({
+            data: {
+                qty: inventoryItem.qty - Number(qty),
+                isUsed: true
+            },
+            where: {
+                id: inventoryItem.id
             }
         })
 
-        const newProductItem = await prisma.productItem.create({
-            data: {
-                productId: Number(productId), 
-                variationOptionId: variationOption.id,
-                productLogId: productLog.id,
-                imageURLs,
-                price: Number(price),
-                manufacturer,
-                qty: Number(qty),
-                status
-            }
-        })
 
         res.status(201);
         res.json({
-            data: newProductItem,
+            newProductItem,
+            beforeUpdatedInventory: inventoryItem,
+            afterUpdatedInventory: updatedInventoryItem,
             msg: 'Product Item berhasil ditambah!'
         });
     } catch (error) {
         console.log(error.message);
+        res.json(error.message);
     }
 });
 
@@ -867,58 +930,60 @@ app.put('/product/update/:id', accessValidation, upload.fields([
 app.put('/product/item/update/:id', accessValidation, upload.array('images', 10), async (req, res) => {
     try {
         const { id } = req.params;
-        const imageURLs = req.files.map(file => `http://localhost:${PORT}/images/${file.filename}`);
-        const { qty, price, manufacturer, status, variationValue, variationId } = req.body;
-        const userId = req.userId;
+        // const imageURLs = req.files.map(file => `http://localhost:${PORT}/images/${file.filename}`);
+        const { price, qty, status, manufacturer } = req.body;
 
+        // current product item
         const productItem = await prisma.productItem.findUnique({
             where: {
                 id: Number(id)
             }
-        })
-
-        const updatedVariationOption = await prisma.variationOptions.update({
-            data: {
-                variationValue, 
-                variationId: Number(variationId)
-            },
-            where: {
-                id: productItem.variationOptionId
-            }
-        })
-
-        const productLog = await prisma.productLog.create({
-            data: {
-                userId, 
-                process: `Edit product item ${productItem.unitId}`
-            }
         });
-
+        const currentProductItemQty = productItem.qty;
+        
+        // updated product item
         const updatedProductItem = await prisma.productItem.update({
-            data: {
-                productLogId: productLog.id,
-                variationOptionId: updatedVariationOption.id,
-                imageURLs,
-                price: Number(price),
-                manufacturer,
-                qty: Number(qty),
-                status
-            },
             where: {
                 id: Number(id)
+            },
+            data: {
+                price: Number(price),
+                qty: Number(qty),
+                status,
+                manufacturer
             }
-        })
+        });
+        const updatedProductItemQty = updatedProductItem.qty;
+
+        const diff = updatedProductItemQty - currentProductItemQty;
+
+        // get inventory item
+        const inventoryItem = await prisma.inventoryItem.findUnique({
+            where: {
+                id: updatedProductItem.inventoryItemId
+            }
+        });
+        const inventoryCurrentQty = inventoryItem.qty;
+
+        // update inventory item qty
+        const updatedInventoryItemQty = await prisma.inventoryItem.update({
+            where: {
+                id: updatedProductItem.inventoryItemId
+            },
+            data: {
+                qty: inventoryCurrentQty - diff
+            }
+        });
 
         res.status(201);
         res.json({
             updatedProductItem,
-            updatedVariationOption,
-            productLog,
+            updatedInventoryItem: updatedInventoryItemQty,
             msg: 'Product item berhasil diubah!'
         });
     } catch (error) {
         res.json(error);
-        console.log(error.message);
+        console.log(error);
     }
 });
 
@@ -951,7 +1016,22 @@ app.patch('/product/activate/:id', accessValidation, async (req, res) => {
 app.delete('/product/item/:id', accessValidation,  async (req, res) => {
     try {
         const { id } = req.params;
-        const userId = req.userId;
+
+        // find related cart
+        const relatedCart = await prisma.cart.findMany({
+            where: {
+                productItemId: Number(id)
+            }
+        });
+
+        // delete related cart
+        if (relatedCart) {
+            await prisma.cart.deleteMany({
+                where: {
+                    productItemId: Number(id)
+                }
+            })
+        }
 
         const deleteProductItem = await prisma.productItem.delete({
             where: {
@@ -975,17 +1055,28 @@ app.delete('/product/item/:id', accessValidation,  async (req, res) => {
             })
         }
 
-        const productLog = await prisma.productLog.create({
-            data: {
-                userId,
-                process: `Delete product item ${deleteProductItem.variationOption.variationValue}`
+        // update the inventory qty
+        const inventoryItem = await prisma.inventoryItem.findUnique({
+            where: {
+                id: deleteProductItem.inventoryItemId
             }
         })
+
+        if (inventoryItem) {
+            await prisma.inventoryItem.update({
+                where: {
+                    id: deleteProductItem.inventoryItemId
+                },
+                data: {
+                    qty: inventoryItem.qty + deleteProductItem.qty,
+                    isUsed: false
+                }
+            })
+        }
     
         res.json({
             deleteProductItem,
             productVariation,
-            productLog,
             msg: 'Berhasil menghapus productitem'
         });
         
@@ -995,6 +1086,30 @@ app.delete('/product/item/:id', accessValidation,  async (req, res) => {
     }
 
 });
+
+// API for get product item detail by id
+app.get('/product/item/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const productItem = await prisma.productItem.findUnique({
+            where: {
+                id: Number(id)
+            },
+            include: {
+                inventoryItem: {
+                    include: {
+                        inventory: true
+                    }
+                }
+            }
+        });
+
+        res.json(productItem);
+    } catch (error) {
+        res.json(error);
+        console.error(error);
+    }
+})
 
 // API for delete Products
 app.delete('/product/:id', accessValidation, async (req, res) => {
