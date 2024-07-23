@@ -814,8 +814,9 @@ app.get('/products/switch', async (req, res) => {
         const switches = await prisma.products.findMany({
             where: {
                 category: {
-                    categoryName: 'Switch'
-                }
+                    categoryName: 'Switch',
+                },
+                isActive: true
             },
             include: {
                 productItem: true,
@@ -840,7 +841,8 @@ app.get('/products/keyboards', async (req, res) => {
             where: {
                 category: {
                     categoryName: 'Keyboard'
-                }
+                },
+                isActive: true
             },
             include: {
                 productItem: {
@@ -870,7 +872,8 @@ app.get('/products/keycaps', async (req, res) => {
             where: {
                 category: {
                     categoryName: 'Keycaps'
-                }
+                },
+                isActive: true
             },
             include: {
                 productItem: true,

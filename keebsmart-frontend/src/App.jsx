@@ -24,6 +24,9 @@ import CourierFinishedDeliveryPage from './components/pages/Courier/Courier Fini
 import AdminInventoryPage from './components/pages/Dashboard/Admin Inventory Page/AdminInventoryPage';
 import EditInventoryForm from './components/Layouts/Admin Dashboard/Inventory/EditInventoryForm';
 import EditProductItemForm from './components/Layouts/Admin Dashboard/Product Forms/EditProductItemForm';
+import KeyboardPage from './components/pages/User/Product List/Keyboard Page/KeyboardPage';
+import KeycapsPage from './components/pages/User/Product List/Keycaps Page/KeycapsPage';
+import SwitchPage from './components/pages/User/Product List/Switch Page/SwitchPage';
 
 export default function App() {
     return (
@@ -33,6 +36,9 @@ export default function App() {
                     <Route path="/" Component={HomePage}/>
                     <Route path="/login" Component={LoginPage}/>
                     <Route path="/register" Component={RegisterPage}/>
+                    <Route path="/keyboards" Component={KeyboardPage}/>
+                    <Route path="/keycaps" Component={KeycapsPage}/>
+                    <Route path="/switches" Component={SwitchPage}/>
                     <Route path="/admin" Component={AdminDashboardPage}/>
                     <Route path="/admin/products" Component={AdminAllProductPage}/>
                     <Route path="/admin/product/:id" Component={AdminProductItem}/>

@@ -7,7 +7,7 @@ export default function HomePagePreviewItem({color, textColor, title, descriptio
             <div className={`${textColor} font-light text-lg tracking-normal`}>
                 {description}
             </div>
-            <div className="flex justify-center mt-16">
+            <div className="flex justify-center mt-16 duration-500 hover:scale-110">
                 <img src={imgSrc} alt="" width={380} className="rounded-lg"/>
             </div>
         </div>

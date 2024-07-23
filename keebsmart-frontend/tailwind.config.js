@@ -9,13 +9,42 @@ export default {
     flowbite.content(),
   ],
   theme: {
-    extend: {},
+    extend: {
+      animation: {
+        scroll:
+          "scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite",
+      },
+      keyframes: {
+        scroll: {
+          to: {
+            transform: "translate(calc(-50% - 0.5rem))",
+          },
+        },
+      },
+    },
   },
   plugins: [
-      require('flowbite/plugin')({
-        charts: true,
+    addVariablesForColors,
+    require('flowbite/plugin')({
+      charts: true,
     }),
-      flowbite.plugin(),
+    flowbite.plugin(),
   ],
 }
+
+function addVariablesForColors({ addBase, theme }) {
+  const flattenColorPalette = (colors) => {
+    return colors;
+  };
+
+  const allColors = flattenColorPalette(theme("colors"));
+  const newVars = Object.fromEntries(
+    Object.entries(allColors).map(([key, val]) => [`--${key}`, val])
+  );
+
+  addBase({
+    ":root": newVars,
+  });
+}
+
 

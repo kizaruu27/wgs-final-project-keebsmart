@@ -1,22 +1,28 @@
-import GiftIcon from "../elements/GiftIcon"
-import HomePageWhyUsItem from "../elements/HomePageWhyUsItem"
-import HomePageWhyUsTitle from "../elements/HomePageWhyUsTitle"
-import ShippingIcon from "../elements/ShippingIcon"
-import ThumbIcon from "../elements/ThumbIcon"
-import WalletIcon from "../elements/WalletIcon"
-import Container from "../fragments/Container"
-import HomePageWhyUsContainer from "../fragments/HomePageWhyUsContainer"
+import { InfiniteMovingCards } from "../ui/infinite-moving-cards"
 
 export default function HomePageWhyUs() {
+    const items = [
+        {
+            quote: 'All orders are packaged with 💜 and shipped from the Keebsmart warehouse in Bandung.',
+            color: 'purple-500',
+        },
+        {
+            quote: 'We ship most orders within 24-48 hours and accept returns within 14 days of receipt.',
+            color: 'blue-500',
+        },
+        {
+            quote: 'Multiple payment options available at checkout, and interest-free payment plans are available.',
+            color: 'green-500',
+        },
+        {
+            quote: 'Create your dream mechanical keyboard from scratch or customize existing ones.',
+            color: 'pink-500',
+        },
+    ];
+
     return (
-        <Container>
-            <HomePageWhyUsTitle />
-            <HomePageWhyUsContainer>
-                <HomePageWhyUsItem text='All orders are packaged with 💜 and shipped from the Keebsmart warehouse in Bandung.' color='text-purple-500' icon={<ShippingIcon />} />
-                <HomePageWhyUsItem text='We ship most orders within 24-48 hours and accept returns within 14 days of receipt.' color='text-blue-500' icon={<GiftIcon />} />
-                <HomePageWhyUsItem text='Multiple payment options available at checkout, and interest-free payment plans are available.' color='text-emerald-500' icon={<WalletIcon />} />
-                <HomePageWhyUsItem text='Create your dream mechanical keyboard from scratch or customize existing ones.' color='text-pink-500' icon={<ThumbIcon />} />
-            </HomePageWhyUsContainer>
-        </Container>
+        <div className="rounded-md flex flex-col antialiased bg-white dark:bg-black dark:bg-grid-white/[0.05] items-center justify-center relative overflow-hidden">
+            <InfiniteMovingCards items={items} direction="right" speed="slow" pauseOnHover={false}/>
+        </div>
     )
 }

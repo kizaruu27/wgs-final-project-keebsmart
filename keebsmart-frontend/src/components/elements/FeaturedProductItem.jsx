@@ -1,11 +1,36 @@
+import { CardBody, CardContainer, CardItem } from "../ui/3d-card"
+
 export default function FeaturedProductItem({productName, description, img, price, imgMarginY}) {
     return (
-        <div className="bg-gray-100 shadow-lg rounded-lg p-5 w-64 flex-shrink-0 mb-5 cursor-pointer">
-            <p className="text-sm font-ligth text-slate-400">KeebsMart</p>
-            <h2 className="text-xl font-medium mt-1 text-wrap">{productName}</h2>
-            <img src={img} alt="" className={`${imgMarginY}`} />
-            <p className="text-sm text-wrap text-slate-500 mt-5">{description}</p>
-            <p className="text-lg text-black mt-3 font-medium">Rp. {price}</p>
-        </div>
+        <CardContainer className="inter-var h-full">
+            <CardBody className="bg-gray-100 relative group/card text-wrap dark:hover:shadow-2xl dark:hover:shadow-emerald-500/[0.1] dark:bg-black dark:border-white/[0.2] border-black/[0.1] w-auto sm:w-[30rem] rounded-xl p-6 border flex flex-col justify-start gap-1 h-full" width={300}>
+                <CardItem
+                translateZ="50"
+                className="h-5 ext-lg font-bold text-neutral-600 dark:text-white"
+                >
+                {productName}
+                </CardItem>
+                <CardItem translateZ="100" className="mx-auto mt-8">
+                <img
+                    src={img}
+                    alt="thumbnail"
+                    className="rounded-xl"
+                />
+                </CardItem>
+                <CardItem as="p" translateZ="60" className="h-16 text-neutral-500 text-sm max-w-sm mt-8 dark:text-neutral-300 text-wrap">
+                    {description}
+                </CardItem>
+
+                <div className="mt-5">
+                    <CardItem
+                        translateZ={20}
+                        as="p"
+                        className="text-neutral-400 text-xl font-semibold"
+                    >
+                        Rp. {price}
+                    </CardItem>
+                </div>
+            </CardBody>
+        </CardContainer>
     )
 }
