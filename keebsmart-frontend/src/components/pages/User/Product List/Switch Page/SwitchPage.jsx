@@ -11,7 +11,7 @@ export default function SwitchPage() {
         getSwitchesData((data) => {
             setSwitches(data);
         });
-    })
+    }, [])
 
     return (
         <div className="mx-auto">

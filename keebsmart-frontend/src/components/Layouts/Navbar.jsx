@@ -6,6 +6,7 @@ import CartIcon from "../elements/CartIcon"
 import NavbarUsername from "../elements/NavbarUsername"
 import { useState, useEffect } from "react"
 import { getUserData } from "../../server/userDataController"
+import { GoToPage } from "../../server/pageController"
 
 export default function Navbar() {
     const backToHome = () => window.location.href = '/';
@@ -31,7 +32,7 @@ export default function Navbar() {
                 <NavbarMenu linkTo='/keyboards' text='Keyboard' />
                 <NavbarMenu linkTo='/keycaps' text='Keycaps' />
                 <NavbarMenu linkTo='/switches' text='Switches' />
-                <CartIcon size={6}/>
+                <CartIcon linkTo='/cart' size={6}/>
                 <NavbarUsername linkTo='/profile' text={username}/>
             </NavbarMenuContainer>
         </NavbarFragment>

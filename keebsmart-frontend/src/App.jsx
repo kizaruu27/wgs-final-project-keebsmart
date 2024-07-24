@@ -27,6 +27,8 @@ import EditProductItemForm from './components/Layouts/Admin Dashboard/Product Fo
 import KeyboardPage from './components/pages/User/Product List/Keyboard Page/KeyboardPage';
 import KeycapsPage from './components/pages/User/Product List/Keycaps Page/KeycapsPage';
 import SwitchPage from './components/pages/User/Product List/Switch Page/SwitchPage';
+import ProductPage from './components/pages/User/Product Detail/ProductPage';
+import CartPage from './components/pages/User/Cart/CartPage';
 
 export default function App() {
     return (
@@ -39,6 +41,8 @@ export default function App() {
                     <Route path="/keyboards" Component={KeyboardPage}/>
                     <Route path="/keycaps" Component={KeycapsPage}/>
                     <Route path="/switches" Component={SwitchPage}/>
+                    <Route path="/product/:id" Component={ProductPage}/>
+                    <Route path="/cart" Component={CartPage}/>
                     <Route path="/admin" Component={AdminDashboardPage}/>
                     <Route path="/admin/products" Component={AdminAllProductPage}/>
                     <Route path="/admin/product/:id" Component={AdminProductItem}/>

@@ -144,6 +144,7 @@ model Cart {
   qty           Int
   subTotalPrice Int
   isOrdered     Boolean     @default(false)
+  isDeleted     Boolean     @default(false)
   productItem   ProductItem @relation(fields: [productItemId], references: [id])
   user          User        @relation(fields: [userId], references: [id])
   order         Orders[]    @relation("CartToOrders")

@@ -1,5 +1,6 @@
 import axios from "axios";
 import { urlEndpoint } from "./url";
+const token = localStorage.getItem('token');
 
 export const getAllCategory = async (setCategories) => {
     try {
@@ -67,7 +68,7 @@ export const getProductById = async (id, onSucces) => {
 export const getProductDetail = async (id, setProduct, setProductItems, setCategory, setImage, onGetStatistic) => {
     try {
         const response = (await axios.get(`${urlEndpoint}/product/${id}`)).data;
-        if (setProductItems) setProduct(response);
+        if (setProduct) setProduct(response);
         if (setProductItems) setProductItems(response.productItem);
         if (setImage) setImage(response.productImage.imagePreviewUrl);
         if (setCategory) setCategory(response.category.categoryName);
@@ -286,5 +287,20 @@ export const getProductItemDetail = async (id, onSucces) => {
         onSucces(response.data);
     } catch (error) {
         console.log(error);
+    }
+}
+
+export const addNewCart = async (productItemId, qty, onSuccess) => {
+    try {
+        const response = await axios.post(`${urlEndpoint}/cart`, {
+            productItemId, qty
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        onSuccess(response.data);
+    } catch (error) {
+        console.error(error);
     }
 }

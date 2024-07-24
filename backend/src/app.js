@@ -606,6 +606,7 @@ app.get('/product/:id', async (req, res) => {
         const { id } = req.params;
         const response = await prisma.products.findUnique({
             select: {
+                specs: true,
                 productName: true,
                 description: true,
                 brand: true,
@@ -1496,7 +1497,8 @@ app.get('/user/cart', accessValidation, async (req, res) => {
         const userId = req.userId;
         const cart = await prisma.cart.findMany({
             where: {
-                userId
+                userId,
+                isDeleted: false
             }
         });
         res.json(cart);
@@ -1533,6 +1535,74 @@ app.post('/cart', accessValidation, async (req, res) => {
     } catch (error) {
         console.log(error);
         res.json(error);
+    }
+});
+
+// API for delete cart
+app.delete('/cart/:id', accessValidation, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedCart = await prisma.cart.update({
+            where: {
+                id: Number(id)
+            },
+            data: {
+                isDeleted: true
+            }
+        });
+
+        res.json(deletedCart);
+    } catch (error) {
+        res.json(error);
+        console.log(error);
+    }
+})
+
+// API for get cart by user
+app.get('/cart/user', accessValidation, async (req, res) => {
+    try {
+        const userId = req.userId;
+        const carts = await prisma.cart.findMany({
+            where: {
+                userId,
+                isOrdered: false,
+                isDeleted: false
+            },
+            include: {
+                productItem: {
+                    include: {
+                        product: true,
+                        variationOption: true
+                    }
+                }
+            }
+        });
+
+        res.json(carts);
+    } catch (error) {
+        res.json(error);
+        console.log(error);
+    }
+});
+
+// API for update user cart
+app.patch('/cart/user/:id', accessValidation, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { qty } = req.body;
+        const updatedCart = await prisma.cart.update({
+            where: {
+                id: Number(id)
+            },
+            data: {
+                qty
+            }
+        });
+
+        res.json(updatedCart);
+    } catch (error) {
+        res.json(error);
+        console.log(error);
     }
 })
 

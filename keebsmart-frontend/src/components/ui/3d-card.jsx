@@ -15,6 +15,7 @@ export const CardContainer = ({
   children,
   className,
   containerClassName,
+  onClick
 }) => {
   const containerRef = useRef(null);
   const [isMouseEntered, setIsMouseEntered] = useState(false);
@@ -40,8 +41,9 @@ export const CardContainer = ({
   return (
     <MouseEnterContext.Provider value={[isMouseEntered, setIsMouseEntered]}>
       <div
+        onClick={onClick}
         className={cn(
-          "py-2 flex items-center justify-center",
+          "py-2 flex items-center justify-center cursor-pointer",
           containerClassName
         )}
         style={{
