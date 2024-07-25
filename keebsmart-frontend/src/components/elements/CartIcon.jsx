@@ -7,7 +7,6 @@ export default function CartIcon({size, linkTo}) {
     useEffect(() => {
         getUserCart((data) => {
             setCartData(data);
-            console.log(data);
         })
     }, [])
 

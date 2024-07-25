@@ -138,16 +138,17 @@ model PaymentMethods {
 }
 
 model Cart {
-  id            Int         @id @default(autoincrement())
+  id            Int             @id @default(autoincrement())
   userId        String
   productItemId Int
   qty           Int
   subTotalPrice Int
-  isOrdered     Boolean     @default(false)
-  isDeleted     Boolean     @default(false)
-  productItem   ProductItem @relation(fields: [productItemId], references: [id])
-  user          User        @relation(fields: [userId], references: [id])
-  order         Orders[]    @relation("CartToOrders")
+  isOrdered     Boolean         @default(false)
+  isDeleted     Boolean         @default(false)
+  productItem   ProductItem     @relation(fields: [productItemId], references: [id])
+  user          User            @relation(fields: [userId], references: [id])
+  order         Orders[]        @relation("CartToOrders")
+  pendingOrders PendingOrders[] @relation("CartToPendingOrders")
 }
 
 model Shipping {
@@ -157,6 +158,11 @@ model Shipping {
   orderId      String @unique
   order        Orders @relation(fields: [orderId], references: [orderId])
   user         User   @relation(fields: [userId], references: [id])
+}
+
+model PendingOrders {
+  id   Int    @id @default(autoincrement())
+  cart Cart[] @relation("CartToPendingOrders")
 }
 
 model Orders {

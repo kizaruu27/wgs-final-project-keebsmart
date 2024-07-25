@@ -90,4 +90,36 @@ export const deleteOrder = async (id, onDelete) => {
     } catch (error) {
         console.log(error);
     }
+};
+
+export const addPendingOrder = async (cartIds, onSuccess) => {
+    try {
+        const response = await axios.post(`${urlEndpoint}/pending-order`, {
+            cartIds
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        onSuccess(response.data);
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const makeNewOrder = async (cartIds, totalPrice, orderNotes, paymentMethodId, addressId, onSuccess) => {
+    try {
+        const response = await axios.post(`${urlEndpoint}/order`, {
+            cartIds, totalPrice, orderNotes, paymentMethodId, addressId
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        onSuccess(response.data);
+    } catch (error) {
+        console.log(error);
+    }
 }

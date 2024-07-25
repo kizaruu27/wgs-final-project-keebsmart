@@ -1301,6 +1301,37 @@ app.get('/order/:id', accessValidation, async (req, res) => {
     }
 });
 
+// API for create pending order
+app.post('/pending-order', accessValidation, async (req, res) => {
+    try {
+        const { cartIds } = req.body;
+        const targetCart = await prisma.cart.findMany({
+            where:{
+                id: {
+                    in: cartIds
+                }
+            }
+        });
+
+        const pendingOrders = await prisma.pendingOrders.create({
+            data: {
+                cart: {
+                    connect: targetCart
+                }
+            }
+        });
+
+        res.json({
+            pendingOrders,
+            msg: 'Successfull add pending orders'
+        })
+    } catch (error) {
+        res.json(error);
+        console.log(error);
+    }
+})
+
+
 // API for create new shipment
 app.post('/shipment', accessValidation, async (req, res) => {
     try {
@@ -1520,12 +1551,28 @@ app.post('/cart', accessValidation, async (req, res) => {
             }
         });
 
-        const newCart = await prisma.cart.create({
-            data: {
-                userId, productItemId, qty, 
-                subTotalPrice: productItem.price * qty,
+        const similarCart = await prisma.cart.findFirst({
+            where: {
+                productItemId,
+                isDeleted: false
             }
-        })
+        });
+
+        const newCart = similarCart ? 
+            await prisma.cart.update({
+                where: {
+                    id: similarCart.id,
+                },
+                data: {
+                    qty: similarCart.qty + qty
+                }
+            }) :
+            await prisma.cart.create({
+                data: {
+                    userId, productItemId, qty, 
+                    subTotalPrice: productItem.price * qty,
+                }
+            })
 
         res.json({
             newCart,
@@ -1607,99 +1654,123 @@ app.patch('/cart/user/:id', accessValidation, async (req, res) => {
     }
 })
 
-// API for get cart detail
-app.get('/cart/:id', async (req, res) => {
+// API for get cart by id
+app.get('/selected/cart', async (req, res) => {
     try {
-        const { id } = req.params;
-        const cart = await prisma.cart.findUnique({
+        const cartIds = req.query.cartIds.split(',').map(id => parseInt(id));
+        const cart = await prisma.cart.findMany({
             where: {
-                id: Number(id)
+                id: {
+                    in: cartIds
+                }
+            },
+            include: {
+                productItem: {
+                    include: {
+                        product: true,
+                        variationOption: true
+                    }
+                }
             }
-        })
+        });
         res.json(cart);
     } catch (error) {
-        res.json(error);
+        res.status(500).json({ error: error.message });
         console.log(error);
     }
 });
+
+// API for create new address
+app.post('/address', accessValidation, async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { street, kelurahan, kecamatan, city, province, postCode } = req.body;
+        const newAddress = await prisma.userAddress.create({
+            data: {
+                userId, street, kelurahan, kecamatan, city, province, postCode: Number(postCode),
+                isDefault: false
+            }
+        });
+        
+        res.status(201);
+        res.json({
+            newAddress,
+            msg: 'New address added!'
+        })
+    } catch (error) {
+        console.log(error);
+    }
+})
 
 // API for making new orders
 app.post('/order', accessValidation, async (req, res) => {
     try {
         const userId = req.userId;
-        const { targetedCartIds, paymentMethodId, addressId, orderNotes } = req.body;
-        
-        const targetCarts = await prisma.cart.findMany({
+        const { cartIds, paymentMethodId, addressId, totalPrice, orderNotes } = req.body;
+
+        // find coresponding cart
+        const carts = await prisma.cart.findMany({
             where: {
                 id: {
-                    in: targetedCartIds
-                }
-            },
-            include: {
-                productItem: {
-                    select: {
-                        id: true,
-                        qty: true,
-                        sold: true
-                    }
+                    in: cartIds
                 }
             }
         });
 
-        const totalPrice = targetCarts.map((item) => item.subTotalPrice).reduce((acc, accValue) => acc + accValue, 0);
-        const orderTotal = targetCarts.map((item) => item.qty).reduce((acc, accValue) => acc+ accValue, 0);
-
+        // create new order
         const newOrder = await prisma.orders.create({
             data: {
                 userId,
                 paymentMethodId,
                 addressId,
-                orderTotal,
+                orderTotal: carts.length,
                 totalPrice,
                 orderNotes,
                 carts: {
-                    connect: targetCarts
+                    connect: carts
+                },
+                currentStatus: {
+                    create: {
+                        orderStatusId: 1
+                    }
                 }
             }
         });
 
-        const setOrderStatus = await prisma.currentStatus.create({
-            data: {
-                orderId: newOrder.orderId,
-                orderStatusId: 1
-            }
-        })
+        // set cart status to is ordered
+        await Promise.all(
+            carts.map(async (item) => {
+                await prisma.cart.update({
+                    where: {
+                        id: item.id
+                    },
+                    data: {
+                        isOrdered: true
+                    }
+                })
+            })
+        )
 
-        const productItemIds = [];
-        for (const item of targetCarts) {
-            await prisma.productItem.update({
-                data: {
-                    qty: item.productItem.qty - item.qty,
-                    sold: item.productItem.sold + item.qty
-                },
-                where: {
-                    id: item.productItem.id
-                }
-            });
-            productItemIds.push(item.productItemId);
-        }
-
-        const updatedProductItem = await prisma.productItem.findMany({
-            where: {
-                id: {
-                    in: productItemIds
-                }
-            }
-        })
+        // update qty stock and sold data
+        await Promise.all(
+            carts.map(async (item) => {
+                await prisma.productItem.update({
+                    where:{
+                        id: item.productItemId
+                    },
+                    data: {
+                        qty: { decrement: item.qty },
+                        sold: { increment: item.qty }
+                    }
+                })
+            })
+        )
 
         res.json({
+            carts,
             newOrder,
-            setOrderStatus,
-            targetCarts,
-            totalPrice,
-            updatedProductItem,
-            orderTotal
-        });
+            msg: 'Making new order successfull'
+        })
 
     } catch (error) {
         console.log(error);

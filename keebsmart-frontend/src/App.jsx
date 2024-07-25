@@ -29,6 +29,8 @@ import KeycapsPage from './components/pages/User/Product List/Keycaps Page/Keyca
 import SwitchPage from './components/pages/User/Product List/Switch Page/SwitchPage';
 import ProductPage from './components/pages/User/Product Detail/ProductPage';
 import CartPage from './components/pages/User/Cart/CartPage';
+import CheckoutPage from './components/pages/User/Checkout/CheckoutPage';
+import OrderSummaryPage from './components/pages/User/Orders/OrderSummary';
 
 export default function App() {
     return (
@@ -43,6 +45,8 @@ export default function App() {
                     <Route path="/switches" Component={SwitchPage}/>
                     <Route path="/product/:id" Component={ProductPage}/>
                     <Route path="/cart" Component={CartPage}/>
+                    <Route path="/checkout" Component={CheckoutPage}/>
+                    <Route path="/order/summary" Component={OrderSummaryPage}/>
                     <Route path="/admin" Component={AdminDashboardPage}/>
                     <Route path="/admin/products" Component={AdminAllProductPage}/>
                     <Route path="/admin/product/:id" Component={AdminProductItem}/>

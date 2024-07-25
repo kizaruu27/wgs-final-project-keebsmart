@@ -35,4 +35,18 @@ export const deleteCart = async (id, onSuccess) => {
     } catch (error) {
         console.log(error);
     }
-}
+};
+
+export const getCartsById = async (ids, onSuccess) => {
+    try {
+        // Convert array of IDs to comma-separated string
+        const params = new URLSearchParams({ cartIds: ids.join(',') });
+
+        const response = await axios.get(`${urlEndpoint}/selected/cart?${params.toString()}`, config);
+        if (onSuccess) {
+            onSuccess(response.data);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+};

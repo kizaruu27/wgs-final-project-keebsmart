@@ -60,4 +60,20 @@ export const deleteAdmin = async (id, onSuccess) => {
     } catch (error) {
         console.log(error);
     }
+};
+
+export const createNewAddress = async (street, kelurahan, kecamatan, city, province, postCode, onSuccess) => {
+    try {
+        const response = await axios.post(`${urlEndpoint}/address`, {
+            street, kelurahan, kecamatan, city, province, postCode
+        }, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        onSuccess(response.data);
+    } catch (error) {
+        console.log(error);
+    }
 }
