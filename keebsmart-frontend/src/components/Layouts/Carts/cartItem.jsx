@@ -1,30 +1,59 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { deleteCart, updateUserCart } from "../../../server/cartController";
 import { GoToPage } from "../../../server/pageController";
+import { getProductItemDetail } from "../../../server/productController";
 
-export default function CartItem({id, image, qty, price, productName, variationValue, onChecked}) {
+export default function CartItem({id, productItemId, image, qty, price, productName, variationValue, onChecked}) {
     const [currentQty, setCurrentQty] = useState(qty);
     const [isChecked, setIsChecked] = useState(false);
+    const [productPrice, setProductPrice] = useState(0); // statis
+    const [productQty, setProductQty] = useState(0); // qty fromm product item
+    const [productId, setProductId] = useState(0);
+
+    // data dinamis
+    const [totalPrice, setTotalPrice] = useState(price); // harus dikirim ke luar
 
     const handleCheckboxChange = (event) => {
         setIsChecked(event.target.checked);
-        onChecked(event.target.checked, id, price);
+        onChecked(event.target.checked, id, totalPrice);
+        localStorage.setItem(`cart-${id}`, JSON.stringify(!isChecked));
     };
-    
+
     const increaseCartQty = (id) => {
-        setCurrentQty(currentQty => currentQty + 1);
-        updateUserCart(id, currentQty + 1, (data) => {
-            console.log(data);
+            setCurrentQty(prevQty => {
+                if (prevQty >= productQty) {
+                    return prevQty;
+                }
+                const newQty = prevQty + 1;
+                const newTotalPrice = newQty * productPrice;
+                setTotalPrice(newTotalPrice);
+                
+                // Call updateUserCart with the new values
+                updateUserCart(id, newQty, newTotalPrice, (data) => {
+                    console.log(data);
+                });
+
+                return newQty;
         });
-    }
+        // GoToPage('/cart', 50);
+    };
 
     const decreaseQty = (id) => {
-        if (currentQty > 1) {
-            setCurrentQty(currentQty => currentQty - 1);
-            updateUserCart(id, currentQty - 1, (data) => {
+        setCurrentQty(prevQty => {
+            if (prevQty <= 1) {
+                return prevQty;
+            }
+            
+            const newQty = prevQty - 1;
+            const newTotalPrice = newQty * productPrice;
+            setTotalPrice(newTotalPrice);
+            updateUserCart(id, newQty, newTotalPrice, (data) => {
                 console.log(data);
             });
-        }
+        
+                return newQty;
+        });
+        // GoToPage('/cart', 50);
     };
 
     const removeCart = (id) => {
@@ -32,7 +61,23 @@ export default function CartItem({id, image, qty, price, productName, variationV
             console.log(data);
             GoToPage('/cart', 100);
         })
-    }
+    };
+
+    useEffect(() => {
+        getProductItemDetail(productItemId, (data) => {
+            setProductPrice(data.price);
+            setProductQty(data.qty);
+            setProductId(data.product.id);
+        })
+    }, []);
+
+    useEffect(() => {
+        const savedChecked = JSON.parse(localStorage.getItem(`cart-${id}`));
+        if (savedChecked !== null) {
+            setIsChecked(savedChecked);
+            onChecked(savedChecked, id, totalPrice);
+        }
+    }, [totalPrice, id])
 
     return (
         <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
@@ -58,12 +103,12 @@ export default function CartItem({id, image, qty, price, productName, variationV
                 </button>
                 </div>
                 <div className="text-end md:order-4 md:w-32">
-                    <p className="text-base font-bold text-gray-900 dark:text-white">Rp. {price}</p>
+                    <p className="text-base font-bold text-gray-900 dark:text-white">Rp. {totalPrice}</p>
                 </div>
             </div>
 
             <div className="w-full min-w-0 flex-1 space-y-4 md:order-2 md:max-w-md">
-                <a href="#" className="text-base font-medium text-gray-900 hover:underline dark:text-white">{productName} - {variationValue}</a>
+                <a href={`/product/${productId}`} className="text-base font-medium text-gray-900 hover:underline dark:text-white">{productName} - {variationValue}</a>
 
                 <div className="flex items-center gap-4">
                 <button onClick={() => removeCart(id)} type="button" className="inline-flex items-center text-sm font-medium text-red-600 hover:underline dark:text-red-500">

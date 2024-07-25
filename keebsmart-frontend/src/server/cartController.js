@@ -17,10 +17,10 @@ export const getUserCart = async (onSuccess) => {
     }
 }
 
-export const updateUserCart = async (id, qty, onSuccess) => {
+export const updateUserCart = async (id, qty, price, onSuccess) => {
     try {
         const response = await axios.patch(`${urlEndpoint}/cart/user/${id}`, {
-            qty
+            qty, price
         }, config);
         onSuccess(response.data);
     } catch (error) {

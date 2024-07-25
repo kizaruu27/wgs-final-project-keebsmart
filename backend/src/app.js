@@ -1589,13 +1589,14 @@ app.get('/cart/user', accessValidation, async (req, res) => {
 app.patch('/cart/user/:id', accessValidation, async (req, res) => {
     try {
         const { id } = req.params;
-        const { qty } = req.body;
+        const { qty, price } = req.body;
         const updatedCart = await prisma.cart.update({
             where: {
                 id: Number(id)
             },
             data: {
-                qty
+                qty,
+                subTotalPrice: price
             }
         });
 

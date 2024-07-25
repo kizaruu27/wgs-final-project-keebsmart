@@ -14,24 +14,20 @@ export default function CartPage() {
             setCart(data);
         })
     }, []);
-
+    
     const setChecked = (checked, id, price) => {
         setSelectedCartId(prevSelected => {
-            const updatedSelected = checked 
-                ? [...prevSelected, id] 
-                : prevSelected.filter(cartId => cartId !== id);
-            
-            console.log('Updated selectedCartId:', updatedSelected);
+            let updatedSelected;
+            if (checked) {
+                updatedSelected = [...prevSelected, { id, price }];
+            } else {
+                updatedSelected = prevSelected.filter(item => item.id !== id);
+            }
+            const selectedData = Array.from(new Map(updatedSelected.map(item => [item.id, item])).values());
         
-            // Calculate the new subtotal price
-            const newSubtotal = checked 
-                ? subTotalPrice + price 
-                : subTotalPrice - price;
-        
-            console.log('Updated subtotal price:', newSubtotal);
-            setSubTotalPrice(newSubtotal);
-        
-            return updatedSelected;
+            console.log('Updated selectedCartId:', selectedData);        
+            setSubTotalPrice(selectedData.map(item => item.price).reduce((acc, accValue) => acc + accValue, 0));
+            return selectedData;
         });
     };
 
@@ -47,7 +43,7 @@ export default function CartPage() {
                             <div className="space-y-6">
                                 {/* Loop this */}
                                 {cart.map((item, key) =>
-                                    <CartItem id={item.id} onChecked={setChecked} image={item.productItem.imageURLs[0]} price={item.subTotalPrice} qty={item.qty} productName={item.productItem.product.productName} variationValue={item.productItem.variationOption.variationValue} key={key}/>
+                                    <CartItem id={item.id} productItemId={item.productItem.id} onChecked={setChecked} image={item.productItem.imageURLs[0]} price={item.subTotalPrice} qty={item.qty} productName={item.productItem.product.productName} variationValue={item.productItem.variationOption.variationValue} key={key}/>
                                 )}
                             </div>
                         </div>

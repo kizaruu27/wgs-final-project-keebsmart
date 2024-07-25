@@ -15,13 +15,14 @@ export default function ProductPage() {
     const [showNotif, setShowNotif] = useState(false);
     
     // dynamic state
-    const [price, setPrice] = useState(0);
+    const [defaultPrice, setDefaultPrice] = useState(0);
+    const [totalPrice, setTotalPrice] = useState(0);
     const [variationValue, setVariationValue] = useState('');
     const [itemQty, setItemQty] = useState(0);
     const [productImagePreview, setProductImagePreview] = useState('');
 
     // state for making cart request
-    const [selectedItemId, setSelectedItemId] = useState(0);
+    const [selectedItemId, setSelectedItemId] = useState(null);
     const [qty, setQty] = useState(1);
 
     useEffect(() => {
@@ -34,8 +35,9 @@ export default function ProductPage() {
         }, (data) => {
             setProductItem(data);
             setVariationValue(data[0].variationOption.variationValue)
-            setPrice(data[0].price);
-            setItemQty(data[0].qty - 1);
+            setDefaultPrice(data[0].price);
+            setTotalPrice(data[0].price);
+            setItemQty((data[0].qty) - qty);
             setSelectedItemId(data[0].id);
             // console.log(data[0]);
             console.log(data);
@@ -45,24 +47,33 @@ export default function ProductPage() {
     const onClickProductItem = (id) => {
         getProductItemDetail(id, (data) => {
             setSelectedItemId(id);
-            setPrice(data.price);
+            setDefaultPrice(data.price);
+            setTotalPrice(data.price * qty);
             setVariationValue(data.variationOption.variationValue);
-            setItemQty(data.qty);
+            setItemQty(data.qty - qty);
             setProductImagePreview(data.imageURLs[0]);
         })
     };
 
     const decreaseQty = () => {
-        setQty(qty => qty <= 0 ? qty : qty - 1);
-        if (qty > 0 ) {
-            setItemQty(itemQty => itemQty + 1);
+        if (qty > 1) {
+            setQty(prevQty => {
+                const newQty = prevQty - 1;
+                setTotalPrice(newQty * defaultPrice);
+                return newQty;
+            });
+            setItemQty(prevItemQty => prevItemQty + 1);
         }
     }
 
     const increaseQty = () => {
-        setQty(qty => itemQty <= 0 ? qty : qty + 1);
         if (itemQty > 0) {
-            setItemQty(itemQty => itemQty - 1);
+            setQty(prevQty => {
+                const newQty = prevQty + 1;
+                setTotalPrice(newQty * defaultPrice);
+                return newQty;
+            });
+            setItemQty(prevItemQty => prevItemQty - 1);
         }
     };
 
@@ -70,7 +81,6 @@ export default function ProductPage() {
         addNewCart(selectedItemId, qty, (data) => {
             console.log(data);
             setShowNotif(true);
-            // GoToPage(`/product/${id}`, 1000);
         });
     }
 
@@ -92,7 +102,7 @@ export default function ProductPage() {
                         {product.productName} - {variationValue}
                     </div>
                     <div className="font-medium tracking-wide text-lg my-5">
-                        Rp. {price}
+                        Rp. {totalPrice}
                     </div>
 
                     {/* Button grid */}
@@ -101,9 +111,17 @@ export default function ProductPage() {
                         <h1 className="mb-3 text-xs text-gray-500">Qty: {itemQty}</h1>
                         <div className="flex flex-wrap">
                             {productItem.map((item, key) => (
-                                <div key={key} className="mx-1">
-                                    <button type="button" onClick={() => onClickProductItem(item.id)} className="text-nowrap text-gray-900 hover:text-white border border-gray-800 hover:bg-gray-900 focus:outline-none focus:bg-gray-900 focus:text-white font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800">{item.variationOption.variations.variationName} - {item.variationOption.variationValue}</button>
-                                </div>
+                                    <button
+                                    key={key}
+                                    type="button"
+                                    onClick={() => onClickProductItem(item.id)}
+                                    className={`text-nowrap border font-medium rounded-full text-sm px-5 py-2.5 text-center me-2 mb-2 
+                                    ${selectedItemId === item.id ? 
+                                    'text-white bg-gray-900 border-gray-800' : 
+                                    'text-gray-900 hover:text-white border-gray-800 hover:bg-gray-900 focus:outline-none focus:bg-gray-900 focus:text-white dark:border-gray-600 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-800'}`}
+                                >
+                                    {item.variationOption.variations.variationName} - {item.variationOption.variationValue}
+                                </button>
                             ))}
                         </div>
                     </div>
