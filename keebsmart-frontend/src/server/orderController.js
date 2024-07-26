@@ -2,6 +2,11 @@ import axios from "axios";
 import { urlEndpoint } from "./url";
 
 const token = localStorage.getItem('token');
+const config = {
+    headers: {
+        Authorization: `Bearer ${token}`
+    }
+};
 
 export const orderStatus = [
     {
@@ -36,7 +41,83 @@ export const orderStatus = [
         status: 'Finish',
         description: 'Order finished'
     }
-]
+];
+
+
+export const changeStatusColor = (orderStatus, setStatusColor) => {
+    switch (orderStatus) {
+        case 'Checkout Success':
+            setStatusColor('bg-yellow-100 text-yellow-800')
+            break;
+        case 'On Process':
+            setStatusColor('bg-blue-100 text-blue-800')
+            break;
+        case 'On Packing':
+            setStatusColor('bg-blue-100 text-blue-800')
+            break;
+        case 'Waiting Courier For Pick Up':
+            setStatusColor('bg-blue-100 text-blue-800')
+            break;
+        case 'Courier Pick Up':
+            setStatusColor('bg-blue-100 text-blue-800')
+            break;
+        case 'On Delivery':
+            setStatusColor('bg-blue-100 text-blue-800')
+            break;
+        case 'Delivered':
+            setStatusColor('bg-green-100 text-green-800')
+            break;
+        case 'Finish':
+            setStatusColor('bg-green-100 text-green-800')
+            break;
+        case 'Canceled':
+            setStatusColor('bg-red-100 text-red-800')
+            break;
+        default:
+            setStatusColor('bg-blue-100 text-blue-800')
+            break;
+    }
+};
+
+export const changeStatusColorForTable = (status) => {
+    let color = '';
+    switch (status) {
+        case 'Checkout Success':
+            color = 'bg-yellow-100 text-yellow-800';
+            break;
+        case 'On Process':
+            color = 'bg-blue-100 text-blue-800';
+            break;
+        case 'On Packing':
+            color = 'bg-blue-100 text-blue-800';
+            break;
+        case 'Waiting Courier For Pick Up':
+            color = 'bg-blue-100 text-blue-800';
+            break;
+        case 'Courier Pick Up':
+            color = 'bg-blue-100 text-blue-800';
+            break;
+        case 'On Delivery':
+            color = 'bg-blue-100 text-blue-800';
+            break;
+        case 'Cash On Delivery Paid':
+            color = 'bg-green-100 text-green-800';
+            break;
+        case 'Delivered':
+            color = 'bg-green-100 text-green-800';
+            break;
+        case 'Canceled':
+            color = 'bg-red-100 text-red-800';
+            break;
+        case 'Finish':
+            color = 'bg-green-100 text-green-800';
+            break; 
+        default:
+            color = 'bg-yellow-100 text-yellow-800';
+            break;
+    }
+    return color;
+}
 
 export const getOrders = async (setOrders, onFailed) => {
     try {
@@ -118,6 +199,15 @@ export const makeNewOrder = async (cartIds, totalPrice, orderNotes, paymentMetho
             }
         });
 
+        onSuccess(response.data);
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const getUserOrders = async (onSuccess) => {
+    try {
+        const response = await axios.get(`${urlEndpoint}/user/orders`, config);
         onSuccess(response.data);
     } catch (error) {
         console.log(error);

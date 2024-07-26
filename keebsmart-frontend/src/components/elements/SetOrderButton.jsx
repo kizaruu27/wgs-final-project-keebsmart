@@ -16,6 +16,7 @@ export default function SetOrderButton({status, orderId, paymentMethod, access, 
     } 
 
     const setButton = (status) => {
+        // FIX THIS
         switch (status) {
             case 'Checkout Success':
                 setBtnText('Process Order');
@@ -45,6 +46,7 @@ export default function SetOrderButton({status, orderId, paymentMethod, access, 
                 setBtnText('Deliver');
                 setNewStatus('On Delivery');
                 setBtnColor('bg-blue-500 hover:bg-blue-800');
+                // FIX THIS
                 if (access === 'courier') {
                     setBtnIsDisabled(false);
                 } else {

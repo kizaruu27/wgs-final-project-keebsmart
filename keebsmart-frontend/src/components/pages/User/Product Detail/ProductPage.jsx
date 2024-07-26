@@ -16,6 +16,7 @@ export default function ProductPage() {
     const [specs, setSpecs] = useState([]);
     const [productImages, setProductImages] = useState([]);
     const [showNotif, setShowNotif] = useState(false);
+    const [productQty, setProductQty] = useState(0);
     
     // dynamic state
     const [defaultPrice, setDefaultPrice] = useState(0);
@@ -38,26 +39,45 @@ export default function ProductPage() {
             console.dir(data.productImage.imagePreviewUrl);
         }, (data) => {
             // set product item data
+            const firstItem = data[0];
+            setSelectedItemId(firstItem.id);
+            setDefaultPrice(firstItem.price);
             setProductItem(data);
-            setVariationValue(data[0].variationOption.variationValue)
-            setDefaultPrice(data[0].price);
-            setTotalPrice(data[0].price);
-            setItemQty((data[0].qty) - qty);
-            setSelectedItemId(data[0].id);
-            // console.log(data[0]);
+            setVariationValue(firstItem.variationOption.variationValue);
+            setTotalPrice(firstItem.price);
+            const updatedItemQty = firstItem.qty - qty;
+            setItemQty(updatedItemQty);
+            if (updatedItemQty <= 0) {
+                setQty(0);
+            } else {
+                setQty(Math.min(qty, updatedItemQty));
+            }
+            setProductQty(firstItem.qty);
+            setProductImagePreview(firstItem.imageURLs[0]);
             console.log(data);
         });
-    }, [0]);
+    }, []);
 
     const onClickProductItem = (id) => {
         getProductItemDetail(id, (data) => {
             setSelectedItemId(id);
             setDefaultPrice(data.price);
-            setTotalPrice(data.price * qty);
+            setTotalPrice(qty === 0 ? data.price :  data.price * qty);
             setVariationValue(data.variationOption.variationValue);
-            setItemQty(data.qty - qty);
+            
+            // Adjust qty and itemQty logic
+            let newQty = qty;
+            if (newQty === 0) {
+                newQty = 1;
+            } else if (itemQty >= 0) {
+                newQty = 0;
+            }
+    
+            setQty(newQty);
+            setProductQty(data.qty);
+            setItemQty(data.qty - newQty);
             setProductImagePreview(data.imageURLs[0]);
-        })
+        });
     };
 
     const decreaseQty = () => {
@@ -118,7 +138,7 @@ export default function ProductPage() {
                     <SetQtyButton onDecrease={decreaseQty} onIncrease={increaseQty} qty={qty} />
 
                     {/* Add to cart button */}
-                    <AddToCartButton postNewCart={postNewCart} qty={qty} />
+                    <AddToCartButton postNewCart={postNewCart} qty={productQty} />
 
                     {/* Description Section */}
                     <ProductDescriptionSection product={product} specs={specs} />

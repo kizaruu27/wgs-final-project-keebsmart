@@ -31,6 +31,9 @@ import ProductPage from './components/pages/User/Product Detail/ProductPage';
 import CartPage from './components/pages/User/Cart/CartPage';
 import CheckoutPage from './components/pages/User/Checkout/CheckoutPage';
 import OrderSummaryPage from './components/pages/User/Orders/OrderSummary';
+import OrderConfirmation from './components/pages/User/Orders/OrderConfirmation';
+import AllUserOrdersPage from './components/pages/User/Orders/AllUserOrdersPage';
+import OrderDetailPage from './components/pages/User/Product Detail/OrderDetailPage';
 
 export default function App() {
     return (
@@ -47,6 +50,9 @@ export default function App() {
                     <Route path="/cart" Component={CartPage}/>
                     <Route path="/checkout" Component={CheckoutPage}/>
                     <Route path="/order/summary" Component={OrderSummaryPage}/>
+                    <Route path="/order/confirmation" Component={OrderConfirmation}/>
+                    <Route path="/orders" Component={AllUserOrdersPage}/>
+                    <Route path="/order/:id" Component={OrderDetailPage}/>
                     <Route path="/admin" Component={AdminDashboardPage}/>
                     <Route path="/admin/products" Component={AdminAllProductPage}/>
                     <Route path="/admin/product/:id" Component={AdminProductItem}/>

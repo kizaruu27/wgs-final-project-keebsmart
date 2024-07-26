@@ -5,6 +5,8 @@ import { makeNewOrder } from "../../../../server/orderController";
 
 export default function OrderSummaryPage() {
     const location = useLocation();
+    const navigate = useNavigate();
+
     const name = location.state?.name || [];
     const phoneNumber = location.state?.phoneNumber || [];
     const cartIds = location.state?.targetedCartIds || []; // sent for orders
@@ -17,7 +19,7 @@ export default function OrderSummaryPage() {
     const province = location.state?.province || [];
     const city = location.state?.city || [];
     const postCode = location.state?.postCode || [];
-    const totalPrice = location.state?.totalPrice || [];
+    const totalPrice = location.state?.totalPrice || []; // sent for orders
 
     useEffect(() => {
         console.log(name, phoneNumber, cartIds, addressId, orderNotes, carts);
@@ -27,6 +29,16 @@ export default function OrderSummaryPage() {
         e.preventDefault();
         makeNewOrder(cartIds, totalPrice, orderNotes, 1, addressId, (data) => {
             console.log(data);
+            navigate('/order/confirmation', {
+                state: {
+                    orderId: data.newOrder.orderId,
+                    date: data.newOrder.orderDate,
+                    paymentMethod: data.newOrder.paymentMethod.paymentType,
+                    name,
+                    address: `${street}, ${kelurahan}, ${kecamatan}, ${city}, ${province}, ${postCode}`,
+                    phoneNumber
+                }
+            })
         })
     }
 
@@ -57,7 +69,7 @@ export default function OrderSummaryPage() {
                                                         <a href="#" className="flex items-center aspect-square w-10 h-10 shrink-0">
                                                             <img className="h-auto w-full max-h-full rounded-lg dark:hidden" src={item.productItem.imageURLs[0]} alt="imac image" />
                                                         </a>
-                                                        <p>{item.productItem.product.productName} - {item.productItem.variationOption.variationValue}</p>
+                                                        <p className="text-wrap">{item.productItem.product.productName} - {item.productItem.variationOption.variationValue}</p>
                                                     </div>
                                                 </td>
                                                 <td className="p-4 text-base font-normal text-gray-900 dark:text-white">x{item.qty}</td>

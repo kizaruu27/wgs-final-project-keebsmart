@@ -11,9 +11,12 @@ import { GoToPage } from "../../server/pageController"
 export default function Navbar() {
     const backToHome = () => window.location.href = '/';
     const [username, setUsername] = useState('');
+    const [totalOrders, setTotalOrders] = useState(0);
 
     const onSuccessGetUserData = (data) => {
+        console.log(data);
         setUsername(data.name);
+        setTotalOrders(data.orders.length);
     };
     const onTokenEmpty = () => GoToPage('/login');
     
@@ -33,7 +36,7 @@ export default function Navbar() {
                 <NavbarMenu linkTo='/keycaps' text='Keycaps' />
                 <NavbarMenu linkTo='/switches' text='Switches' />
                 <CartIcon linkTo='/cart' size={6}/>
-                <NavbarUsername linkTo='/profile' text={username}/>
+                <NavbarUsername linkTo='/profile' text={username} totalOrders={totalOrders}/>
             </NavbarMenuContainer>
         </NavbarFragment>
     )

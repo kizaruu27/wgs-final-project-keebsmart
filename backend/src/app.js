@@ -353,7 +353,10 @@ app.get('/user', accessValidation, async (req, res) => {
     try {
         const id = req.userId;
         const response = await prisma.user.findUnique({
-            where: {id}
+            where: {id},
+            include: {
+                orders: true
+            }
         });
         res.json({
             user: response,
@@ -1256,13 +1259,47 @@ app.patch('/order/status/:id', accessValidation, async (req, res) => {
     }
 });
 
+// API for get user orders
+app.get('/user/orders', accessValidation, async (req, res) => {
+    try {
+        const userId = req.userId;
+        const orders = await prisma.orders.findMany({
+            where: {
+                userId
+            },
+            include: {
+                address: true,
+                paymentMethod: true,
+                currentStatus: {
+                    include : {
+                        status: true
+                    }
+                },
+                carts: {
+                    include: {
+                        productItem: true
+                    }
+                }
+            }
+        });
+
+        res.json({
+            orders,
+            msg: 'Get user order successfull'
+        });
+    } catch (error) {
+        res.json(error);
+        console.log(error);
+    }
+})
+
 // API for get order by id
 app.get('/order/:id', accessValidation, async (req, res) => {
     try {
         const { id } = req.params;
         const order = await prisma.orders.findUnique({
             where: {
-                orderId: id
+                orderId: id,
             },
             include: {
                 carts: {
@@ -1280,14 +1317,18 @@ app.get('/order/:id', accessValidation, async (req, res) => {
                     }
                 },
                 user: true,
-                shipping: true,
+                shipping: {
+                    include: {
+                        user: true
+                    }
+                },
                 paymentMethod: true,
                 address: true,
                 currentStatus: {
                     include: {
                         status: true
                     }
-                }
+                },
             }
         })
 
@@ -1554,7 +1595,8 @@ app.post('/cart', accessValidation, async (req, res) => {
         const similarCart = await prisma.cart.findFirst({
             where: {
                 productItemId,
-                isDeleted: false
+                isDeleted: false,
+                isOrdered: false
             }
         });
 
@@ -1734,6 +1776,9 @@ app.post('/order', accessValidation, async (req, res) => {
                         orderStatusId: 1
                     }
                 }
+            },
+            include: {
+                paymentMethod: true
             }
         });
 

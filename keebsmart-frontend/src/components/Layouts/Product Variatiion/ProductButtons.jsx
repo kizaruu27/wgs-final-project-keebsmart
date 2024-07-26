@@ -2,7 +2,7 @@ export default function ProductButtons ({variationValue, itemQty, productItem, s
     return (
         <div className="my-5">
             <h1 className="mb-2 text-sm text-gray-500">Selected Variant: {variationValue}</h1>
-            <h1 className="mb-3 text-xs text-gray-500">Qty: {itemQty}</h1>
+            <h1 className={`mb-3 ${itemQty <= 0 ? 'text-xs text-red-400' : 'text-xs text-gray-500'} `}>Qty: {itemQty <= 0 ? 0 : itemQty}</h1>
             <div className="flex flex-wrap">
                 {productItem.map((item, key) => (
                         <button
