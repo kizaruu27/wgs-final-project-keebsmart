@@ -5,7 +5,10 @@ import TotalProductSection from "../Product Total Section/TotalProductSection";
 import ProductCategorySalesChart from "../../../Charts Section/ProductCategorySalesChart";
 import ProductListSection from "../Product Category List Section/ProductListSection";
 import DeleteModal from "../../../Modals/DeleteModal";
-import { activateProduct } from "../../../../../server/productController";
+import { activateProduct, deleteProduct } from "../../../../../server/productController";
+import { GoToPage } from "../../../../../server/pageController";
+import AddProductFormModal from "../../Product Forms/AddProductFormModal";
+import AddProductByCategoryFormModal from "../../Product Forms/AddProductByCategoryFormModal";
 
 export default function ProductCategoryDetail({category, categoryId, setSelectedProduct, totalProducts, products}) {
     // Variable to store user data
@@ -68,24 +71,28 @@ export default function ProductCategoryDetail({category, categoryId, setSelected
     useEffect(() => {
         getSalesStatistic((stat) => {
             const statistic = stat.data.filter(item => item.category.categoryName === category);
+            console.log(category);
             setChartLabel(statistic.map(item => item.productName));
             setChartSeries(statistic.map(item => item.soldTotal));
         })
     }, [0])
 
-    const setEdit = (product) => {
-        setOpenEditModal(true);
-        setSelectedProduct(product);
-    }
+    // const setEdit = (product) => {
+    //     setOpenEditModal(true);
+    //     setSelectedProduct(product);
+    // }
     return (
         <>
             <div className="grid grid-cols-2 gap-3">
                 <TotalProductSection totalProducts={totalProducts} category={category} />
-                <ProductCategorySalesChart series={chartSeries} label={chartLabel} headings={`Total ${category} Sales`} showLegend={true} />
+                <ProductCategorySalesChart series={chartSeries} label={chartLabel} headings={`Total ${category} sales`} showLegend={false} />
             </div>
-            <ProductListSection setAdd={() => setAdd(categoryId)} products={products} onActivateProduct={activateProduct} setDelete={setDelete} setEdit={setEdit} />
+            <ProductListSection setAdd={() => setAdd(categoryId)} products={products} onActivateProduct={activateProduct} setDelete={setDelete} />
               {/* Modal for delete product */}
             <DeleteModal openConfirmationModal={openDeleteModal} setOpenConfirmationModal={setOpenDeleteModal} msg='Are you sure want to delete this product?' onClickDelete={onClickDeleteProduct} />
+
+            {/* Modal for add new product */}
+            <AddProductByCategoryFormModal openModal={openAddProductModal} setOpenModal={setOpenAddProductModal} catId={categoryId} categoryName={category} />
         </>
     )
 }

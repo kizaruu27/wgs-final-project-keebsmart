@@ -395,8 +395,39 @@ app.post('/inventory', accessValidation, async (req, res) => {
     }
 });
 
-// API for get new inventory
+// API for get inventory
 app.get('/inventory', accessValidation, async (req, res) => {
+    try {
+        const inventory = await prisma.inventory.findMany({
+            include: {
+                category: true,
+                createdBy: true,
+                item: {
+                    where: {
+                        isDeleted: false
+                    }
+                }
+            },
+            where: {
+                isDeleted: false,
+            },
+            orderBy: {
+                id: 'desc'
+            }
+        });
+
+        res.json({
+            inventory,
+            msg: 'Get inventory success'
+        });
+    } catch (error) {
+        res.json(error);
+        console.log(error);
+    }
+});
+
+// get unused inventory
+app.get('/inventory/unused', accessValidation, async (req, res) => {
     try {
         const inventory = await prisma.inventory.findMany({
             include: {
@@ -680,6 +711,51 @@ app.get('/product/:id', async (req, res) => {
     }
 });
 
+// get product detail with deleted data
+app.get('/product/sales/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const response = await prisma.products.findUnique({
+            select: {
+                specs: true,
+                productName: true,
+                description: true,
+                brand: true,
+                category: true,
+                productImage: true,
+                productItem: {
+                    include: {
+                        variationOption: {
+                            include: {
+                                variations: true
+                            }
+                        },
+                    },
+                },
+                inventory: {
+                    where: {
+                        isDeleted: false
+                    },
+                    include: {
+                        item: {
+                            where: {
+                                isDeleted: false
+                            }
+                        }
+                    }
+                }
+            },
+            where: {
+                id: Number(id),
+            }
+        });
+        
+        res.json(response);
+    } catch (error) {
+        console.log(error);
+    }
+});
+
 // API for get product sales
 app.get('/sales', async (req, res) => {
     const products = await prisma.products.findMany({
@@ -702,9 +778,9 @@ app.get('/sales', async (req, res) => {
                 }
             }
         },
-        where: {
-            isDeleted: false
-        }
+        // where: {
+        //     isDeleted: false
+        // }
     });
 
     let totalIncome = 0;
@@ -895,9 +971,9 @@ app.get('/products/switch', async (req, res) => {
         const switches = await prisma.products.findMany({
             where: {
                 category: {
-                    categoryName: 'Switch',
+                    categoryName: 'Switches',
                 },
-                isActive: true,
+                // isActive: true,
                 isDeleted: false
             },
             include: {
@@ -926,9 +1002,8 @@ app.get('/products/keyboards', async (req, res) => {
         const keyboards = await prisma.products.findMany({
             where: {
                 category: {
-                    categoryName: 'Keyboard'
+                    categoryName: 'Keyboards'
                 },
-                isActive: true,
                 isDeleted: false
             },
             include: {
@@ -963,7 +1038,7 @@ app.get('/products/keycaps', async (req, res) => {
                 category: {
                     categoryName: 'Keycaps'
                 },
-                isActive: true,
+                // isActive: true,
                 isDeleted: false
             },
             include: {
@@ -979,7 +1054,7 @@ app.get('/products/keycaps', async (req, res) => {
         
         res.json({
             keycaps,
-            msg: 'Berhasil mendapatkan data switches!'
+            msg: 'Berhasil mendapatkan data keycaps!'
         })
     } catch (error) {
         res.json({error})
@@ -1039,7 +1114,7 @@ app.put('/product/update/:id', accessValidation, upload.fields([
 app.put('/product/item/update/:id', accessValidation, upload.array('images', 10), async (req, res) => {
     try {
         const { id } = req.params;
-        // const imageURLs = req.files.map(file => `http://localhost:${PORT}/images/${file.filename}`);
+        const imageURLs = req.files.map(file => `http://localhost:${PORT}/images/${file.filename}`);
         const { price, qty, status, manufacturer } = req.body;
 
         // current product item
@@ -1058,7 +1133,8 @@ app.put('/product/item/update/:id', accessValidation, upload.array('images', 10)
                 price: Number(price),
                 qty: Number(qty),
                 status,
-                manufacturer
+                manufacturer,
+                imageURLs
             }
         });
         const diff = updatedProductItem.qty - productItem.qty;
@@ -1125,13 +1201,29 @@ app.delete('/product/item/:id', accessValidation,  async (req, res) => {
     try {
         const { id } = req.params;
 
+        const targetProductItem = await prisma.productItem.findUnique({
+            where: {
+                id: Number(id)
+            },
+        });
+
+        const inventoryItem = await prisma.inventoryItem.update({
+            where: {
+                id: targetProductItem.inventoryItemId
+            },
+            data: {
+                isUsed: false
+            }
+        })
+
         const deletedProductItem = await prisma.productItem.update({
             where: {
                 id: Number(id)
             },
             data: {
-                isDeleted: true
-            }
+                isDeleted: true,
+                inventoryItemId: null,
+            },
         })
 
         res.json({
@@ -1200,12 +1292,50 @@ app.delete('/product/:id', accessValidation, async (req, res) => {
                 inventory: {
                     update: {
                         data: {
-                            isUsed: false
+                            isUsed: false,
                         }
-                    }
+                    },
                 }
+            },
+            include: {
+                inventory: {
+                    include: {
+                        item: true
+                    }
+                },
+                productItem:true
             }
-        });
+        }); 
+
+        const updateProductItem = await prisma.productItem.updateMany({
+            where: {
+                productId: deletedProduct.id
+            },
+            data: {
+                inventoryItemId: null
+            }
+        })
+
+        const inventoryItemIds = deletedProduct.inventory.item.map(item => item.id);
+        const updatedInventoryItem = await prisma.inventoryItem.updateMany({
+            where: {
+                id: {
+                    in: inventoryItemIds
+                }
+            },
+            data: {
+                isUsed: false
+            }
+        })
+
+        const setClearInventory = await prisma.products.update({
+            where: {
+                id: Number(id),
+            },
+            data: {
+                inventoryId: null
+            }
+        })
 
         res.json({deletedProduct, msg: 'Product Berhasil Dihapus!'});
 
@@ -1344,6 +1474,9 @@ app.get('/order/:id', accessValidation, async (req, res) => {
                 currentStatus: {
                     include: {
                         status: true
+                    }, 
+                    orderBy: {
+                        updateAt: 'asc'
                     }
                 },
             }
@@ -1529,6 +1662,9 @@ app.get('/shipment/:id', accessValidation, async (req, res) => {
                         currentStatus: {
                             include: {
                                 status: true
+                            },
+                            orderBy: {
+                                updateAt: 'asc'
                             }
                         },
                         user: true,

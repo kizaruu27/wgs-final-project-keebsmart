@@ -15,7 +15,7 @@ export default function AdminInventoryPage() {
 
     useEffect(() => {
         getAllinventory((data) => {
-            // console.log(data.inventory);
+            console.log(data);
             setInventory(data);
         })
     }, []);

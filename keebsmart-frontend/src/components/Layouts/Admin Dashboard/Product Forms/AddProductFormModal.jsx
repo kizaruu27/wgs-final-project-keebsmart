@@ -1,6 +1,6 @@
 import { Modal } from "flowbite-react"
 import { useEffect, useState } from "react"
-import { getAllinventory, getInventoryDetail } from "../../../../server/inventoryController"
+import { getAllinventory, getInventoryDetail, getUnusedInventory } from "../../../../server/inventoryController"
 import { addNewProduct } from "../../../../server/productController";
 import { GoToPage } from "../../../../server/pageController";
 
@@ -20,7 +20,7 @@ export default function AddProductFormModal({openModal, setOpenModal}) {
     const [category, setCategory] = useState('');
 
     useEffect(() => {
-        getAllinventory((data) => {
+        getUnusedInventory((data) => {
             setInventory(data);
         })
     }, []);

@@ -1,6 +1,6 @@
 import { GoToPage } from "../../../../../server/pageController"
 
-export default function ProductListSection({setAdd, products, onActivateProduct, setDelete, setEdit}) {
+export default function ProductListSection({setAdd, products, onActivateProduct, setDelete}) {
     return (
         <div className="p-5 mx-5">
             <h1 className="text-xl ">Product List</h1>
@@ -43,15 +43,14 @@ export default function ProductListSection({setAdd, products, onActivateProduct,
                                 {product.category.categoryName}
                             </td>
                             <td className="px-6 py-4">
-                                <label className="inline-flex items-center mb-5 cursor-pointer mt-3 ml-1">
-                                    <input defaultChecked={product.isActive ? true : false} type="checkbox" value="true" className="sr-only peer" onChange={() => onActivateProduct(product.id, !product.isActive)}/>
+                                <label className={`inline-flex items-center mb-5 mt-3 ml-1 ${product.productItem.length <= 0 ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                                    <input disabled={product.productItem.length <= 0 ? true : false} defaultChecked={product.isActive ? true : false} type="checkbox" value="true" className={`sr-only peer`} onChange={() => onActivateProduct(product.id, product.isActive ? false : true)}/>
                                     <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
                                 </label>
                             </td>
                             <td className="px-6 py-4">
                                 <span onClick={() => GoToPage(`/admin/product/${product.id}`)} className="cursor-pointer rounded-xl bg-yellow-100 text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 dark:bg-yellow-900 dark:text-yellow-300">detail</span>
                                 <span onClick={() => setDelete(product.id)} className="cursor-pointer bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl dark:bg-red-900 dark:text-red-300">delete</span>
-                                <span onClick={() => setEdit(product)} className="cursor-pointer bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl dark:bg-red-900 dark:text-red-300">edit</span>
                             </td>
                         </tr>
                     ))}

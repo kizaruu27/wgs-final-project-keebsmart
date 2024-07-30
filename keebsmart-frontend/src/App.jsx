@@ -34,6 +34,7 @@ import OrderSummaryPage from './components/pages/User/Orders/OrderSummary';
 import OrderConfirmation from './components/pages/User/Orders/OrderConfirmation';
 import AllUserOrdersPage from './components/pages/User/Orders/AllUserOrdersPage';
 import OrderDetailPage from './components/pages/User/Product Detail/OrderDetailPage';
+import AdminOrderPending from './components/pages/Dashboard/Admin All Order Page/AdminOrderPending';
 
 export default function App() {
     return (
@@ -61,6 +62,7 @@ export default function App() {
                     <Route path="/admin/products/switches" Component={AdminSwitchesProduct}/>
                     <Route path="/admin/orders" Component={AdminOrderPage}/>
                     <Route path="/admin/order/:id" Component={AdminOrderDetail}/>
+                    <Route path="/admin/order/pending" Component={AdminOrderPending}/>
                     <Route path="/admin/order/processed" Component={AdminOrderProcessed}/>
                     <Route path="/admin/order/ondelivery" Component={AdminOrderOnDelivery}/>
                     <Route path="/admin/order/canceled" Component={AdminOrderCanceled}/>

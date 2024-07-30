@@ -2,17 +2,26 @@ import { useEffect, useState } from "react";
 import { userLogout } from "../../server/auth"
 import { GoToPage } from "../../server/pageController";
 import { getUserData } from "../../server/userDataController";
+import { getOrders } from "../../server/orderController";
 
 export default function DashboardSideMenu() {
     const [access, setAccess] = useState('');
+    const [orders, setOrders] = useState([]);
 
     const logout = () => {
         userLogout((data) => {
-            // console.log(data);
             localStorage.clear();
             GoToPage('/login', 200);
         })
     }
+
+    useEffect(() => {
+        getOrders((response) => {
+            setOrders(response.orders.filter(order => order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1] === 'Checkout Success').length);
+        }, (error) => {
+            console.log(error);
+        })
+    },[0])
 
     useEffect(() => {
         getUserData((data) => {
@@ -86,6 +95,9 @@ export default function DashboardSideMenu() {
                                     <a href="/admin/orders" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">All Orders</a>
                                 </li>
                                 <li>
+                                    <a href="/admin/order/pending" className="flex text-nowrap items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Pending Orders {orders !== 0 && <span className="p-1 px-3 mx-3 rounded-full bg-red-500 text-white text-sm">{orders}</span>} </a>
+                                </li>
+                                <li>
                                     <a href="/admin/order/processed" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">Processed Orders</a>
                                 </li>
                                 <li>
@@ -127,17 +139,6 @@ export default function DashboardSideMenu() {
                                 </div>
                             </li>
                         }
-                        
-                        <li>
-                            <a href="#" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 3.75H6.912a2.25 2.25 0 0 0-2.15 1.588L2.35 13.177a2.25 2.25 0 0 0-.1.661V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18v-4.162c0-.224-.034-.447-.1-.661L19.24 5.338a2.25 2.25 0 0 0-2.15-1.588H15M2.25 13.5h3.86a2.25 2.25 0 0 1 2.012 1.244l.256.512a2.25 2.25 0 0 0 2.013 1.244h3.218a2.25 2.25 0 0 0 2.013-1.244l.256-.512a2.25 2.25 0 0 1 2.013-1.244h3.859M12 3v8.25m0 0-3-3m3 3 3-3" />
-                                </svg>
-
-                                <span className="flex-1 ms-3 whitespace-nowrap">Inbox</span>
-                                <span className="inline-flex items-center justify-center w-3 h-3 p-3 ms-3 text-sm font-medium text-blue-800 bg-blue-100 rounded-full dark:bg-blue-900 dark:text-blue-300">0</span>
-                            </a>
-                        </li>
                         <hr />
                         <li className='inset-x-0 bottom-0'>
                             <div className="cursor-pointer flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">

@@ -25,7 +25,7 @@ export default function ProductInformationSection({product, image, category, cha
                 <h2 className="text-xl font-medium">Description</h2>
                 <p className="text-lg font-light">{product.description}</p>
             </div>
-            <ProductCategorySalesChart series={chartSeries} label={chartLabel} showLegend={true} headings='Sales Statistic' />
+            <ProductCategorySalesChart series={chartSeries} label={chartLabel} showLegend={false} headings='Sales Statistic' />
         </div>
     )
 }

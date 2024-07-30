@@ -22,6 +22,7 @@ export default function AddProductVariationModal({openModal, setOpenModal}) {
     const [isSelected, setIsSelected] = useState(false);
 
     const [onShowAlert, setOnShowAlert] = useState(false);
+    const [onShowQtyAlert, setOnShowQtyAlert] = useState(false);
 
     useEffect(() => {
         getProductById(id, (data) => {
@@ -47,6 +48,12 @@ export default function AddProductVariationModal({openModal, setOpenModal}) {
         }, (error) => {
             setOnShowAlert(true);
         });
+    };
+
+    const handleOnQtyChange = (e) => {
+        setItemQty(e.target.value);
+        if (e.target.value > qty) setOnShowQtyAlert(true);
+        else setOnShowQtyAlert(false);
     }
 
     return (
@@ -54,6 +61,7 @@ export default function AddProductVariationModal({openModal, setOpenModal}) {
             <Modal.Header>Add Product Variant</Modal.Header>
             <Modal.Body>
                 <FormAlert msg='All data must be filled!' onShow={onShowAlert}/>
+                <FormAlert msg='Item qty cannot set more than inventory qty' onShow={onShowQtyAlert}/>
                 <form onSubmit={e => postNewProductItem(e)}>
                     <div className="grid grid-cols-2 gap-3">
                         <div className="col-span-2">
@@ -67,7 +75,7 @@ export default function AddProductVariationModal({openModal, setOpenModal}) {
                         </div>
                         <div>
                             <label htmlFor="qty">Qty</label>
-                            <input disabled={!isSelected} onChange={e => setItemQty(e.target.value)} type="number" id="qty" className="my-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                            <input disabled={!isSelected} onChange={e => handleOnQtyChange(e)} type="number" id="qty" className="my-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
                             <p className="text-sm text-gray-500">Qty: {qty}</p>
                         </div>
                         {!inventoryIsUsed && 
@@ -100,7 +108,8 @@ export default function AddProductVariationModal({openModal, setOpenModal}) {
                             </div>
                         }
                         <div className="my-4">
-                            <button type="submit" className="text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Add Variant</button>
+                            <button disabled={onShowQtyAlert} type="submit" 
+                            className={`${onShowQtyAlert ? 'text-gray-400' : 'text-gray-900 hover:bg-gray-100'}  bg-white border border-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700`}>Add Variant</button>
                         </div>
                     </div>
                 </form>

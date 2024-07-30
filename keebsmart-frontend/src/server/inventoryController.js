@@ -17,6 +17,15 @@ export const getAllinventory = async (onSuccess) => {
     }
 };
 
+export const getUnusedInventory = async (onSuccess) => {
+    try {
+        const response = await axios.get(`${urlEndpoint}/inventory/unused`, config);
+        onSuccess(response.data.inventory);
+    } catch (error) {
+        console.log(error);
+    }
+};
+
 export const getInventoryDetail = async (id, onSucces) => {
     try {
         const response = await axios.get(`${urlEndpoint}/inventory/${id}`, config);

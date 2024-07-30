@@ -61,6 +61,7 @@ export default function InventoryTable({inventory, onClickDelete}) {
                     <Table.HeadCell>Brand</Table.HeadCell>
                     <Table.HeadCell>Category</Table.HeadCell>
                     <Table.HeadCell>Added By</Table.HeadCell>
+                    <Table.HeadCell>Status</Table.HeadCell>
                     <Table.HeadCell>Action</Table.HeadCell>
                 </Table.Head>
                 <Table.Body className="divide-y">
@@ -70,6 +71,11 @@ export default function InventoryTable({inventory, onClickDelete}) {
                             <Table.Cell>{item.brand}</Table.Cell>
                             <Table.Cell>{item.category.categoryName}</Table.Cell>
                             <Table.Cell>{item.createdBy.name}</Table.Cell>
+                            <Table.Cell>
+                                <div className={`${item.isUsed ? 'bg-red-500' : 'bg-green-400'} text-white text-center p-1 rounded-full text-sm font-semibold`}>
+                                    {item.isUsed ? 'is used' : 'available'}
+                                </div>
+                                </Table.Cell>
                             <Table.Cell>
                                 <span onClick={() => onDetailClick(item.id)} className="cursor-pointer bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl dark:bg-green-900 dark:text-green-300">Detail</span>
                                 <span onClick={() => setDelete(item.id)} className="cursor-pointer bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl dark:bg-green-900 dark:text-green-300">Delete</span>

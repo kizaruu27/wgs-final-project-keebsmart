@@ -17,6 +17,7 @@ export default function AdminKeyboardProducts() {
     // Fetch keyboards data
     useEffect(() => {
         getKeyboardsData((data) => {
+            console.log(data);
             setKeyboards(data);
             setTotalProducts(data.length);
         });
@@ -27,7 +28,7 @@ export default function AdminKeyboardProducts() {
             <DashboardNavbar />
             <DashboardSideMenu />
             <DashboardContent>
-                <ProductCategoryDetail category='Keyboard' categoryId={1} setSelectedProduct={setSelectedKeyboard} totalProducts={totalProducts} products={keyboards} />
+                <ProductCategoryDetail category='Keyboards' categoryId={1} setSelectedProduct={setSelectedKeyboard} totalProducts={totalProducts} products={keyboards} />
             </DashboardContent>
         </DashboardFragment>
     )

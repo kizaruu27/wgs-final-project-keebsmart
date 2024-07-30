@@ -37,9 +37,9 @@ export default function AdminDashboardPage() {
     useEffect(() => {
         getSalesStatistic((stat) => {
             const allProductStatistic = stat.data;
-            const keyboardStatistic = stat.data.filter(item => item.category.categoryName === 'Keyboard');
+            const keyboardStatistic = stat.data.filter(item => item.category.categoryName === 'Keyboards');
             const keycapsStatistic = stat.data.filter(item => item.category.categoryName === 'Keycaps');
-            const switchStatistic = stat.data.filter(item => item.category.categoryName === 'Switch');
+            const switchStatistic = stat.data.filter(item => item.category.categoryName === 'Switches');
 
             setProductStat(allProductStatistic.map(item => item.productName));
             setSoldStat(allProductStatistic.map(item => item.soldTotal));

@@ -73,7 +73,9 @@ export const getProductDetail = async (id, setProduct, setProductItems, setCateg
         if (setImage) setImage(response.productImage.imagePreviewUrl);
         if (setCategory) setCategory(response.category.categoryName);
         
-        const items = response.productItem;
+        const getStatistic = (await axios.get(`${urlEndpoint}/product/sales/${id}`)).data;
+
+        const items = getStatistic.productItem;
         const soldItem = items.map(item => item.sold);
         const variationItem = items.map(item => item.variationOption.variationValue);
 
@@ -230,19 +232,31 @@ export const updateProduct = async (id, productName, description, brand, categor
     }
 }
 
-export const updateProductItem = async (id, qty, price, manufacturer, status, onSuccess, onFailed) => {
+export const updateProductItem = async (id, price, qty, status, manufacturer, images, onSuccess, onFailed) => {
     try {
         const token = localStorage.getItem('token');
-        const data = {
-            price,
-            qty,
-            status,
-            manufacturer
+
+        const formData = new FormData();
+        formData.append('price', price);
+        formData.append('qty', qty);
+        formData.append('status', status);
+        formData.append('manufacturer', manufacturer);
+
+        for (let i = 0; i < images.length; i++) {
+            formData.append('images', images[i]);
         }
 
-        const response = await axios.put(`${urlEndpoint}/product/item/update/${id}`, data, {
+        // const data = {
+        //     price,
+        //     qty,
+        //     status,
+        //     manufacturer
+        // }
+
+        const response = await axios.put(`${urlEndpoint}/product/item/update/${id}`, formData, {
             headers: {
                 Authorization: `Bearer ${token}`,
+                'Content-Type': 'multipart/form-data',
             }
         });
 
