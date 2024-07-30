@@ -7,8 +7,8 @@ export default function OrderSummaryPage() {
     const location = useLocation();
     const navigate = useNavigate();
 
-    const name = location.state?.name || [];
-    const phoneNumber = location.state?.phoneNumber || [];
+    const name = location.state?.name || []; // sent for orders
+    const phoneNumber = location.state?.phoneNumber || []; // sent for orders
     const cartIds = location.state?.targetedCartIds || []; // sent for orders
     const carts = location.state?.carts || [];
     const addressId = location.state?.addressId || []; // sent for orders
@@ -27,7 +27,7 @@ export default function OrderSummaryPage() {
 
     const postNewOrder = (e) => {
         e.preventDefault();
-        makeNewOrder(cartIds, totalPrice, orderNotes, 1, addressId, (data) => {
+        makeNewOrder(cartIds, name, phoneNumber, totalPrice, orderNotes, 1, addressId, (data) => {
             console.log(data);
             navigate('/order/confirmation', {
                 state: {

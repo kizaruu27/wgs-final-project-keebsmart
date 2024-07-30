@@ -117,7 +117,7 @@ export const addProductItem = async ( productId, price, qty, status, manufacture
             }
         });
 
-        if (response.status !== 201) return console.error('Add product item failed!');
+        if (response.status !== 201) return onFailed('Add Product Failed')
         onSuccess(response);
 
     } catch (error) {

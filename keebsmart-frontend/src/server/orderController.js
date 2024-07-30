@@ -189,10 +189,10 @@ export const addPendingOrder = async (cartIds, onSuccess) => {
     }
 };
 
-export const makeNewOrder = async (cartIds, totalPrice, orderNotes, paymentMethodId, addressId, onSuccess) => {
+export const makeNewOrder = async (cartIds, buyerName, phoneNumber, totalPrice, orderNotes, paymentMethodId, addressId, onSuccess) => {
     try {
         const response = await axios.post(`${urlEndpoint}/order`, {
-            cartIds, totalPrice, orderNotes, paymentMethodId, addressId
+            cartIds, totalPrice, orderNotes, paymentMethodId, addressId, buyerName, phoneNumber
         }, {
             headers: {
                 Authorization: `Bearer ${token}`

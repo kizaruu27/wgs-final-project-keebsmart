@@ -102,7 +102,7 @@ export default function OrderTable({orders, onDeleteRedirect, header}) {
                                         {order.orderId}
                                     </th>
                                     <td className="px-6 py-4 text-nowrap">
-                                        {order.user.name}
+                                        {order.buyerName}
                                     </td>
                                     <td className="px-6 py-4 text-nowrap">
                                         {new Date(order.orderDate).toDateString()}

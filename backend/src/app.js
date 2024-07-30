@@ -402,7 +402,15 @@ app.get('/inventory', accessValidation, async (req, res) => {
             include: {
                 category: true,
                 createdBy: true,
-                item: true
+                item: {
+                    where: {
+                        isDeleted: false
+                    }
+                }
+            },
+            where: {
+                isDeleted: false,
+                isUsed: false
             }
         });
 
@@ -427,6 +435,9 @@ app.get('/inventory/:id', accessValidation, async (req, res) => {
                 item: {
                     include: {
                         variationName: true
+                    },
+                    where: {
+                        isDeleted: false
                     }
                 }
             },
@@ -449,47 +460,16 @@ app.get('/inventory/:id', accessValidation, async (req, res) => {
 app.delete('/inventory/:id', accessValidation, async (req, res) => {
     const { id } = req.params;
     try {
-        // const products = await prisma.products.findUnique({
-        //     where: {
-        //         inventoryId: Number(id)
-        //     }
-        // });
-
-        // if (products) {
-        //     await prisma.productItem.deleteMany({
-        //         where: {
-        //             productId: products.id
-        //         }
-        //     })
-    
-        //     await prisma.productImage.delete({
-        //         where: {
-        //             productId: products.id
-        //         }
-        //     })
-
-        //     // delete products
-        //     await prisma.products.delete({
-        //         where: {
-        //             inventoryId: Number(id)
-        //         }
-        //     });
-        // }
-
-        // Delete the inventory items
-        await prisma.inventoryItem.deleteMany({
-            where: {
-                inventoryId: Number(id),
-            },
-        });
-   
       // Delete the inventory
-        const deletedInventory = await prisma.inventory.delete({
+        const deletedInventory = await prisma.inventory.update({
             where: {
                 id: Number(id),
             },
+            data: {
+                isDeleted: true
+            }
         });
-  
+
         res.json({
             deletedInventory,
             msg: 'Delete inventory successful',
@@ -535,12 +515,6 @@ app.put('/inventory/:id', accessValidation, async (req, res) => {
             })
         }
 
-        const updatedInventoryItem = await prisma.inventoryItem.deleteMany({
-            where: {
-                inventoryId: Number(id)
-            }
-        });
-
         const newItems = items.map(item => ({
             inventoryId: Number(id),
             qty: item.qty,
@@ -559,13 +533,60 @@ app.put('/inventory/:id', accessValidation, async (req, res) => {
     }
 });
 
+// UPDATE/edit inventory item by id
+app.put('/inventory/item/:id', accessValidation, async (req, res) => {
+    try {
+        const { qty, variation, variationId } = req.body;
+        const { id } = req.params;
+        const updatedInventoryItem = await prisma.inventoryItem.update({
+            where: {
+                id: Number(id)
+            },
+            data: {
+                qty,
+                variation,
+                variationId
+            }
+        });
+
+        res.json({
+            updatedInventoryItem,
+            msg: 'Inventory item successfully updated'
+        })
+    } catch (error) {
+        res.json(error);
+        console.log(error);
+    }
+});
+
+// Delete inventory item by id
+app.delete('/inventory/item/:id', accessValidation, async (req, res) => {
+    try {
+        const { id } = req.params;
+        const deletedInventoryItem = await prisma.inventoryItem.update({
+            where: {
+                id: Number(id)
+            },
+            data: {
+                isDeleted: true
+            }
+        });
+
+        res.json(deletedInventoryItem);
+    } catch (error) {
+        res.json(error);
+        console.log(error);
+    }
+})
+
 // Get inventory item  by id
 app.get('/inventory/item/:id', accessValidation, async (req, res) => {
     try {
         const { id } = req.params;
         const inventoryItem = await prisma.inventoryItem.findUnique({
             where: {
-                id: Number(id)
+                id: Number(id),
+                isDeleted: false
             }
         });
 
@@ -592,9 +613,16 @@ app.get('/products', async (req, res) => {
         const response = await prisma.products.findMany({
             include: {
                 category: true,
-                productItem: true,
+                productItem: {
+                    where: {
+                        isDeleted: false
+                    }
+                },
                 productImage: true
-            } 
+            },
+            where: {
+                isDeleted: false
+            }
         });
 
         res.json(response);
@@ -622,16 +650,27 @@ app.get('/product/:id', async (req, res) => {
                                 variations: true
                             }
                         },
+                    },
+                    where: {
+                        isDeleted: false
                     }
                 },
                 inventory: {
+                    where: {
+                        isDeleted: false
+                    },
                     include: {
-                        item: true
+                        item: {
+                            where: {
+                                isDeleted: false
+                            }
+                        }
                     }
                 }
             },
             where: {
-                id: Number(id)
+                id: Number(id),
+                isDeleted: false
             }
         });
         
@@ -654,11 +693,17 @@ app.get('/sales', async (req, res) => {
                 }
             },
             productItem: {
+                where: {
+                    isDeleted: false
+                },
                 select: {
                     sold: true,
                     price: true
                 }
             }
+        },
+        where: {
+            isDeleted: false
         }
     });
 
@@ -751,10 +796,43 @@ app.post('/product/item/add', accessValidation, upload.array('images', 10), asyn
             }
         });
 
+        // find product item with the similar inventory item
+        const similarProductItem = await prisma.productItem.findUnique({
+            where: {
+                inventoryItemId: Number(inventoryItemId)
+            }
+        });
+
+        if (similarProductItem) {
+            const updatedProductItem = await prisma.productItem.update({
+                where: {
+                    id: similarProductItem.id
+                },
+                data: {
+                    qty: { increment: Number(qty) },
+                    status,
+                }
+            });
+
+            // update inventory item
+            const updatedInventoryItem = await prisma.inventoryItem.update({
+                data: {
+                    qty: { decrement: Number(qty) },
+                    isUsed: true
+                },
+                where: {
+                    id: updatedProductItem.inventoryItemId
+                }
+            });
+
+            return res.status(201).json({updatedProductItem, updatedInventoryItem});
+        } 
+
         // create new product item
         const newProductItem = await prisma.productItem.create({
             data: {
                 productId: Number(productId),
+                inventoryItemId: Number(inventoryItemId),
                 variationOptionId: newVariationOption.id,
                 price: Number(price),
                 qty: Number(qty),
@@ -767,24 +845,23 @@ app.post('/product/item/add', accessValidation, upload.array('images', 10), asyn
         // update inventory item
         const updatedInventoryItem = await prisma.inventoryItem.update({
             data: {
-                qty: inventoryItem.qty - Number(qty),
+                qty: { decrement: Number(qty) },
+                isUsed: true
             },
             where: {
-                id: inventoryItem.id
+                id: newProductItem.inventoryItemId
             }
-        })
-
+        });
 
         res.status(201);
         res.json({
             newProductItem,
-            beforeUpdatedInventory: inventoryItem,
-            afterUpdatedInventory: updatedInventoryItem,
+            updatedInventoryItem,
             msg: 'Product Item berhasil ditambah!'
         });
     } catch (error) {
-        console.log(error.message);
-        res.json(error.message);
+        console.log(error);
+        res.json(error);
     }
 });
 
@@ -820,10 +897,15 @@ app.get('/products/switch', async (req, res) => {
                 category: {
                     categoryName: 'Switch',
                 },
-                isActive: true
+                isActive: true,
+                isDeleted: false
             },
             include: {
-                productItem: true,
+                productItem: {
+                    where: {
+                        isDeleted: false
+                    }
+                },
                 productImage: true,
                 category: true
             }
@@ -846,12 +928,16 @@ app.get('/products/keyboards', async (req, res) => {
                 category: {
                     categoryName: 'Keyboard'
                 },
-                isActive: true
+                isActive: true,
+                isDeleted: false
             },
             include: {
                 productItem: {
                     include: {
                         variationOption: true
+                    },
+                    where: {
+                        isDeleted: false
                     }
                 },
                 productImage: true,
@@ -877,10 +963,15 @@ app.get('/products/keycaps', async (req, res) => {
                 category: {
                     categoryName: 'Keycaps'
                 },
-                isActive: true
+                isActive: true,
+                isDeleted: false
             },
             include: {
-                productItem: true,
+                productItem: {
+                    where: {
+                        isDeleted: false
+                    }
+                },
                 productImage: true,
                 category: true
             }
@@ -957,7 +1048,6 @@ app.put('/product/item/update/:id', accessValidation, upload.array('images', 10)
                 id: Number(id)
             }
         });
-        const currentProductItemQty = productItem.qty;
         
         // updated product item
         const updatedProductItem = await prisma.productItem.update({
@@ -971,27 +1061,27 @@ app.put('/product/item/update/:id', accessValidation, upload.array('images', 10)
                 manufacturer
             }
         });
-        const updatedProductItemQty = updatedProductItem.qty;
-
-        const diff = updatedProductItemQty - currentProductItemQty;
+        const diff = updatedProductItem.qty - productItem.qty;
 
         // get inventory item
-        // const inventoryItem = await prisma.inventoryItem.findUnique({
-        //     where: {
-        //         id: updatedProductItem.inventoryItemId
-        //     }
-        // });
-        // const inventoryCurrentQty = inventoryItem.qty;
+        const inventoryItem = await prisma.inventoryItem.findUnique({
+            where: {
+                id: updatedProductItem.inventoryItemId
+            }
+        });
 
-        // update inventory item qty
-        // const updatedInventoryItemQty = await prisma.inventoryItem.update({
-        //     where: {
-        //         id: updatedProductItem.inventoryItemId
-        //     },
-        //     data: {
-        //         qty: inventoryCurrentQty - diff
-        //     }
-        // });
+        if (inventoryItem) {
+            // update inventory item qty
+            await prisma.inventoryItem.update({
+                where: {
+                    id: updatedProductItem.inventoryItemId
+                },
+                data: {
+                    qty: { decrement: diff }
+                }
+            });
+        }
+
 
         res.status(201);
         res.json({
@@ -1035,66 +1125,17 @@ app.delete('/product/item/:id', accessValidation,  async (req, res) => {
     try {
         const { id } = req.params;
 
-        // find related cart
-        const relatedCart = await prisma.cart.findMany({
-            where: {
-                productItemId: Number(id)
-            }
-        });
-
-        // delete related cart
-        if (relatedCart) {
-            await prisma.cart.deleteMany({
-                where: {
-                    productItemId: Number(id)
-                }
-            })
-        }
-
-        const deleteProductItem = await prisma.productItem.delete({
+        const deletedProductItem = await prisma.productItem.update({
             where: {
                 id: Number(id)
             },
-            include: {
-                variationOption: true
+            data: {
+                isDeleted: true
             }
-        });
-    
-        const productVariation = await prisma.variationOptions.findUnique({
-            where: {
-                id: Number(deleteProductItem.variationOptionId)
-            }
-        });
-        if (productVariation) {
-            await prisma.variationOptions.delete({
-                where: {
-                    id: Number(deleteProductItem.variationOptionId)
-                }
-            })
-        }
-
-        // update the inventory qty
-        // const inventoryItem = await prisma.inventoryItem.find({
-        //     where: {
-        //         id: deleteProductItem.inventoryItemId
-        //     }
-        // })
-
-        // if (inventoryItem) {
-        //     await prisma.inventoryItem.update({
-        //         where: {
-        //             id: deleteProductItem.inventoryItemId
-        //         },
-        //         data: {
-        //             qty: inventoryItem.qty + deleteProductItem.qty,
-        //             isUsed: false
-        //         }
-        //     })
-        // }
+        })
 
         res.json({
-            deleteProductItem,
-            productVariation,
+            deletedProductItem,
             msg: 'Berhasil menghapus productitem'
         });
         
@@ -1118,7 +1159,14 @@ app.get('/product/item/:id', async (req, res) => {
                     include: {
                         inventory: {
                             include: {
-                                item: true
+                                item: {
+                                    where: {
+                                        isDeleted: false
+                                    }
+                                }
+                            },
+                            where: {
+                                isDeleted: false
                             }
                         }
                     }
@@ -1128,7 +1176,7 @@ app.get('/product/item/:id', async (req, res) => {
                         variations: true
                     }
                 }
-            }
+            },
         });
 
         res.json(productItem);
@@ -1141,59 +1189,25 @@ app.get('/product/item/:id', async (req, res) => {
 // API for delete Products
 app.delete('/product/:id', accessValidation, async (req, res) => {
     const { id } = req.params;
-    const userId = req.userId;
 
     try {
-        const products = await prisma.products.findUnique({
+        const deletedProduct = await prisma.products.update({
             where: {
-                id: Number(id)
-            }
-        })
-
-        const productImage = await prisma.productImage.findFirst({
-            where: {
-                productId: Number(id)
-            }
-        })
-
-        if (productImage) {
-            await prisma.productImage.delete({
-                where: {
-                    productId: Number(id)
-                }
-            });
-        }
-
-        const productItem = await prisma.productItem.findMany({
-            where: {
-                productId: Number(id)
-            }
-        })
-
-        if (productItem) {
-            await prisma.productItem.deleteMany({
-                where: {
-                    productId: Number(id)
-                }
-            })
-        }
-
-        const updateInventory = await prisma.inventory.update({
-            where: {
-                id: products.inventoryId
+                id: Number(id),
             },
             data: {
-                isUsed: false
-            }
-        })
-
-        const deleteProduct = await prisma.products.delete({
-            where: {
-                id: Number(id)
+                isDeleted: true,
+                inventory: {
+                    update: {
+                        data: {
+                            isUsed: false
+                        }
+                    }
+                }
             }
         });
 
-        res.json('Product Berhasil Dihapus!');
+        res.json({deletedProduct, msg: 'Product Berhasil Dihapus!'});
 
     } catch (error) {
         console.log(error);
@@ -1280,6 +1294,9 @@ app.get('/user/orders', accessValidation, async (req, res) => {
                         productItem: true
                     }
                 }
+            },
+            orderBy: {
+                orderDate: 'desc'
             }
         });
 
@@ -1406,6 +1423,9 @@ app.get('/shipments', accessValidation, async (req, res) => {
                         }
                     }
                 }
+            },
+            orderBy: {
+                createdAt: 'desc'
             }
         });
 
@@ -1571,7 +1591,7 @@ app.get('/user/cart', accessValidation, async (req, res) => {
             where: {
                 userId,
                 isDeleted: false
-            }
+            },
         });
         res.json(cart);
     } catch (error) {
@@ -1664,6 +1684,9 @@ app.get('/cart/user', accessValidation, async (req, res) => {
                         variationOption: true
                     }
                 }
+            },
+            orderBy: {
+                createAt: 'desc'
             }
         });
 
@@ -1747,8 +1770,8 @@ app.post('/address', accessValidation, async (req, res) => {
 // API for making new orders
 app.post('/order', accessValidation, async (req, res) => {
     try {
-        const userId = req.userId;
-        const { cartIds, paymentMethodId, addressId, totalPrice, orderNotes } = req.body;
+        const userId = req.userId; 
+        const { cartIds, buyerName, phoneNumber, paymentMethodId, addressId, totalPrice, orderNotes } = req.body;
 
         // find coresponding cart
         const carts = await prisma.cart.findMany({
@@ -1768,6 +1791,8 @@ app.post('/order', accessValidation, async (req, res) => {
                 orderTotal: carts.length,
                 totalPrice,
                 orderNotes,
+                buyerName,
+                phoneNumber,
                 carts: {
                     connect: carts
                 },

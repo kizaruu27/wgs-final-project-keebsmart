@@ -16,6 +16,7 @@ model Inventory {
   description String
   userId      String
   isUsed      Boolean         @default(false)
+  isDeleted   Boolean         @default(false)
   category    ProductCategory @relation(fields: [categoryId], references: [id])
   createdBy   User            @relation(fields: [userId], references: [id])
   item        InventoryItem[]
@@ -23,14 +24,16 @@ model Inventory {
 }
 
 model InventoryItem {
-  id            Int        @id @default(autoincrement())
+  id            Int          @id @default(autoincrement())
   inventoryId   Int
   qty           Int
   variation     String
   variationId   Int
-  isUsed        Boolean    @default(false)
-  inventory     Inventory  @relation(fields: [inventoryId], references: [id])
-  variationName Variations @relation(fields: [variationId], references: [id])
+  isUsed        Boolean      @default(false)
+  isDeleted     Boolean      @default(false)
+  inventory     Inventory    @relation(fields: [inventoryId], references: [id])
+  variationName Variations   @relation(fields: [variationId], references: [id])
+  productItem   ProductItem?
 }
 
 model Products {
@@ -43,6 +46,7 @@ model Products {
   soldTotal    Int?            @default(0)
   specs        String[]        @db.VarChar
   inventoryId  Int?            @unique
+  isDeleted    Boolean         @default(false)
   productImage ProductImage?
   productItem  ProductItem[]
   category     ProductCategory @relation(fields: [categoryId], references: [id])
@@ -76,7 +80,10 @@ model ProductItem {
   status            String
   manufacturer      String
   sold              Int              @default(0)
+  inventoryItemId   Int?             @unique
+  isDeleted         Boolean          @default(false)
   Cart              Cart[]
+  inventoryItem     InventoryItem?   @relation(fields: [inventoryItemId], references: [id])
   product           Products         @relation(fields: [productId], references: [id])
   variationOption   VariationOptions @relation(fields: [variationOptionId], references: [id])
 }
@@ -145,6 +152,7 @@ model Cart {
   subTotalPrice Int
   isOrdered     Boolean         @default(false)
   isDeleted     Boolean         @default(false)
+  createAt      DateTime        @default(now())
   productItem   ProductItem     @relation(fields: [productItemId], references: [id])
   user          User            @relation(fields: [userId], references: [id])
   order         Orders[]        @relation("CartToOrders")
@@ -152,12 +160,13 @@ model Cart {
 }
 
 model Shipping {
-  id           String @id @default(uuid())
-  shipmentName String @default("KeebsMart Express")
+  id           String   @id @default(uuid())
+  shipmentName String   @default("KeebsMart Express")
   userId       String
-  orderId      String @unique
-  order        Orders @relation(fields: [orderId], references: [orderId])
-  user         User   @relation(fields: [userId], references: [id])
+  orderId      String   @unique
+  createdAt    DateTime @default(now())
+  order        Orders   @relation(fields: [orderId], references: [orderId])
+  user         User     @relation(fields: [userId], references: [id])
 }
 
 model PendingOrders {
@@ -176,6 +185,8 @@ model Orders {
   totalPrice      Int
   orderNotes      String
   updateDate      DateTime        @default(now())
+  buyerName       String          @default("")
+  phoneNumber     String          @default("")
   address         UserAddress     @relation(fields: [addressId], references: [id])
   paymentMethod   PaymentMethods  @relation(fields: [paymentMethodId], references: [id])
   user            User            @relation(fields: [userId], references: [id])

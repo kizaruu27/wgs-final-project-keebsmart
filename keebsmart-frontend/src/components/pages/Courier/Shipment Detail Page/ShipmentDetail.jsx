@@ -17,7 +17,8 @@ export default function ShipmentDetail () {
     const { id } = useParams();
     const [courier, setCourier] = useState({});
     const [status, setStatus] = useState('');
-    const [buyer, setBuyer] = useState({});
+    const [buyer, setBuyer] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
     const [address, setAddress] = useState({});
     const [shipment, setShipment] = useState({});
     const [order, setOrder] = useState({});
@@ -42,8 +43,9 @@ export default function ShipmentDetail () {
 
     useEffect(() => {
         getShipmentDetail(id, (data) => {
-            console.log(data.shipment.order.paymentMethod);
-            setBuyer(data.buyer);
+            console.log(data.shipment.order.buyerName);
+            setBuyer(data.shipment.order.buyerName);
+            setPhoneNumber(data.shipment.order.phoneNumber);
             setAddress(data.shipment.order.address);
             setShipment(data.shipment);
             setStatus(data.currentStatus);
@@ -68,7 +70,7 @@ export default function ShipmentDetail () {
             <DashboardCourierSideMenu />
             <DashboardContent>
                 <OrderShipmentDetailFragment>
-                    <UserSection customerStatus='Recipient' customerName={buyer.name} customerEmail={buyer.email} customerPhoneNumber={buyer.phoneNumber} customerAddress={address}/>
+                    <UserSection customerStatus='Recipient' customerName={buyer} customerPhoneNumber={phoneNumber} customerAddress={address}/>
 
                     <ShipmentOrderInfo condition='Shipment ID' id={shipment.id} orderDate={order.orderDate} paymentMethod={paymentMethod.paymentType} status={status} shipmentName={shipment.shipmentName} />
 

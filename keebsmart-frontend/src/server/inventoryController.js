@@ -63,4 +63,24 @@ export const getInventoryItem = async (id, onSuccess) => {
     } catch (error) {
         console.log(error);
     }
+};
+
+export const editInventoryItem = async (id, qty, variation, variationId, onSucces) => {
+    try {
+        const response = await axios.put(`${urlEndpoint}/inventory/item/${id}`, {
+            qty: Number(qty), variation, variationId: Number(variationId)
+        }, config);
+        onSucces(response.data);
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const deleteInventoryItem = async (id, onSucces) => {
+    try {
+        const response = await axios.delete(`${urlEndpoint}/inventory/item/${id}`, config);
+        onSucces(response.data);
+    } catch (error) {
+        console.log(error);
+    }
 }

@@ -9,6 +9,7 @@ import { getAllCategory } from "../../../../server/productController";
 import { getVariations } from "../../../../server/variationController";
 import { GoToPage } from "../../../../server/pageController";
 import { Dropdown } from "flowbite-react";
+import InventoryItem from "../../../elements/Items/InventoryItem";
 
 export default function EditInventoryForm() {
     const { id } = useParams();
@@ -21,8 +22,8 @@ export default function EditInventoryForm() {
     const [itemFields, setItemFields] = useState([]);
     const [variationOption, setVariationOption] = useState([]);
     const [categoryId, setCategoryId] = useState(0);
-
-    const [isDisabled, setIsDisabled] = useState(true);
+    const [newItemFields, setNewiItemFields] = useState([]);
+    const [enabledInputs, setEnabledInputs] = useState({});
 
     useEffect(() => {
         getAllCategory((data) => {
@@ -50,6 +51,14 @@ export default function EditInventoryForm() {
         })
     }, [])
 
+     // Function to toggle the enabled state of inputs for a specific iteration
+     const toggleInputs = key => {
+        setEnabledInputs(prevState => ({
+            ...prevState,
+            [key]: !prevState[key]
+        }));
+    };
+
     // assign data on specs input changed
     const onSpecsChange = (key, e) => {
         let data = [...specsFields];
@@ -71,10 +80,10 @@ export default function EditInventoryForm() {
 
     // assign data on items input changed
     const onItemChange = (key, e) => {
-        let data = [...itemFields];
+        let data = [...newItemFields];
         data[key][e.target.name] = e.target.value;
-        setItemFields(data);
-        console.log(itemFields);
+        setNewiItemFields(data);
+        console.log(newItemFields);
     }
 
     const addItemFields = () => {
@@ -87,13 +96,13 @@ export default function EditInventoryForm() {
                 variationName: 'Selet variant type'
             }
         };
-        setItemFields([...itemFields, newItem]);
+        setNewiItemFields([...newItemFields, newItem]);
     }
 
     const removeItemFields = (key) => {
-        let data = [...itemFields];
+        let data = [...newItemFields];
         data.splice(key, 1);
-        setItemFields(data);
+        setNewiItemFields(data);
     }
 
     const postUpdateInventory = (e) => {
@@ -104,7 +113,7 @@ export default function EditInventoryForm() {
             categoryId: Number(categoryId),
             specs: specsFields,
             description,
-            items: itemFields.map(item => ({
+            items: newItemFields.map(item => ({
                 qty: Number(item.qty),
                 variation: item.variation,
                 variationId: Number(item.variationId)
@@ -129,15 +138,15 @@ export default function EditInventoryForm() {
                     <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
                         <div className="sm:col-span-2">
                             <label htmlFor="product_name" className="block mb-2 text-sm font-medium text-gray-900">Product Name</label>
-                            <input onChange={e => setProductName(e.target.value)} defaultValue={productName} type="text" name="product_name" id="product_name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Insert Product Name" required="" />
+                            <input onChange={e => setProductName(e.target.value)} defaultValue={productName} type="text" name="product_name" id="product_name" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Insert Product Name" required />
                         </div>
                         <div className="w-full">
                             <label htmlFor="brand" className="block mb-2 text-sm font-medium text-gray-900">Brand</label>
-                            <input onChange={e => setBrand(e.target.value)} defaultValue={brand} type="text" name="brand" id="brand" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Product brand" required="" />
+                            <input onChange={e => setBrand(e.target.value)} defaultValue={brand} type="text" name="brand" id="brand" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Product brand" required />
                         </div>
                         <div>
                             <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900">Category</label>
-                            <select id="variationId" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" onChange={e => setCategoryId(e.target.value)}>
+                            <select required id="variationId" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" onChange={e => setCategoryId(e.target.value)}>
                                 <option value={categoryId}>-- {category.categoryName} --</option>
                                 {allCategories.map((cat, key) => (
                                     <option key={key} value={cat.id}>{cat.categoryName}</option>
@@ -148,7 +157,7 @@ export default function EditInventoryForm() {
                             <label htmlFor="specs" className="block mb-2 text-sm font-medium text-gray-900">Specs</label>
                             {specsFields.map((spec, key) => (
                                 <div key={key} className="grid grid-cols-8 gap-3">
-                                    <input defaultValue={spec} onChange={e => onSpecsChange(key, e)} type="text" name="specs" id="specs" className="col-span-7 mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Item Specs" required="" />
+                                    <input defaultValue={spec} onChange={e => onSpecsChange(key, e)} type="text" name="specs" id="specs" className="col-span-7 mb-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="Item Specs" required />
                                     <button type="button" onClick={() => removeSpecsFields(key)} className="w-full text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">-</button>
                                 </div>
                             ))}
@@ -156,37 +165,34 @@ export default function EditInventoryForm() {
                         </div>
                         <div className="sm:col-span-2">
                             <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-900">Description</label>
-                            <textarea defaultValue={description}  onChange={e => setDescription(e.target.value)} id="description" name="description" rows="8" className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500" placeholder="Your description here"></textarea>
+                            <textarea required defaultValue={description}  onChange={e => setDescription(e.target.value)} id="description" name="description" rows="8" className="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-primary-500 focus:border-primary-500" placeholder="Your description here"></textarea>
                         </div>
                         {/* Inventory Item */}
                         <div className="sm:col-span-2">
                             <div>
-                            <h1 className="block mb-2 text-xl font-medium text-gray-900">Edit Variants</h1>
+                                <h1 className="block mb-2 text-xl font-medium text-gray-900">Edit Variants</h1>
                                 {itemFields.map((variant, key) => (
+                                    <InventoryItem key={key} index={key} id={variant.id} enabledInputs={enabledInputs} variant={variant} variationOption={variationOption} toggleInputs={toggleInputs} />
+                                ))}
+                                {newItemFields.map((variant, key) => (
                                     <div className="grid grid-cols-2 gap-5 my-3" key={key}>
                                         <div>
                                             <label htmlFor="variationId" className="block mb-2 text-sm font-medium text-gray-900">Variant</label>
                                             <div className="grid grid-cols-2 gap-2">
-                                                <select disabled={isDisabled} onChange={e => onItemChange(key, e)} id="variationId" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="variationId">
+                                                <select required onChange={e => onItemChange(key, e)} id="variationId" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" name="variationId">
                                                     <option defaultValue={variant.variationName.id}>{variant.variationName.variationName}</option> 
                                                     {variationOption.map((item, key) => (
                                                         <option key={key} value={item.id}>{item.variationName}</option>
                                                     ))}
                                                 </select>
-                                                <input disabled={isDisabled} defaultValue={variant.variation} type="text" name="variation" id="variation" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="" required="" onChange={e => onItemChange(key, e)}/>
+                                                <input defaultValue={variant.variation} type="text" name="variation" id="variation" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5" placeholder="" required onChange={e => onItemChange(key, e)}/>
                                             </div>
                                         </div>
                                         <div>
                                             <label htmlFor="qty" className="block mb-2 text-sm font-medium text-gray-900">Qty</label>
                                             <div className="flex gap-3">
-                                                <input disabled={isDisabled} defaultValue={variant.qty} type="number" name="qty" id="qty" className="h-10 w-full col-span-5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block p-2.5" placeholder="" required="" onChange={e => onItemChange(key, e)} />
-                                                <div className="">
-                                                    <Dropdown label="Action" color='light' dismissOnClick={false} style={{height: 40}}>
-                                                        <Dropdown.Item onClick={() => setIsDisabled(false)}>Edit</Dropdown.Item>
-                                                        <Dropdown.Item>Delete</Dropdown.Item>
-                                                    </Dropdown>
-                                                </div>
-                                                {/* <button type="button" onClick={() => removeItemFields(key)} className="text-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">-</button> */}
+                                                <input defaultValue={variant.qty} type="number" name="qty" id="qty" className="h-10 w-full col-span-5 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block p-2.5" placeholder="" required onChange={e => onItemChange(key, e)} />
+                                                <button type="button" onClick={() => removeItemFields(key)} className="text-center text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">-</button>
                                             </div>
                                         </div>
                                     </div>

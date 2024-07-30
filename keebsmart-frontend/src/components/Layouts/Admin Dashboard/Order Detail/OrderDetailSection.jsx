@@ -18,7 +18,7 @@ export default function OrderDetailSection({order, paymentMethod, status, status
             </div>
             <div className="p-5 flex flex-col gap-3 text-nowrap">
                 <h1 className="font-medium text-2xl">Status</h1>
-                <span className={`${statusColor} text-center rounded-xl text-xs font-medium me-2 px-2.5 py-0.5 w-40`}>{status === 'Checkout Success' ? 'Waiting Confirmation' : status}</span>
+                <span className={`${statusColor} text-center rounded-xl text-xs font-medium me-2 px-2.5 py-0.5 ${status === 'Waiting Courier For Pick Up' ? 'w-56' : 'w-40' }`}>{status === 'Checkout Success' ? 'Waiting Confirmation' : status}</span>
             </div>
             {/* <div className="p-5 flex flex-col gap-3 ">
                 <h1 className="font-medium text-2xl">Shipment</h1>

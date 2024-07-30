@@ -14,7 +14,8 @@ import OrderTimeline from "../../../Layouts/Admin Dashboard/Order Detail/OrderTi
 export default function AdminOrderDetail () {
     const { id } = useParams();
     const [order, setOrder] = useState([]);
-    const [buyer, setBuyer] = useState({});
+    const [buyerName, setBuyerName] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
     const [carts, setCarts] = useState([]);
     const [address, setAddress] = useState([]);
     const [shipping, setShipping] = useState({});
@@ -28,6 +29,7 @@ export default function AdminOrderDetail () {
         if (status === 'Delivered') return false;
         if (status === 'Finish') return false;
         if (status === 'Courier Pick Up') return false;
+        if (status === 'Waiting Courier For Pick Up' || status === 'Courier Pick Up' || status === 'On Delivery' || status === 'Cash On Delivery Paid' ) return false;
         else return true;
     }
 
@@ -75,7 +77,8 @@ export default function AdminOrderDetail () {
     useEffect(() => {
         getOrderDetail(id, (data) => {
             setOrder(data);
-            setBuyer(data.user);
+            setBuyerName(data.buyerName);
+            setPhoneNumber(data.phoneNumber);
             setCarts(data.carts);
             setAddress(data.address);
             setShipping(data.shipping);
@@ -96,7 +99,7 @@ export default function AdminOrderDetail () {
             <DashboardSideMenu />
             <DashboardContent>
                 <div className="grid grid-cols-2 gap-5">
-                    <BuyerDetailSection buyer={buyer} address={address} />
+                    <BuyerDetailSection buyerName={buyerName} phoneNumber={phoneNumber} address={address} />
                     <OrderDetailSection order={order} paymentMethod={paymentMethod} status={status} statusColor={statusColor} />
                     <OrderItemSection carts={carts} order={order} paymentMethod={paymentMethod} onCancelOrder={() => cancelOrder('Canceled')} canCancel={canCancel} status={status} id={id} />
                     <OrderTimeline order={order} currentStatus={currentStatus} />
