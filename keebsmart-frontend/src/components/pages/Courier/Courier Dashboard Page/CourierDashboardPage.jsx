@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { getOrders, setOrderStatus } from "../../../../server/orderController";
 import DashboardCourierSideMenu from "../../../Layouts/DashboardCourierSideMenu";
 import { createNewShipment } from "../../../../server/shipmentController";
+import { convertCurrency } from "../../../../server/currency";
 
 export default function CourierDashboardPage() {
     const [orders, setOrders] = useState([]);
@@ -142,7 +143,7 @@ export default function CourierDashboardPage() {
                                                 {order.paymentMethod.paymentType}
                                             </td>
                                             <td className="px-6 py-4 text-nowrap">
-                                                Rp. {order.totalPrice}
+                                                {convertCurrency(order.totalPrice)}
                                             </td>
                                             <td className="px-6 py-4 text-nowrap">
                                                 <span className={`${changeStatusColor(order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1])} rounded-xl text-xs font-medium me-2 px-2.5 py-0.5`}>{order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1] === 'Checkout Success' ? 'Waiting Confirmation' : order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1]}</span>

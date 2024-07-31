@@ -64,7 +64,11 @@ export default function AdminDashboardPage() {
 
     useState(() => {
         getOrders((data) => {
-            setIncome(data.orders.filter(order => order.currentStatus[order.currentStatus.length - 1].status.status === 'Finish').map(order => order.totalPrice).reduce((acc, accValue) => acc + accValue, 0));
+            const totalIncome = data.orders.filter(order => order.currentStatus[order.currentStatus.length - 1].status.status === 'Finish').map(order => order.totalPrice).reduce((acc, accValue) => acc + accValue, 0);
+            setIncome(new Intl.NumberFormat('id-ID', {
+                style: 'currency',
+                currency: 'IDR'
+            }).format(totalIncome));
         })
     }, [0])
 

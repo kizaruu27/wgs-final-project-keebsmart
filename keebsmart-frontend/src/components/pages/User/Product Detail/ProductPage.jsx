@@ -8,6 +8,7 @@ import ProductButtons from "../../../Layouts/Product Variatiion/ProductButtons";
 import SetQtyButton from "../../../Layouts/Product Variatiion/SetQtyButton";
 import AddToCartButton from "../../../elements/Buttons/AddToCart";
 import ProductDescriptionSection from "./ProductDescriotionSection";
+import { convertCurrency } from "../../../../server/currency";
 
 export default function ProductPage() {
     const { id } = useParams();
@@ -128,7 +129,7 @@ export default function ProductPage() {
                         {product.productName} - {variationValue}
                     </div>
                     <div className="font-medium tracking-wide text-lg my-5">
-                        Rp. {totalPrice}
+                        {convertCurrency(totalPrice)}
                     </div>
 
                     {/* Button grid */}

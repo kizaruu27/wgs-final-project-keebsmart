@@ -2,13 +2,14 @@ import { useEffect, useState } from "react";
 import { userLogout } from "../../server/auth"
 import { GoToPage } from "../../server/pageController";
 import { getUserData } from "../../server/userDataController";
+import { getOrders } from "../../server/orderController";
 
 export default function DashboardCourierSideMenu() {
     const [access, setAccess] = useState('');
+    const [totalOrders, setTotalOrders] = useState([]);
 
     const logout = () => {
         userLogout((data) => {
-            // console.log(data);
             localStorage.clear();
             GoToPage('/login', 200);
         })
@@ -17,11 +18,18 @@ export default function DashboardCourierSideMenu() {
     useEffect(() => {
         getUserData((data) => {
             setAccess(data.access)
-            // console.log(data);
         }, (error) => {
             console.log(error);
         })
-    })
+    });
+
+    useEffect(() => {
+        getOrders((response) => {
+            setTotalOrders(response.orders.filter(order => order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1] === 'Waiting Courier For Pick Up').length);
+        }, (error) => {
+            console.log(error);
+        })
+    },[0])
 
     return (
         <>
@@ -37,19 +45,18 @@ export default function DashboardCourierSideMenu() {
                     <ul className="my-20 space-y-2 font-medium">
                         <li>
                             <a href="/courier" className="flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group">
-                            <svg className="w-5 h-5 text-gray-500 transition duration-75 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 22 21">
-                                <path d="M16.975 11H10V4.025a1 1 0 0 0-1.066-.998 8.5 8.5 0 1 0 9.039 9.039.999.999 0 0 0-1-1.066h.002Z"/>
-                                <path d="M12.5 0c-.157 0-.311.01-.565.027A1 1 0 0 0 11 1.02V10h8.975a1 1 0 0 0 1-.935c.013-.188.028-.374.028-.565A8.51 8.51 0 0 0 12.5 0Z"/>
-                            </svg>
-                            <span className="ms-3">Dashboard</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+                                </svg>
+
+                                <span className="ms-3">Orders</span> {totalOrders > 0 && <span className="ml-14 bg-red-500 text-white px-2 rounded-full">{totalOrders}</span>} 
                             </a>
                         </li>
                         <li>
                             <button type="button" className="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="producs" data-collapse-toggle="products">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
-                            </svg>
-
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+                                </svg>
                                 <span className="flex-1 ms-3 text-left rtl:text-right whitespace-nowrap">My Shipments</span>
                                 <svg className="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
                                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="m1 1 4 4 4-4"/>
@@ -57,7 +64,7 @@ export default function DashboardCourierSideMenu() {
                             </button>
                             <ul id="products" className="hidden py-2 space-y-2">
                                 <li>
-                                    <a href="/courier/shipments" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">All Shipments</a>
+                                    <a href="/courier/shipments" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700 text-nowrap">All Shipments</a>
                                 </li>
                                 <li>
                                     <a href="/courier/shipment/ongoing" className="flex items-center w-full p-2 text-gray-900 transition duration-75 rounded-lg pl-11 group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700">On Going Shipments</a>

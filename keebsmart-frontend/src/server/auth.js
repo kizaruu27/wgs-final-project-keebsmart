@@ -72,6 +72,26 @@ export const adminRegister = async (name, email, password, phoneNumber, onSucces
     } catch (error) {
         console.log(error);
     }
+};
+
+export const courierRegistration = async (name, email, password, phoneNumber, onSuccess, setMsg) => {
+    try {
+        const data = {name, email, password, phoneNumber}
+        const response = await axios.post(`${urlEndpoint}/courier/registration`, data, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if (response.status !== 201) {
+            setMsg(response.data.msg);
+            return;
+        }
+
+        onSuccess(response.data);
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 export const userLogout = async (onLogout) => {

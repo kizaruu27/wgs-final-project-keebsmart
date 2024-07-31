@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import Navbar from "../../../../Layouts/Navbar";
 import ProductListHeader from "../../../../Layouts/Product/ProductListHeader";
-import { getSwitchesData } from "../../../../../server/productController";
+import { getSwitchesForCustomer } from "../../../../../server/productController";
 import ProductList from "../../../../Layouts/Product/ProductList";
 
 export default function SwitchPage() {
     const [switches, setSwitches] = useState([]);
 
     useEffect(() => {
-        getSwitchesData((data) => {
+        getSwitchesForCustomer((data) => {
+            console.log(data);
             setSwitches(data);
         });
     }, [])

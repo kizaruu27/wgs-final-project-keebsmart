@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import Navbar from "../../../../Layouts/Navbar";
 import ProductList from "../../../../Layouts/Product/ProductList";
 import ProductListHeader from "../../../../Layouts/Product/ProductListHeader";
-import { getKeycapsData } from "../../../../../server/productController";
+import { getKeycapsForCustomer } from "../../../../../server/productController";
 
 export default function KeycapsPage() {
     const [keycaps, setKeycaps] = useState([]);
 
     useEffect(() => {
-        getKeycapsData((data) => {
+        getKeycapsForCustomer((data) => {
             setKeycaps(data);
         })
     }, [])

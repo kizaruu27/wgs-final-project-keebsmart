@@ -1,4 +1,6 @@
+import { convertCurrency } from "../../../../server/currency";
 import { GoToPage } from "../../../../server/pageController";
+import { changeStatusColor } from "../../../../server/shipmentController";
 
 export default function ShipmentTable ({shipments, title}) {
     const shipmentStatus = (shipment) => {
@@ -18,6 +20,9 @@ export default function ShipmentTable ({shipments, title}) {
                                     Shipment ID
                                 </th>
                                 <th scope="col" className="px-6 py-3 text-nowrap">
+                                    Price
+                                </th>
+                                <th scope="col" className="px-6 py-3 text-nowrap">
                                     Shipment Name
                                 </th>
                                 <th scope="col" className="px-6 py-3 text-nowrap">
@@ -31,14 +36,17 @@ export default function ShipmentTable ({shipments, title}) {
                         <tbody>
                             {shipments.map((shipment, key) => (
                                 <tr key={key} className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600">
-                                    <th scope="row" className="px-6 py-4 font-light text-nowrap text-gray-900 whitespace-nowrap dark:text-white">
+                                    <th scope="row" onClick={() => GoToPage(`/courier/shipment/${shipment.id}`)} className="px-6 py-4 font-light text-nowrap text-gray-900 whitespace-nowrap dark:text-white hover:underline cursor-pointer">
                                         {shipment.id}
                                     </th>
+                                    <td className="px-6 py-4 text-nowrap">
+                                        Rp. {convertCurrency(shipment.order.paymentMethodId === 1 ? shipment.order.totalPrice : 0)}
+                                    </td>
                                     <td className="px-6 py-4 text-nowrap">
                                         {shipment.shipmentName}
                                     </td>
                                     <td className="px-6 py-4 text-nowrap">
-                                        <span className="bg-blue-100 rounded-xl text-blue-800 text-xs font-medium me-2 px-2.5 py-0.5 text-nowrap">{shipment.currentStatus ? shipment.currentStatus : shipmentStatus(shipment)} </span>
+                                        <span className={`${changeStatusColor(shipmentStatus(shipment))} rounded-xl text-xs font-medium me-2 px-2.5 py-0.5 text-nowrap`}>{shipmentStatus(shipment) === 'Finish' ? 'Delivered' : shipmentStatus(shipment)} </span>
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className="bg-yellow-100 rounded-xl text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 cursor-pointer text-nowrap" onClick={() => GoToPage(`/courier/shipment/${shipment.id}`)}>detail</span>

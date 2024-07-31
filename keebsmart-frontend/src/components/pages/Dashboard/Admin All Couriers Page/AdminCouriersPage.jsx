@@ -1,26 +1,27 @@
 import DashboardContent from "../../../fragments/DashboardContent";
 import DashboardFragment from "../../../fragments/DashboardFragment";
+import UserTable from "../../../Layouts/Admin Dashboard/User Table/UserTable";
 import DashboardNavbar from "../../../Layouts/DashboardNavbar";
 import DashboardSideMenu from "../../../Layouts/DashboardSideMenu";
-import { getAllUser, changeUserStatus } from "../../../../server/userDataController"; 
 import { useEffect, useState } from "react";
+import { getAllUser } from "../../../../server/userDataController";
 import { GoToPage } from "../../../../server/pageController";
-import UserTable from "../../../Layouts/Admin Dashboard/User Table/UserTable";
+import { changeUserStatus } from "../../../../server/userDataController";
 
-export default function AdminAllUsers() {
-    const [users, setUsers] = useState([]);
+export default function AdminCouriersPage() {
+    const [couriers, setCouriers] = useState([]);
 
     useEffect(() => {
         getAllUser((res) => {
-            console.log(res.data.users.map(user => user.orders.map(item => item.totalPrice).reduce((acc, accValue) => acc + accValue, 0)));
-            setUsers(res.data.users.filter(item => item.access === 'customer'));
+            console.log(res.data.users.filter(item => item.access === 'courier'));
+            setCouriers(res.data.users.filter(item => item.access === 'courier'));
         })
     }, []);
 
     const setuserStatus = (id, status) => {
         changeUserStatus(id, status, (data) => {
             console.log(data);
-            GoToPage('/admin/users', 100);
+            GoToPage('/admin/couriers', 100);
         })
     }
 
@@ -29,7 +30,7 @@ export default function AdminAllUsers() {
             <DashboardNavbar />
             <DashboardSideMenu />
             <DashboardContent>
-                <UserTable users={users} setuserStatus={setuserStatus} access='customer' />
+                <UserTable users={couriers} setuserStatus={setuserStatus} access='courier' />
             </DashboardContent>
         </DashboardFragment>
     )

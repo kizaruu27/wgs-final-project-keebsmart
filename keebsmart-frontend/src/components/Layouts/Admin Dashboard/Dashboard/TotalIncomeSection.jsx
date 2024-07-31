@@ -4,7 +4,7 @@ export default function TotalIncomeSection({income}) {
             <div>
                 <div className="w-full flex flex-col gap-2">
                     <h3 className="text-xl font-normal text-gray-500 dark:text-gray-400">Total Income</h3>
-                    <span className="text-2xl font-bold leading-none text-gray-900 sm:text-3xl dark:text-white">Rp. {income}</span>
+                    <span className="text-2xl font-bold leading-none text-gray-900 sm:text-3xl dark:text-white">{income}</span>
                     <p className="flex items-center text-lg text-wrap font-normal text-gray-500 dark:text-gray-400">
                         Total income from solded products so far
                     </p>

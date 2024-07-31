@@ -67,10 +67,14 @@ app.get('/users', accessValidation, async (req, res) => {
     try {
         const users = await prisma.user.findMany({
             include: {
-                orders: true
+                orders: true,
+                shipment: true
             },
             orderBy: {
                 createdAt: 'desc'
+            },
+            where: {
+                isDeleted: false
             }
         });
         res.json({
@@ -254,9 +258,13 @@ app.post('/registration/admin', accessValidation, async (req, res) => {
 app.delete('/delete/admin/:id', accessValidation, async (req, res) => {
     try {
         const { id } = req.params;
-        const deletedAdmin = await prisma.user.delete({
+        const deletedAdmin = await prisma.user.update({
             where: {
                 id
+            },
+            data: {
+                isDeleted: true,
+                email: null
             }
         });
 
@@ -305,6 +313,42 @@ app.post('/admin/registration', async (req, res) => {
         console.log(error);
     }
 });
+
+// API for courier registration
+app.post('/courier/registration', accessValidation, async (req, res) => {
+    try {
+        const {name, email, password, phoneNumber} = req.body;
+    
+        // Validate email
+        const similarEmail = await prisma.user.findUnique({
+            where: {
+                email
+            }
+        });
+    
+        if (similarEmail) {
+            return res.json({
+                msg: 'Email sudah digunakan! Silahkan gunakan email yg berbeda!'
+            })
+        };
+
+        const hashPassword = await bcrypt.hash(password, 10);
+    
+        const newAdmin = await prisma.user.create({
+            data: {
+                name, email, password: hashPassword, phoneNumber, isActive: true, access: 'courier'
+            }
+        });
+
+        res.status(201);
+        res.json({
+            newAdmin,
+            msg: 'Akun berhasil dibuat!'
+        })
+    } catch (error) {
+        console.log(error);
+    }
+})
 
 // API for login
 app.post('/login', async (req, res) => {
@@ -965,15 +1009,15 @@ app.get('/product/variation/:id', async (req, res) => {
     res.json(variation);
 });
 
-// API for get switch products
-app.get('/products/switch', async (req, res) => {
+// API for get switch products - customer
+app.get('/switches', async (req, res) => {
     try {
         const switches = await prisma.products.findMany({
             where: {
                 category: {
                     categoryName: 'Switches',
                 },
-                // isActive: true,
+                isActive: true,
                 isDeleted: false
             },
             include: {
@@ -996,7 +1040,69 @@ app.get('/products/switch', async (req, res) => {
     }
 });
 
-// API for get keyboards
+// API for get keyboards for customer
+app.get('/keyboards', async (req, res) => {
+    try {
+        const keyboards = await prisma.products.findMany({
+            where: {
+                category: {
+                    categoryName: 'Keyboards',
+                },
+                isActive: true,
+                isDeleted: false
+            },
+            include: {
+                productItem: {
+                    where: {
+                        isDeleted: false
+                    }
+                },
+                productImage: true,
+                category: true
+            }
+        });
+        
+        res.json({
+            keyboards,
+            msg: 'Berhasil mendapatkan data keyboards!'
+        })
+    } catch (error) {
+        res.json({error})
+    }
+});
+
+// API for get keycaps for customer
+app.get('/keycaps', async (req, res) => {
+    try {
+        const keycaps = await prisma.products.findMany({
+            where: {
+                category: {
+                    categoryName: 'Keycaps',
+                },
+                isActive: true,
+                isDeleted: false
+            },
+            include: {
+                productItem: {
+                    where: {
+                        isDeleted: false
+                    }
+                },
+                productImage: true,
+                category: true
+            }
+        });
+        
+        res.json({
+            keycaps,
+            msg: 'Berhasil mendapatkan data keycaps!'
+        })
+    } catch (error) {
+        res.json({error})
+    }
+});
+
+// API for get keyboards - admin
 app.get('/products/keyboards', async (req, res) => {
     try {
         const keyboards = await prisma.products.findMany({
@@ -1030,7 +1136,7 @@ app.get('/products/keyboards', async (req, res) => {
     }
 });
 
-// API for get product keycaps
+// API for get product keycaps - admin
 app.get('/products/keycaps', async (req, res) => {
     try {
         const keycaps = await prisma.products.findMany({
@@ -1059,7 +1165,38 @@ app.get('/products/keycaps', async (req, res) => {
     } catch (error) {
         res.json({error})
     }
-})
+});
+
+// Get switches data for customer
+app.get('/products/switch', async (req, res) => {
+    try {
+        const switches = await prisma.products.findMany({
+            where: {
+                category: {
+                    categoryName: 'Switches',
+                },
+                // isActive: true,
+                isDeleted: false
+            },
+            include: {
+                productItem: {
+                    where: {
+                        isDeleted: false
+                    }
+                },
+                productImage: true,
+                category: true
+            }
+        });
+        
+        res.json({
+            switches,
+            msg: 'Berhasil mendapatkan data switches!'
+        })
+    } catch (error) {
+        res.json({error})
+    }
+});
 
 
 // API for edit product data
@@ -1545,6 +1682,7 @@ app.post('/shipment', accessValidation, async (req, res) => {
 // API for get all shipments
 app.get('/shipments', accessValidation, async (req, res) => {
     try {
+        const userId = req.userId;
         const shipments = await prisma.shipping.findMany({
             include: {
                 order: {
@@ -1556,6 +1694,9 @@ app.get('/shipments', accessValidation, async (req, res) => {
                         }
                     }
                 }
+            },
+            where: {
+                userId
             },
             orderBy: {
                 createdAt: 'desc'
@@ -1575,6 +1716,7 @@ app.get('/shipments', accessValidation, async (req, res) => {
 // API for get shipments by status
 app.get('/shipments/ongoing', accessValidation, async (req, res) => {
     try {
+        const userId = req.userId;
         const shipments = await prisma.shipping.findMany({
             include: {
                 order: {
@@ -1587,6 +1729,9 @@ app.get('/shipments/ongoing', accessValidation, async (req, res) => {
                         address: true
                     }
                 }
+            },
+            where: {
+                userId
             }
         })
 

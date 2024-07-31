@@ -1,4 +1,6 @@
-import SetOrderButton from "../SetOrderButton"
+import { convertCurrency } from "../../../server/currency";
+import SetOrderButton from "../SetOrderButton";
+import { Alert } from "flowbite-react";
 
 export default function ShipmentOrderItems({canCancel, carts, order, status, paymentType, access, redirect}) {
     return (
@@ -25,10 +27,33 @@ export default function ShipmentOrderItems({canCancel, carts, order, status, pay
                     </div>
                 </div>
                 <div>
+                    { paymentType === 'Cash On Delivery' && (status === 'On Delivery' || status === 'Courier Pick Up') &&
+                        <Alert color="warning" rounded className="mb-5">
+                            <span className="font-medium">Reminder!</span> Don't forget to collect the payment from the buyer
+                        </Alert>
+                    }
                     <div className="border flex flex-col justify-center rounded-lg shadow-lg p-5">
-                        <p className="text-lg font-semibold mt-5">Total Items: <span className="font-normal">{order.orderTotal}</span></p>
-                        <p className="text-lg font-semibold mt-5">Total Price: <span className="font-normal">Rp. {order.totalPrice}</span></p>
-                        <div className="flex gap-2">
+                        <table className="ml-9" style={{width: 300}}>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <p className="text-lg font-semibold">Total Items:</p>
+                                    </td>
+                                    <td>
+                                        <p className="font-normal text-center">{order.orderTotal}</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <p className="text-lg font-semibold">Total Price:</p>
+                                    </td>
+                                    <td>
+                                        <p className="font-normal text-center text-nowrap">{ convertCurrency(paymentType === 'Cash On Delivery' ? order.totalPrice : 0 )}</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div className="flex gap-2 justify-center">
                             <SetOrderButton status={status} orderId={order.orderId} paymentMethod={paymentType} redirect={redirect}/>
                             <button hidden={canCancel() ? false : true} onClick={() => cancelShipment('Canceled')} type="button" className={`focus:outline-none w-44 text-white bg-red-500 hover:bg-red-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 my-5 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800`}>Cancel Order</button>
                         </div>

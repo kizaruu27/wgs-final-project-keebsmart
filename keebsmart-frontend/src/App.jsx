@@ -35,6 +35,7 @@ import OrderConfirmation from './components/pages/User/Orders/OrderConfirmation'
 import AllUserOrdersPage from './components/pages/User/Orders/AllUserOrdersPage';
 import OrderDetailPage from './components/pages/User/Product Detail/OrderDetailPage';
 import AdminOrderPending from './components/pages/Dashboard/Admin All Order Page/AdminOrderPending';
+import AdminCouriersPage from './components/pages/Dashboard/Admin All Couriers Page/AdminCouriersPage';
 
 export default function App() {
     return (
@@ -68,7 +69,8 @@ export default function App() {
                     <Route path="/admin/order/canceled" Component={AdminOrderCanceled}/>
                     <Route path="/admin/order/finish" Component={AdminOrderFinished}/>
                     <Route path="/admin/users" Component={AdminAllUsers}/>
-                    <Route path="/admin/all-admins" Component={SuperAdminAllAdminPage}/>
+                    <Route path="/admin/couriers" Component={AdminCouriersPage}/>
+                    <Route path="/super-admin" Component={SuperAdminAllAdminPage}/>
                     <Route path="/courier" Component={CourierDashboardPage}/>
                     <Route path="/courier/shipments" Component={CourierAllShipments}/>
                     <Route path="/courier/shipment/:id" Component={ShipmentDetail}/>

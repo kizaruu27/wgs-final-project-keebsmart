@@ -6,6 +6,7 @@ import OrderTimeline from "../../../Layouts/Admin Dashboard/Order Detail/OrderTi
 import { setOrderStatus } from "../../../../server/orderController";
 import DeleteModal from "../../../Layouts/Modals/DeleteModal";
 import { GoToPage } from "../../../../server/pageController";
+import { convertCurrency } from "../../../../server/currency";
 
 export default function OrderDetailPage() {
     const { id } = useParams();
@@ -71,7 +72,7 @@ export default function OrderDetailPage() {
                                             <p className="text-sm font-normal text-gray-500 dark:text-gray-400"><span className="font-medium text-gray-900 dark:text-white">Product ID:</span> {item.productItem.unitId.substring(0, 8).toUpperCase()}</p>
                                             <div className="flex items-center justify-end gap-4">
                                                 <p className="text-base font-normal text-gray-900 dark:text-white">x{item.qty}</p>
-                                                <p className="text-xl font-bold leading-tight text-gray-900 dark:text-white">Rp. {item.subTotalPrice}</p>
+                                                <p className="text-xl font-bold leading-tight text-gray-900 dark:text-white">{convertCurrency(item.subTotalPrice)}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -86,13 +87,13 @@ export default function OrderDetailPage() {
                                     <div className="space-y-2">
                                         <dl className="flex items-center justify-between gap-4">
                                             <dt className="font-normal text-gray-500 dark:text-gray-400">Shipment</dt>
-                                            <dd className="font-medium text-gray-900 dark:text-white">Rp. 0</dd>
+                                            <dd className="font-medium text-gray-900 dark:text-white">Rp. 0,00</dd>
                                         </dl>
                                     </div>
 
                                     <dl className="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
                                         <dt className="text-lg font-bold text-gray-900 dark:text-white">Total</dt>
-                                        <dd className="text-lg font-bold text-gray-900 dark:text-white">Rp. {order.totalPrice}</dd>
+                                        <dd className="text-lg font-bold text-gray-900 dark:text-white">{convertCurrency(order.totalPrice)}</dd>
                                     </dl>
                                 </div>
                             </div>

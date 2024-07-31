@@ -3,6 +3,45 @@ import { urlEndpoint } from "./url";
 
 const token = localStorage.getItem('token');
 
+export const changeStatusColor = (orderStatus) => {
+    let statusColor = '';
+
+    switch (orderStatus) {
+        case 'Checkout Success':
+            statusColor = 'bg-yellow-100 text-yellow-800'
+            break;
+        case 'On Process':
+            statusColor = 'bg-blue-100 text-blue-800';
+            break;
+        case 'On Packing':
+            statusColor = 'bg-blue-100 text-blue-800';
+            break;
+        case 'Waiting Courier For Pick Up':
+            statusColor = 'bg-blue-100 text-blue-800';
+            break;
+        case 'Courier Pick Up':
+            statusColor = ('bg-blue-100 text-blue-800')
+            break;
+        case 'On Delivery':
+            statusColor = ('bg-blue-100 text-blue-800')
+            break;
+        case 'Delivered':
+            statusColor = ('bg-green-100 text-green-800')
+            break;
+        case 'Finish':
+            statusColor = ('bg-green-100 text-green-800')
+            break;
+        case 'Canceled':
+            statusColor = ('bg-red-100 text-red-800')
+            break;
+        default:
+            statusColor = ('bg-blue-100 text-blue-800')
+            break;
+    }
+
+    return statusColor;
+};
+
 export const createNewShipment = async (userId, orderId, onSucces) => {
     try {
         const newShipment = await axios.post(`${urlEndpoint}/shipment`, {

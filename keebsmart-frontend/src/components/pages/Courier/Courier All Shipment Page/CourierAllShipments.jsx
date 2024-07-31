@@ -10,34 +10,20 @@ import { GoToPage } from "../../../../server/pageController"
 
 export default function CourierAllShipments() {
     const [shipments, setShipments] = useState([]);
-    const [userData, setUserData] = useState([]);
-
-    useEffect(() => {
-        getUserData((data) => {
-            console.log(data);
-            setUserData(data);
-        }, (error) => {
-            console.log(error);
-        }, () => {
-            console.log('Token Empty');
-        })
-    }, [0])
 
     useEffect(() => {
         getShipments((data) => {
-            console.log(data.shipments.filter(shipment => shipment.userId === userData.id));
+            console.log(data);
             setShipments(data.shipments); 
         })
     }, [0]);
-
-    
 
     return (
         <DashboardFragment>
         <DashboardNavbar />
         <DashboardCourierSideMenu />
         <DashboardContent>
-            <ShipmentTable shipments={shipments.filter(shipment => shipment.userId === userData.id)} title='My Shipments' />
+            <ShipmentTable shipments={shipments} title='My Shipments' />
         </DashboardContent>
     </DashboardFragment>
     )

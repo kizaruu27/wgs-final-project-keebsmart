@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import Navbar from "../../../../Layouts/Navbar"
-import { getKeyboardsData } from "../../../../../server/productController"
+import { getKeyboardsData, getKeyboardsForCustomer } from "../../../../../server/productController"
 import FeaturedProductItem from "../../../../elements/FeaturedProductItem";
 import ProductListHeader from "../../../../Layouts/Product/ProductListHeader";
 import ProductList from "../../../../Layouts/Product/ProductList";
@@ -9,7 +9,7 @@ export default function KeyboardPage() {
     const [keyboards, setKeyboards] = useState([]);
     
     useEffect( () => {
-        getKeyboardsData((data) => {
+        getKeyboardsForCustomer((data) => {
             console.log(data);
             setKeyboards(data);
         })

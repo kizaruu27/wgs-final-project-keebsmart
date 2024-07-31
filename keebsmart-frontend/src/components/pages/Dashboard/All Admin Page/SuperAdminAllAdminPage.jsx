@@ -21,7 +21,7 @@ export default function SuperAdminAllAdminPage() {
     useEffect(() => {
         getUserData((data) => {
             console.log(data);
-            if (data.access !== 'super-admin') GoToPage('/admin', 100);
+            if (data.access !== 'super-admin') GoToPage('/login', 100);
         }, (error) => {
             console.log(error);
         }, () => {
@@ -32,14 +32,14 @@ export default function SuperAdminAllAdminPage() {
     const setuserStatus = (id, status) => {
         changeUserStatus(id, status, (data) => {
             // console.log(data);
-            GoToPage('/admin/all-admins', 100);
+            GoToPage('/super-admin', 100);
         })
     }
 
     const onDeleteAdmin = (id) => {
         deleteAdmin(id, (data) => {
             // console.log(data);
-            GoToPage('/admin/all-admins', 100);
+            GoToPage('/super-admin', 100);
         })
     }
 

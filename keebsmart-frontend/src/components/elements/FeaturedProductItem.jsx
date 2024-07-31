@@ -1,3 +1,4 @@
+import { convertCurrency } from "../../server/currency"
 import { GoToPage } from "../../server/pageController"
 import { CardBody, CardContainer, CardItem } from "../ui/3d-card"
 
@@ -32,7 +33,7 @@ export default function FeaturedProductItem({productName, description, img, pric
                         className="text-neutral-400 text-md font-semibold"
                     >
                         <div className="bg-black text-white p-2 px-4 rounded-full">
-                            Rp. {price}
+                            {convertCurrency(price)}
                         </div>
                     </CardItem>
                 </div>

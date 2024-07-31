@@ -2,6 +2,7 @@ import { useEffect, useState } from "react"
 import { deleteCart, updateUserCart } from "../../../server/cartController";
 import { GoToPage } from "../../../server/pageController";
 import { getProductItemDetail } from "../../../server/productController";
+import { convertCurrency } from "../../../server/currency";
 
 export default function CartItem({id, productItemId, image, qty, price, productName, variationValue, onChecked}) {
     const [currentQty, setCurrentQty] = useState(qty);
@@ -103,7 +104,7 @@ export default function CartItem({id, productItemId, image, qty, price, productN
                 </button>
                 </div>
                 <div className="text-end md:order-4 md:w-32">
-                    <p className="text-base font-bold text-gray-900 dark:text-white">Rp. {totalPrice}</p>
+                    <p className="text-base font-bold text-gray-900 dark:text-white">{convertCurrency(totalPrice)}</p>
                 </div>
             </div>
 

@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import Navbar from "../../../Layouts/Navbar";
 import { useNavigate, useLocation } from "react-router-dom";
 import { makeNewOrder } from "../../../../server/orderController";
+import { convertCurrency } from "../../../../server/currency";
 
 export default function OrderSummaryPage() {
     const location = useLocation();
@@ -73,7 +74,7 @@ export default function OrderSummaryPage() {
                                                     </div>
                                                 </td>
                                                 <td className="p-4 text-base font-normal text-gray-900 dark:text-white">x{item.qty}</td>
-                                                <td className="p-4 text-right text-base font-bold text-gray-900 dark:text-white">Rp. {item.subTotalPrice}</td>
+                                                <td className="p-4 text-right text-base font-bold text-gray-900 dark:text-white">{convertCurrency(item.subTotalPrice)}</td>
                                             </tr>
                                         ))}
                                     </tbody>
@@ -86,7 +87,7 @@ export default function OrderSummaryPage() {
                                 <div className="space-y-4">
                                     <dl className="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
                                         <dt className="text-lg font-bold text-gray-900 dark:text-white">Total</dt>
-                                        <dd className="text-lg font-bold text-gray-900 dark:text-white">Rp. {totalPrice}</dd>
+                                        <dd className="text-lg font-bold text-gray-900 dark:text-white">{convertCurrency(totalPrice)}</dd>
                                     </dl>
                                 </div>
 

@@ -318,3 +318,30 @@ export const addNewCart = async (productItemId, qty, onSuccess) => {
         console.error(error);
     }
 }
+
+export const getSwitchesForCustomer = async (onSucces) => {
+    try {
+        const response = await axios.get(`${urlEndpoint}/switches`);
+        onSucces(response.data.switches);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const getKeyboardsForCustomer = async (onSucces) => {
+    try {
+        const response = await axios.get(`${urlEndpoint}/keyboards`);
+        onSucces(response.data.keyboards);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const getKeycapsForCustomer = async (onSucces) => {
+    try {
+        const response = await axios.get(`${urlEndpoint}/keycaps`);
+        onSucces(response.data.keycaps);
+    } catch (error) {
+        console.log(error);
+    }
+}

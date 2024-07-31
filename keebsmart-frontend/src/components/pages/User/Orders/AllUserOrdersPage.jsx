@@ -3,6 +3,7 @@ import Navbar from "../../../Layouts/Navbar";
 import { changeStatusColor, changeStatusColorForTable, getUserOrders, setOrderStatus } from "../../../../server/orderController";
 import DeleteModal from "../../../Layouts/Modals/DeleteModal";
 import { GoToPage } from "../../../../server/pageController";
+import { convertCurrency } from "../../../../server/currency";
 
 export default function AllUserOrdersPage() {
     const [orders, setOrders] = useState([]);
@@ -60,7 +61,7 @@ export default function AllUserOrdersPage() {
 
                                         <dl className="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">
                                             <dt className="text-base font-medium text-gray-500 dark:text-gray-400">Price:</dt>
-                                            <dd className="mt-1.5 text-base font-semibold text-gray-900 dark:text-white">Rp. {item.totalPrice}</dd>
+                                            <dd className="mt-1.5 text-base font-semibold text-gray-900 dark:text-white">{convertCurrency(item.totalPrice)}</dd>
                                         </dl>
 
                                         <dl className="w-1/2 sm:w-1/4 lg:w-auto lg:flex-1">

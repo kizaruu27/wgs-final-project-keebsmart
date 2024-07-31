@@ -108,13 +108,14 @@ model VariationOptions {
 model User {
   id          String        @id @default(uuid())
   name        String
-  email       String        @unique
+  email       String?       @unique
   password    String
   phoneNumber String
   isActive    Boolean
   access      String
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
+  isDeleted   Boolean       @default(false)
   cart        Cart[]
   inventory   Inventory[]
   messeges    Messeges[]

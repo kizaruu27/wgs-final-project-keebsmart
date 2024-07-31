@@ -1,3 +1,5 @@
+import { convertCurrency } from "../../../server/currency";
+
 export default function CartOrderSummary({subTotalPrice, onCheckOut}) {
     return (
         <div className="mx-auto mt-6 max-w-4xl flex-1 space-y-6 lg:mt-0 lg:w-full">
@@ -8,17 +10,17 @@ export default function CartOrderSummary({subTotalPrice, onCheckOut}) {
                 <div className="space-y-2">
                     <dl className="flex items-center justify-between gap-4">
                         <dt className="text-base font-normal text-gray-500 dark:text-gray-400">Subtotal</dt>
-                        <dd className="text-base font-medium text-gray-900 dark:text-white">Rp. {subTotalPrice}</dd>
+                        <dd className="text-base font-medium text-gray-900 dark:text-white">{convertCurrency(subTotalPrice)}</dd>
                     </dl>
                     <dl className="flex items-center justify-between gap-4">
                         <dt className="text-base font-normal text-gray-500 dark:text-gray-400">Shipment</dt>
-                        <dd className="text-base font-medium text-gray-900 dark:text-white">Rp. 0</dd>
+                        <dd className="text-base font-medium text-gray-900 dark:text-white">Rp. 0,00</dd>
                     </dl>
                 </div>
 
                 <dl className="flex items-center justify-between gap-4 border-t border-gray-200 pt-2 dark:border-gray-700">
                     <dt className="text-base font-bold text-gray-900 dark:text-white">Total</dt>
-                    <dd className="text-base font-bold text-gray-900 dark:text-white">Rp. {subTotalPrice}</dd>
+                    <dd className="text-base font-bold text-gray-900 dark:text-white">{convertCurrency(subTotalPrice)}</dd>
                 </dl>
             </div>
 

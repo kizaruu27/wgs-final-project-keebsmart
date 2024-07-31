@@ -4,6 +4,7 @@ import { useLocation } from "react-router-dom";
 import { getCartsById } from "../../../../server/cartController";
 import { createNewAddress } from "../../../../server/userDataController";
 import { useNavigate } from "react-router-dom";
+import { convertCurrency } from "../../../../server/currency";
 
 export default function CheckoutPage() {
     const location = useLocation();
@@ -209,7 +210,7 @@ export default function CheckoutPage() {
 
                                             <div className="flex items-center justify-between md:order-3 md:justify-end">
                                                 <div className="text-end md:order-4 md:w-32">
-                                                    <p className="text-base font-bold text-gray-900 dark:text-white">Rp. {item.subTotalPrice}</p>
+                                                    <p className="text-base font-bold text-gray-900 dark:text-white">{convertCurrency(item.subTotalPrice)}</p>
                                                 </div>
                                             </div>
 
@@ -224,12 +225,12 @@ export default function CheckoutPage() {
                                 <div className="-my-3 divide-y divide-gray-200 dark:divide-gray-800">
                                     <dl className="flex items-center justify-between gap-4 py-3">
                                         <dt className="text-base font-normal text-gray-500 dark:text-gray-400">Subtotal</dt>
-                                        <dd className="text-base font-medium text-gray-900 dark:text-white">Rp. {totalPrice}</dd>
+                                        <dd className="text-base font-medium text-gray-900 dark:text-white">{convertCurrency(totalPrice)}</dd>
                                     </dl>
 
                                     <dl className="flex items-center justify-between gap-4 py-3">
                                         <dt className="text-base font-bold text-gray-900 dark:text-white">Total</dt>
-                                        <dd className="text-base font-bold text-gray-900 dark:text-white">Rp. {totalPrice}</dd>
+                                        <dd className="text-base font-bold text-gray-900 dark:text-white">{convertCurrency(totalPrice)}</dd>
                                     </dl>
                                 </div>
                             </div>

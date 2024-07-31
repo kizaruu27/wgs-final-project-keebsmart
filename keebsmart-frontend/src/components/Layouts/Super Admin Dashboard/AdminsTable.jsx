@@ -1,6 +1,20 @@
+import { useState } from "react"
 import ModalFormAddAdmin from "../ModalFormAddAdmin"
+import DeleteModal from "../Modals/DeleteModal"
 
 export default function AdminsTable({admins, setAdminStatus, openModal, setOpenModal, onDeleteAdmin}) {
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [selectedId, setSelectedId] = useState(0);
+
+    const setDelete = (id) => {
+        setOpenDeleteModal(true);
+        setSelectedId(id);
+    }
+
+    const deleteAdmin = (selectedId) => {
+        onDeleteAdmin(selectedId);
+    }
+
     return (
         <div className="bg-white rounded-xl shadow-md p-7">
             <h1 className='font-medium text-gray-500 text-2xl my-5'>Admins</h1>
@@ -44,12 +58,13 @@ export default function AdminsTable({admins, setAdminStatus, openModal, setOpenM
                             </td>
                             <td className="px-6 py-4 text-nowrap">
                                 {admin.isActive ? <span onClick={() => setAdminStatus(admin.id, false)} className="bg-yellow-100 text-yellow-800 cursor-pointer text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl dark:bg-yellow-900 dark:text-yellow-300">deactivate</span> : <span onClick={() => setAdminStatus(admin.id, true)} className="bg-green-100 text-green-800 cursor-pointer text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl dark:bg-green-900 dark:text-green-300">activate</span>}
-                                <span onClick={() => onDeleteAdmin(admin.id)} className="bg-red-100 text-red-800 cursor-pointer text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl dark:bg-yellow-900 dark:text-yellow-300">delete</span>
+                                <span onClick={() => setDelete(admin.id)} className="bg-red-100 text-red-800 cursor-pointer text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl dark:bg-yellow-900 dark:text-yellow-300">delete</span>
                             </td>
                         </tr>
                     ))}
                     </tbody>
                 </table>
+                <DeleteModal openConfirmationModal={openDeleteModal} setOpenConfirmationModal={setOpenDeleteModal} msg='Are you sure want to delete this admin?' onClickDelete={() => deleteAdmin(selectedId)} />
                 <ModalFormAddAdmin openModal={openModal} onCloseModal={() => setOpenModal(false)} />
             </div>
         </div>

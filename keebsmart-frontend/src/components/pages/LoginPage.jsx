@@ -36,7 +36,7 @@ export default function LoginPage() {
         setAlertType('success');
         setIsClick(true);
         setAlertMsg('Login as super admin successfull!');
-        GoToPage('/admin', 1500);
+        GoToPage('/super-admin', 1500);
     }
 
     const onCourierLogin = () => {
