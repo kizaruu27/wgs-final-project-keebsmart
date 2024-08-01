@@ -1,8 +1,6 @@
 import axios from 'axios';
-import { urlEndpoint } from './url';
+import { saveToken, urlEndpoint, token } from './url';
 import { jwtDecode } from 'jwt-decode';
-
-const token = localStorage.getItem('token');
 
 export const userLogin = async (email, password, onAdminLogin, onSuperAdminLogin, onCourierLogin,  onCustomerLogin, onLoginFailed) => {
     try {
@@ -14,8 +12,9 @@ export const userLogin = async (email, password, onAdminLogin, onSuperAdminLogin
 
         const { token } = response.data;
         const payload = jwtDecode(token);
-        localStorage.setItem('token', token); 
 
+        saveToken(token);
+        
         switch (payload.access) {
             case 'admin':
                 onAdminLogin();

@@ -1,8 +1,7 @@
 import axios from "axios";
-import { urlEndpoint } from "./url";
+import { urlEndpoint, token } from "./url";
 import { GoToPage } from "./pageController";
 import { userLogout } from "./auth";
-const token = localStorage.getItem('token');
 
 const config = {
     headers: {

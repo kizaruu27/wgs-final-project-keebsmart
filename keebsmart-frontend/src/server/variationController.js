@@ -1,6 +1,5 @@
 import axios from "axios";
-import { urlEndpoint } from "./url";
-const token = localStorage.getItem('token');
+import { urlEndpoint, token } from "./url";
 
 export const getVariations = async (onSuccess) => {
     try {

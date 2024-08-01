@@ -1,6 +1,5 @@
 import axios from "axios";
-import { urlEndpoint } from "./url";
-const token = localStorage.getItem('token');
+import { urlEndpoint, token } from "./url";
 
 export const getAllCategory = async (setCategories) => {
     try {
@@ -14,7 +13,6 @@ export const getAllCategory = async (setCategories) => {
 
 export const addNewProduct = async (inventoryId, productName, description, brand, categoryId, specs, imagePreviewUrl, imageUrls, onSuccess, onFailed) => {
     try {
-        const token = localStorage.getItem('token');
         const formData = new FormData();
         formData.append('inventoryId', inventoryId);
         formData.append('productName', productName);
@@ -99,7 +97,6 @@ export const getProductVariation = async (id, setVariation) => {
 
 export const addProductItem = async ( productId, price, qty, status, manufacturer, inventoryItemId, images, onSuccess, onFailed) => {
     try {
-        const token = localStorage.getItem('token');
         const formData = new FormData();
         formData.append('productId', productId);
         formData.append('qty', qty);
@@ -174,7 +171,6 @@ export const getKeyboardsData = async (setKeyboards, onGetStatistic) => {
 
 export const deleteProduct = async (productId, onDelete, onFailed) => {
     try {
-        const token = localStorage.getItem('token');
         const response = await axios.delete (`${urlEndpoint}/product/${productId}`, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -189,7 +185,6 @@ export const deleteProduct = async (productId, onDelete, onFailed) => {
 
 export const deleteProductItem = async (id, onSuccess, onFailed) => {
     try {
-        const token = localStorage.getItem('token');
         const response = await axios.delete(`${urlEndpoint}/product/item/${id}`, {
             headers: {
                 Authorization: `Bearer ${token}`
@@ -204,7 +199,6 @@ export const deleteProductItem = async (id, onSuccess, onFailed) => {
 
 export const updateProduct = async (id, productName, description, brand, categoryId, imagePreview, images, onSuccess, onFailed) => {
     try {
-        const token = localStorage.getItem('token');
         const formData = new FormData();
         formData.append('productName', productName);
         formData.append('description', description);
@@ -234,7 +228,6 @@ export const updateProduct = async (id, productName, description, brand, categor
 
 export const updateProductItem = async (id, price, qty, status, manufacturer, images, onSuccess, onFailed) => {
     try {
-        const token = localStorage.getItem('token');
 
         const formData = new FormData();
         formData.append('price', price);
@@ -245,13 +238,6 @@ export const updateProductItem = async (id, price, qty, status, manufacturer, im
         for (let i = 0; i < images.length; i++) {
             formData.append('images', images[i]);
         }
-
-        // const data = {
-        //     price,
-        //     qty,
-        //     status,
-        //     manufacturer
-        // }
 
         const response = await axios.put(`${urlEndpoint}/product/item/update/${id}`, formData, {
             headers: {
@@ -270,7 +256,6 @@ export const updateProductItem = async (id, price, qty, status, manufacturer, im
 
 export const activateProduct = async (id, isActive) => {
     try {
-        const token = localStorage.getItem('token');
         const response = await axios.patch(`${urlEndpoint}/product/activate/${id}`, {
             isActive
         },

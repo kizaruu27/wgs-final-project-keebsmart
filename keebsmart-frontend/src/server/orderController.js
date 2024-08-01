@@ -1,7 +1,6 @@
 import axios from "axios";
-import { urlEndpoint } from "./url";
+import { urlEndpoint, token } from "./url";
 
-const token = localStorage.getItem('token');
 const config = {
     headers: {
         Authorization: `Bearer ${token}`
