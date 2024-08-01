@@ -4,12 +4,17 @@ import { changeStatusColor, changeStatusColorForTable, getUserOrders, setOrderSt
 import DeleteModal from "../../../Layouts/Modals/DeleteModal";
 import { GoToPage } from "../../../../server/pageController";
 import { convertCurrency } from "../../../../server/currency";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function AllUserOrdersPage() {
     const [orders, setOrders] = useState([]);
     const [openCancelOrder, setOpenCancelOrder] = useState(false);
     const [selectedCanceledOrder, setSelectedCanceledOrder] = useState('');
     const [statusColor, setStatusColor] = useState('');
+
+    useEffect(() => {
+        validateUser('customer');
+    }, [])
 
     const currentStatus = (item) => {
         return item.currentStatus.map(item => item.status.status)[item.currentStatus.map(item => item.status.status).length - 1];

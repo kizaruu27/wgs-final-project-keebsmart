@@ -12,6 +12,7 @@ import Footer from '../Layouts/Footer';
 import { useEffect, useState } from 'react';
 import { getKeyboardsData, getKeycapsData, getSwitchesData } from '../../server/productController';
 import { GoToPage } from '../../server/pageController';
+import { validateUser } from '../../server/userValidation';
 
 export default function HomePage() {
     const [switchData, setSwitchData] = useState([]);
@@ -40,6 +41,10 @@ export default function HomePage() {
         
         fetchSwitchData();
     },[]);
+
+    useEffect(() => {
+        validateUser('customer');
+    }, [])
 
     return (
         <div className='mx-auto'>

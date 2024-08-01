@@ -8,6 +8,7 @@ import { useParams } from "react-router-dom";
 import { GoToPage } from "../../../../server/pageController";
 import { FileInput, Label } from "flowbite-react";
 import FormAlert from "../../../elements/Alert/FormAlert";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function EditProductItemForm () {
     const { id } = useParams();
@@ -29,6 +30,10 @@ export default function EditProductItemForm () {
     const [onShowAlert, setOnShowAlert] = useState(false);
 
     const itemStatus = ['in stock', 'empty'];
+
+    useEffect(() => {
+        validateUser('admin');
+    }, [])
 
     useEffect(() => {
         getProductItemDetail(id, (data) => {

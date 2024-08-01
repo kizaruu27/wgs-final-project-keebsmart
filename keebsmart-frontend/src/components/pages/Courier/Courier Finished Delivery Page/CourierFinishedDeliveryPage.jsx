@@ -6,9 +6,14 @@ import { useEffect, useState } from "react"
 import { getShipments } from "../../../../server/shipmentController"
 import ShipmentTable from "../../../Layouts/Courier/All Shipment Table/ShipmentTable"
 import { getUserData } from "../../../../server/userDataController"
+import { validateUser } from "../../../../server/userValidation"
 
 export default function CourierFinishedDeliveryPage() {
     const [shipments, setShipments] = useState([]);
+
+    useEffect(() => {
+        validateUser('courier');
+    }, [])
 
     useEffect(() => {
         getShipments((data) => {

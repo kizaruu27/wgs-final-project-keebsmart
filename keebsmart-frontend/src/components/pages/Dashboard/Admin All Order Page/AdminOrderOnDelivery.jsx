@@ -8,6 +8,7 @@ import { GoToPage } from "../../../../server/pageController";
 import DeleteModal from "../../../Layouts/DeleteModal";
 import OrderTable from "../../../Layouts/Admin Dashboard/Order Table/OrderTable";
 import OrderCalculationStatusSection from "../../../Layouts/Admin Dashboard/Order Detail/OrderCalculationStatusSection";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function AdminOrderOnDelivery () {
     const [orders, setOrders] = useState([]);
@@ -24,7 +25,11 @@ export default function AdminOrderOnDelivery () {
         }, (error) => {
             console.log(error);
         })
-    },[0])
+    },[0]);
+
+    useEffect(() => {
+        validateUser('admin');
+    }, []);
 
     return (
         <DashboardFragment>

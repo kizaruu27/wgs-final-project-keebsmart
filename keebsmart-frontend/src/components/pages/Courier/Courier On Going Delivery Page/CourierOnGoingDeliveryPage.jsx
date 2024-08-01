@@ -7,12 +7,17 @@ import { getShipments } from "../../../../server/shipmentController"
 import ShipmentTable from "../../../Layouts/Courier/All Shipment Table/ShipmentTable"
 import { getUserData } from "../../../../server/userDataController";
 import { convertCurrency } from "../../../../server/currency"
+import { validateUser } from "../../../../server/userValidation"
 
 export default function CourierOnGoingDeliveryPage() {
     const [shipments, setShipments] = useState([]);
     const [totalPickedUpShipments, setTotalPickedUpShipments] = useState(0);
     const [totalOnDeliveryShipments, setTotalOnDeliveryShipments] = useState(0);
     const [mustReceiveMoney, setMustReceiveMoney] = useState(0);
+
+    useEffect(() => {
+        validateUser('admin');
+    }, [])
 
     useEffect(() => {
         getShipments((data) => {

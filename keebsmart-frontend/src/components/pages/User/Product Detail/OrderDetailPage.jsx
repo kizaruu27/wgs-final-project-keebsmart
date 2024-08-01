@@ -7,6 +7,7 @@ import { setOrderStatus } from "../../../../server/orderController";
 import DeleteModal from "../../../Layouts/Modals/DeleteModal";
 import { GoToPage } from "../../../../server/pageController";
 import { convertCurrency } from "../../../../server/currency";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function OrderDetailPage() {
     const { id } = useParams();
@@ -22,7 +23,11 @@ export default function OrderDetailPage() {
     const [courier, setCourier] = useState('');
     const [statusColor, setStatusColor] = useState('');
 
-    useState(() => {
+    useEffect(() => {
+        validateUser('customer');
+    }, [])
+
+    useEffect(() => {
         getOrderDetail(id, (data) => {
             console.log(data);
             setOrderItem(data.carts);

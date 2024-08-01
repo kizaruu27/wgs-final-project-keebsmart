@@ -3,6 +3,7 @@ import Navbar from "../../../../Layouts/Navbar";
 import ProductListHeader from "../../../../Layouts/Product/ProductListHeader";
 import { getSwitchesForCustomer } from "../../../../../server/productController";
 import ProductList from "../../../../Layouts/Product/ProductList";
+import { validateUser } from "../../../../../server/userValidation";
 
 export default function SwitchPage() {
     const [switches, setSwitches] = useState([]);
@@ -12,6 +13,10 @@ export default function SwitchPage() {
             console.log(data);
             setSwitches(data);
         });
+    }, []);
+
+    useEffect(() => {
+        validateUser('customer');
     }, [])
 
     return (

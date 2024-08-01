@@ -9,10 +9,12 @@ export const userLogin = async (email, password, onAdminLogin, onSuperAdminLogin
         const response = await axios.post(`${urlEndpoint}/login`, {
             email, password
         })
+
+        if (response.status === 201) return onLoginFailed(response.data.msg);
+
         const { token } = response.data;
         const payload = jwtDecode(token);
-        console.log(response.data);
-        localStorage.setItem('token', token);
+        localStorage.setItem('token', token); 
 
         switch (payload.access) {
             case 'admin':
@@ -31,24 +33,22 @@ export const userLogin = async (email, password, onAdminLogin, onSuperAdminLogin
                 break;
         }
     } catch (error) {
-        onLoginFailed();
+        console.log(error);
     }
 }
 
-export const userRegister = async (name, email, password, phoneNumber, onRegisterSuccess, onRegisterFailed, setMsg) => {
+export const userRegister = async (name, email, password, phoneNumber, onRegisterSuccess, onRegisterFailed) => {
     try {
         const response = await axios.post(`${urlEndpoint}/registration`, {
             name, email, password, phoneNumber
         });
-        if (response.status !== 201) {
-            onRegisterFailed();
-            setMsg(response.data.msg);
+        if (response.status === 200) {
+            onRegisterFailed(response.data);
         } else {
-            onRegisterSuccess();
-            console.log(response.data.data);
+            onRegisterSuccess(response.data);
         }
     } catch (error) {
-        onRegisterFailed();
+        onRegisterFailed(error);
     }
 };
 
@@ -100,7 +100,8 @@ export const userLogout = async (onLogout) => {
             headers: {
                 Authorization: `Bearer ${token}`
             }
-        })
+        });
+        // localStorage.removeItem('token');
         onLogout(logout.data);
     } catch (error) {
         console.log(error);

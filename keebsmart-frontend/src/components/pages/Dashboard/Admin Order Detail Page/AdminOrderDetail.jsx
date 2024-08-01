@@ -10,6 +10,7 @@ import BuyerDetailSection from "../../../Layouts/Admin Dashboard/Order Detail/Bu
 import OrderDetailSection from "../../../Layouts/Admin Dashboard/Order Detail/OrderDetailSection";
 import OrderItemSection from "../../../Layouts/Admin Dashboard/Order Detail/OrderItemSection";
 import OrderTimeline from "../../../Layouts/Admin Dashboard/Order Detail/OrderTimeline";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function AdminOrderDetail () {
     const { id } = useParams();
@@ -91,7 +92,11 @@ export default function AdminOrderDetail () {
 
     useEffect(() => {
         changeStatusColor(status);
-    }, [status])
+    }, [status]);
+
+    useEffect(() => {
+        validateUser('admin');
+    }, [])
 
     return (
         <DashboardFragment>

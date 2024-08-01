@@ -4,6 +4,7 @@ import { getKeyboardsData, getKeyboardsForCustomer } from "../../../../../server
 import FeaturedProductItem from "../../../../elements/FeaturedProductItem";
 import ProductListHeader from "../../../../Layouts/Product/ProductListHeader";
 import ProductList from "../../../../Layouts/Product/ProductList";
+import { validateUser } from "../../../../../server/userValidation";
 
 export default function KeyboardPage() {
     const [keyboards, setKeyboards] = useState([]);
@@ -13,6 +14,10 @@ export default function KeyboardPage() {
             console.log(data);
             setKeyboards(data);
         })
+    }, []);
+
+    useEffect(() => {
+        validateUser('customer');
     }, [])
 
     return (

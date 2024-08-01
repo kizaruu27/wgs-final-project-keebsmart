@@ -13,6 +13,7 @@ import ProductInformationSection from "../../../Layouts/Admin Dashboard/Product 
 import ProductVariationSection from "../../../Layouts/Admin Dashboard/Product Detail/Product Variation Section/ProductVariationSection";
 import DeleteModal from "../../../Layouts/Modals/DeleteModal";
 import AddProductVariationModal from "../../../Layouts/Admin Dashboard/Product Forms/AddProductVariationModal";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function AdminProductItem() {
     const [product, setProduct] = useState({});
@@ -43,6 +44,10 @@ export default function AdminProductItem() {
             setChartSeries(sold);
         });
     }, [0]);
+
+    useEffect(() => {
+        validateUser('admin');
+    }, [])
 
     return (
         <DashboardFragment>

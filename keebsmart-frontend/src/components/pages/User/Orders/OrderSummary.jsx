@@ -3,6 +3,7 @@ import Navbar from "../../../Layouts/Navbar";
 import { useNavigate, useLocation } from "react-router-dom";
 import { makeNewOrder } from "../../../../server/orderController";
 import { convertCurrency } from "../../../../server/currency";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function OrderSummaryPage() {
     const location = useLocation();
@@ -25,6 +26,10 @@ export default function OrderSummaryPage() {
     useEffect(() => {
         console.log(name, phoneNumber, cartIds, addressId, orderNotes, carts);
     }, []);
+
+    useEffect(() => {
+        validateUser('customer');
+    }, [])
 
     const postNewOrder = (e) => {
         e.preventDefault();

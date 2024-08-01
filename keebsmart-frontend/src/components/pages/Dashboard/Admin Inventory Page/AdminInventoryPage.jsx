@@ -8,10 +8,15 @@ import { deleteInventory, getAllinventory } from "../../../../server/inventoryCo
 import { useEffect, useState } from "react";
 import AddInventoryModalFOrm from "../../../Layouts/Admin Dashboard/Inventory/AddInventoryModalForm";
 import { GoToPage } from "../../../../server/pageController";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function AdminInventoryPage() {
     const [inventory, setInventory] = useState([]);
     const [openModal, setOpenModal] = useState(false);
+
+    useEffect(() => {
+        validateUser('admin');
+    }, [])
 
     useEffect(() => {
         getAllinventory((data) => {

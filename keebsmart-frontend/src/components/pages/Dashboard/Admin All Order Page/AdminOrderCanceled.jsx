@@ -5,6 +5,7 @@ import DashboardSideMenu from "../../../Layouts/DashboardSideMenu";
 import { getOrders } from "../../../../server/orderController";
 import { useEffect, useState } from "react";
 import OrderTable from "../../../Layouts/Admin Dashboard/Order Table/OrderTable";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function AdminOrderCanceled () {
     const [orders, setOrders] = useState([]);
@@ -18,7 +19,11 @@ export default function AdminOrderCanceled () {
         }, (error) => {
             console.log(error);
         })
-    },[0])
+    },[0]);
+
+    useEffect(() => {
+        validateUser('admin');
+    }, [])
 
     return (
         <DashboardFragment>

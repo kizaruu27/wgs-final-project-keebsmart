@@ -6,6 +6,7 @@ import { getAllUser, changeUserStatus, deleteAdmin, getUserData } from "../../..
 import { useEffect, useState } from "react";
 import { GoToPage } from "../../../../server/pageController";
 import AdminsTable from "../../../Layouts/Super Admin Dashboard/AdminsTable";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function SuperAdminAllAdminPage() {
     const [users, setUsers] = useState([]);
@@ -13,10 +14,13 @@ export default function SuperAdminAllAdminPage() {
 
     useEffect(() => {
         getAllUser((res) => {
-            // console.log(res.data.users.map(user => user.orders.map(item => item.totalPrice).reduce((acc, accValue) => acc + accValue, 0)));
             setUsers(res.data.users.filter(item => item.access === 'admin'));
         })
     }, []);
+
+    useEffect(() => {
+        validateUser('super-admin');
+    }, [])
 
     useEffect(() => {
         getUserData((data) => {

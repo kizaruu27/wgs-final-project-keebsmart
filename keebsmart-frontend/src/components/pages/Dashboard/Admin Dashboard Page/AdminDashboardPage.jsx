@@ -10,6 +10,7 @@ import TotalActiveProducts from '../../../Layouts/Admin Dashboard/Dashboard/Tota
 import TotalProductSalesChart from '../../../Layouts/Admin Dashboard/Dashboard/TotalProductSales';
 import ProductCategorySalesChart from '../../../Layouts/Charts Section/ProductCategorySalesChart';
 import GridThreeCols from '../../../fragments/Dashboard/GridThreeCols';
+import { validateUser } from '../../../../server/userValidation';
 
 export default function AdminDashboardPage() {
     // Data chart keyboard
@@ -70,7 +71,11 @@ export default function AdminDashboardPage() {
                 currency: 'IDR'
             }).format(totalIncome));
         })
-    }, [0])
+    }, [0]);
+
+    useState(() => {
+        validateUser('admin');
+    }, [])
 
     return (
         <DashboardFragment>

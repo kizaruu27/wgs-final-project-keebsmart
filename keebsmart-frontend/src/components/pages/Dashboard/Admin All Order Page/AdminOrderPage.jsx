@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { GoToPage } from "../../../../server/pageController";
 import OrderTable from "../../../Layouts/Admin Dashboard/Order Table/OrderTable";
 import OrderCalculationSection from "../../../Layouts/Admin Dashboard/Order Detail/OrderCalculationSection";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function AdminOrderPage() {
     const [orders, setOrders] = useState([]);
@@ -29,7 +30,11 @@ export default function AdminOrderPage() {
         }, (error) => {
             console.log(error);
         })
-    },[0])
+    },[0]);
+
+    useEffect(() => {
+        validateUser('admin');
+    }, [])
 
     return (
         <DashboardFragment>

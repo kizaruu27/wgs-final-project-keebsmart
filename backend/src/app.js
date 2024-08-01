@@ -4,6 +4,8 @@ const dotenv = require('dotenv');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const path = require('path');
+const cookieParser = require('cookie-parser');
+const { body, validationResult} = require('express-validator');
 const multer = require('multer');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
@@ -11,11 +13,15 @@ const app = express();
 dotenv.config();  
 
 app.use(cors());
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.static('public'));
 
 const PORT = process.env.PORT;
 const SECRET = process.env.JWT_SECRET;
+
+// List of blacklisted tokens
+const invalidTokens = new Set();
 
 // Middleware for authenticate with JWT
 const accessValidation = (req, res, next) => {
@@ -24,6 +30,7 @@ const accessValidation = (req, res, next) => {
 
     try {
         const decoded = jwt.verify(token, SECRET);
+        if (invalidTokens.has(token)) return res.status(401).json('Invalid Token');
         req.userId = decoded.userId;
         next();
     } catch (error) {
@@ -182,26 +189,50 @@ app.delete('/user/:id', accessValidation, async (req, res) => {
     }
 })
 
-// API for user registration
-app.post('/registration', async (req, res) => {
-    try {
-        const {name, email, password, phoneNumber} = req.body;
-    
-        // Validate email
+// Registration validation
+const registrationValidation = [
+    body('email').custom(async (value) => {
         const similarEmail = await prisma.user.findUnique({
             where: {
-                email
+                email: value
             }
         });
-    
+
         if (similarEmail) {
-            return res.json({
-                msg: 'Email sudah digunakan! Silahkan gunakan email yg berbeda!'
-            })
-        };
+            throw new Error('Email is already in use');
+        }
+    }),
+    body('password').custom(async (value) => {
+        const hasNumber = /\d/.test(value);
+        const hasUppercase = /[A-Z]/.test(value);
+        const hasLowercase = /[a-z]/.test(value);
+        const hasMinLength = value.length >= 8;
+
+        if (!hasNumber || !hasUppercase || !hasLowercase || !hasMinLength) {
+            throw new Error('Password must be at least 8 characters, contain at least one uppercase letter, one lowercase letter, and one number');
+        }
+    }),
+    body('email').isEmail().withMessage('Email is invalid, please use a valid email!'),
+    body('phoneNumber').isMobilePhone('id-ID').withMessage('Phone number is invalid, please input a valid phone number'),
+    body('name').custom(async (value) => {
+        const hasUppercase = /[A-Z]/.test(value);
+        const hasMinLength = value.length > 2;
+
+        if (!hasUppercase || !hasMinLength) throw new Error('Name must be has an uppercase and more than 2 characters');
+    })
+];
+
+// API for user registration
+app.post('/registration', registrationValidation, async (req, res) => {
+    try {
+        const {name, email, password, phoneNumber} = req.body;
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return res.status(200).json(errors.array());
+        }
 
         const hashPassword = await bcrypt.hash(password, 10);
-    
         const newUser = await prisma.user.create({
             data: {
                 name, email, password: hashPassword, phoneNumber, isActive: true, access: 'customer'
@@ -211,7 +242,7 @@ app.post('/registration', async (req, res) => {
         res.status(201);
         res.json({
             user: newUser,
-            msg: 'Akun berhasil dibuat!'
+            msg: 'Account successfully created!'
         })
     } catch (error) {
         console.log(error);
@@ -247,7 +278,7 @@ app.post('/registration/admin', accessValidation, async (req, res) => {
         res.status(201);
         res.json({
             newAdmin,
-            msg: 'Akun berhasil dibuat!'
+            msg: 'Admin successfulyy added!'
         })
     } catch (error) {
         console.log(error);
@@ -359,33 +390,43 @@ app.post('/login', async (req, res) => {
     });
 
     if (!user) {
-        return res.json('Akun tidak terdaftar!');
+        return res.status(201).json({msg: 'Account not registered!'});
     }
 
     const passwordIsValid = await bcrypt.compare(password, user.password);
     if (!passwordIsValid) {
-        return res.json('Password salah!');
+        return res.status(201).json({msg: 'Wrong password!'});
     }
+
+    if (!user.isActive) return res.status(201).json({msg: 'Your account has been disabled!'});
 
     const payload = {
         userId: user.id,
         name: user.name,
         access: user.access,
+        isActive: user.isActive
     }
+
     const expiresIn = 60 * 60 * 24;
     const token = jwt.sign(payload, SECRET, {expiresIn});
-
+    
     res.json({
         user,
         token,
-        msg: 'Login Berhasil!'
+        msg: 'Login Successfull!'
     })
 });
 
 // API for logout
 app.post('/logout', accessValidation, (req, res) => {
     try {
-        res.json('Logout success');
+        const token = req.headers.authorization?.split(' ')[1];
+        invalidTokens.add(token);
+        res.clearCookie('token');
+        res.json({
+            msg: 'Logout success', 
+            token: token
+        });
     } catch (error) {
         console.log(error);
         res.json(error.messege);

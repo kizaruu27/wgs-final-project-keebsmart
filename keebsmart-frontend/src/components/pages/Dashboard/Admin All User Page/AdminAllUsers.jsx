@@ -6,6 +6,7 @@ import { getAllUser, changeUserStatus } from "../../../../server/userDataControl
 import { useEffect, useState } from "react";
 import { GoToPage } from "../../../../server/pageController";
 import UserTable from "../../../Layouts/Admin Dashboard/User Table/UserTable";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function AdminAllUsers() {
     const [users, setUsers] = useState([]);
@@ -22,7 +23,11 @@ export default function AdminAllUsers() {
             console.log(data);
             GoToPage('/admin/users', 100);
         })
-    }
+    };
+
+    useEffect(() => {
+        validateUser('admin');
+    }, [])
 
     return (
         <DashboardFragment>

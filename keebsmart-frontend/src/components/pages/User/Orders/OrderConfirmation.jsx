@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../../../Layouts/Navbar";
 import { useLocation } from "react-router-dom";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function OrderConfirmation() {
     const location = useLocation();
@@ -11,6 +12,10 @@ export default function OrderConfirmation() {
     const name = location.state?.name || '';
     const address = location.state?.address || '';
     const phoneNumber = location.state?.phoneNumber || '';
+
+    useEffect(() => {
+        validateUser('customer');
+    }, [])
 
     useState(() => {
         console.log(orderId, date, paymentMethod, name, address, phoneNumber);

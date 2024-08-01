@@ -5,11 +5,14 @@ import DashboardContent from "../../../fragments/DashboardContent"
 import { useEffect, useState } from "react"
 import { getShipments } from "../../../../server/shipmentController"
 import ShipmentTable from "../../../Layouts/Courier/All Shipment Table/ShipmentTable"
-import { getUserData } from "../../../../server/userDataController"
-import { GoToPage } from "../../../../server/pageController"
+import { validateUser } from "../../../../server/userValidation"
 
 export default function CourierAllShipments() {
     const [shipments, setShipments] = useState([]);
+
+    useEffect(() => {
+        validateUser('courier');
+    }, []);
 
     useEffect(() => {
         getShipments((data) => {

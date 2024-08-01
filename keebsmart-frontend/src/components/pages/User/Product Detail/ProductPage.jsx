@@ -9,6 +9,7 @@ import SetQtyButton from "../../../Layouts/Product Variatiion/SetQtyButton";
 import AddToCartButton from "../../../elements/Buttons/AddToCart";
 import ProductDescriptionSection from "./ProductDescriotionSection";
 import { convertCurrency } from "../../../../server/currency";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function ProductPage() {
     const { id } = useParams();
@@ -108,7 +109,11 @@ export default function ProductPage() {
             console.log(data);
             setShowNotif(true);
         });
-    }
+    };
+
+    useEffect(() => {
+        validateUser('customer');
+    }, [])
 
     return (
         <div className="mx-auto">

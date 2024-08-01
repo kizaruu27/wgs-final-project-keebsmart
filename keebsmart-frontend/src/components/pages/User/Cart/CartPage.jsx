@@ -7,6 +7,7 @@ import CartOrderSummary from "../../../Layouts/Carts/CartOrderSummary";
 import CartHeader from "../../../Layouts/Carts/CartHeader";
 import { addPendingOrder } from "../../../../server/orderController";
 import { useNavigate } from "react-router-dom";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function CartPage() {
     const navigate = useNavigate();
@@ -14,6 +15,10 @@ export default function CartPage() {
     const [cart, setCart] = useState([]);
     const [selectedCartId, setSelectedCartId] = useState([]);
     const [subTotalPrice, setSubTotalPrice] = useState(0);
+
+    useEffect(() => {
+        validateUser('customer');
+    }, [])
 
     useEffect(() => {
         getUserCart((data) => {

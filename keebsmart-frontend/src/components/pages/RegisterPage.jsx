@@ -3,49 +3,41 @@ import LoginRegisterCover from "../elements/LoginRegisterCover";
 import RegisterLayout from "../Layouts/RegisterLayout";
 import Logo from "../elements/Logo";
 import RegisterForm from "../elements/RegisterForm";
-import AlertItem from "../elements/Alert";
+import { Alert } from "flowbite-react";
 import { useState } from "react";
 import { userRegister } from "../../server/auth";
+import { HiInformationCircle, HiCheckCircle } from "react-icons/hi";
+import { GoToPage } from '../../server/pageController';
+
 
 export default function RegisterPage() {
-    // Registration variables
+    // Registration States
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [password, setPassword] = useState('');
     const [confirmationPassword, setConfirmationPassword] = useState('');
 
-    // Alert Variables
-    const [isClick, setIsClick] = useState(false);
-    const [msg, setMsg] = useState('');
-    const [alertType, setAlertType] = useState('success');
+    // Validation States
+    const [errorMesseges, setErrorMesseges] = useState([]);
+    const [successMesseges, setSuccessMesseges] = useState('');
 
-
-    const onRegisterSuccess = () => {
-        setIsClick(true);
-        setMsg('Your account has successfully created');
-        setAlertType('success');
-
-        setTimeout(() => {
-            window.location.href = '/login';
-        }, 1000);
+    const onRegisterSuccess = (data) => {
+        setErrorMesseges([]);
+        setSuccessMesseges(data.msg);
+        GoToPage('/login', 1500);
     }
 
-    const onRegistrationFailed = () => {
-        setIsClick(true);
-        setAlertType('error');
-        // console.log('Registration Failed!');
+    const onRegistrationFailed = (error) => {
+        const errorMsg = error.map(err => err.msg);
+        if (password !== confirmationPassword) errorMsg.push('Password not match!');
+        setSuccessMesseges('');
+        setErrorMesseges(errorMsg);
     }
 
     const register = (e) => {
         e.preventDefault();
-        if (password != confirmationPassword) {
-            setIsClick(true);
-            setMsg('Password tidak sama!');
-            setAlertType('error');
-            return;
-        }
-        userRegister(name, email, password, phoneNumber, onRegisterSuccess, onRegistrationFailed, setMsg);
+        userRegister(name, email, password, phoneNumber, onRegisterSuccess, onRegistrationFailed);
     }
 
     return (
@@ -53,7 +45,27 @@ export default function RegisterPage() {
             <LoginRegisterCover src="https://res.cloudinary.com/kineticlabs/image/upload/q_auto/c_fit,w_3500/f_auto/v1/api-images/products/yunzii-al66-keyboard/DSC00796_vmnqhp" />
             <RegisterLayout>
                 <Logo textStyle='text-3xl text-center my-7' />
-                {isClick && <AlertItem type={alertType} msg={msg}/>}
+                { errorMesseges.map((error, key) => (
+                    <Alert 
+                        key={key} 
+                        color='failure' 
+                        className="mt-5" 
+                        icon={HiInformationCircle}
+                    >
+                        {error}
+                    </Alert>
+                )) }
+
+                { successMesseges && 
+                    <Alert 
+                    color='success' 
+                    className="mt-5" 
+                    icon={HiCheckCircle}
+                    >
+                        {successMesseges}
+                    </Alert>
+                }
+
                 <RegisterForm 
                     onSubmit={e => register(e)} 
                     onChangeName={e => setName(e.target.value)} 

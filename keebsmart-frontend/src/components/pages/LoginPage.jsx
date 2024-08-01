@@ -46,8 +46,8 @@ export default function LoginPage() {
         GoToPage('/courier', 1500);
     }
 
-    const onLoginFailed = () => {
-        setAlertMsg('Login failed! Password or Email incorrect!');
+    const onLoginFailed = (msg) => {
+        setAlertMsg(msg);
         setAlertType('error');
         setIsClick(true);
     }

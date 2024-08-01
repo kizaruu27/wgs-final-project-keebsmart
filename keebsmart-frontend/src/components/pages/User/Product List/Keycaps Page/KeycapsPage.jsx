@@ -3,6 +3,7 @@ import Navbar from "../../../../Layouts/Navbar";
 import ProductList from "../../../../Layouts/Product/ProductList";
 import ProductListHeader from "../../../../Layouts/Product/ProductListHeader";
 import { getKeycapsForCustomer } from "../../../../../server/productController";
+import { validateUser } from "../../../../../server/userValidation";
 
 export default function KeycapsPage() {
     const [keycaps, setKeycaps] = useState([]);
@@ -11,6 +12,10 @@ export default function KeycapsPage() {
         getKeycapsForCustomer((data) => {
             setKeycaps(data);
         })
+    }, []);
+
+    useEffect(() => {
+        validateUser('customer');
     }, [])
 
     return (

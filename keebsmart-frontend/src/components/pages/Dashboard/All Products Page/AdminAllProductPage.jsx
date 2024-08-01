@@ -1,7 +1,6 @@
 import DashboardContent from "../../../fragments/DashboardContent";
 import DashboardFragment from "../../../fragments/DashboardFragment";
 import DashboardSideMenu from "../../../Layouts/DashboardSideMenu";
-import { getAllCategory, addNewProduct } from "../../../../server/productController";
 import { getAllProducts, deleteProduct, updateProduct, activateProduct } from "../../../../server/productController";
 import { useEffect, useState } from "react";    
 import { GoToPage } from "../../../../server/pageController";
@@ -9,6 +8,7 @@ import DashboardNavbar from "../../../Layouts/DashboardNavbar";
 import AllProductTable from "../../../Layouts/Admin Dashboard/Product Table/AllProductTable";
 import DeleteModal from "../../../Layouts/Modals/DeleteModal";
 import AddProductFormModal from "../../../Layouts/Admin Dashboard/Product Forms/AddProductFormModal";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function AdminAllProductPage() {
     const [products, setProducts] = useState([]);
@@ -31,7 +31,11 @@ export default function AdminAllProductPage() {
 
     useEffect(() => {
         getAllProducts(setProducts);
-    }, [0])
+    }, [0]);
+
+    useEffect(() => {
+        validateUser('admin');
+    }, [])
 
     return (
         <DashboardFragment>

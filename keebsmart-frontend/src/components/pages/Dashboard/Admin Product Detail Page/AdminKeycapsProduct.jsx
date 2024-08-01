@@ -5,6 +5,7 @@ import DashboardSideMenu from "../../../Layouts/DashboardSideMenu";
 import { useState, useEffect } from "react";
 import { getKeycapsData } from "../../../../server/productController";
 import ProductCategoryDetail from "../../../Layouts/Admin Dashboard/Product Detail/Product Category/ProductCategoryDetail";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function AdminKeycapsProduct() {
     // Variable to store keycaps data
@@ -21,6 +22,10 @@ export default function AdminKeycapsProduct() {
             setTotalProducts(data.length);
         });
     }, [0]);
+
+    useEffect(() => {
+        validateUser('admin');
+    }, [])
 
     return (
         <DashboardFragment>

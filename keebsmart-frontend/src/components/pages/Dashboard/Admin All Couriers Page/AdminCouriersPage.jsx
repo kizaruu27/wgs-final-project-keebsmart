@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { getAllUser } from "../../../../server/userDataController";
 import { GoToPage } from "../../../../server/pageController";
 import { changeUserStatus } from "../../../../server/userDataController";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function AdminCouriersPage() {
     const [couriers, setCouriers] = useState([]);
@@ -23,7 +24,11 @@ export default function AdminCouriersPage() {
             console.log(data);
             GoToPage('/admin/couriers', 100);
         })
-    }
+    };
+
+    useEffect(() => {
+        validateUser('admin');
+    }, [])
 
     return (
         <DashboardFragment>

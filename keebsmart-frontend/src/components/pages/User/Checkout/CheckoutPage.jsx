@@ -5,6 +5,7 @@ import { getCartsById } from "../../../../server/cartController";
 import { createNewAddress } from "../../../../server/userDataController";
 import { useNavigate } from "react-router-dom";
 import { convertCurrency } from "../../../../server/currency";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function CheckoutPage() {
     const location = useLocation();
@@ -29,6 +30,10 @@ export default function CheckoutPage() {
     const [targetedCartIds, setTargetedCartIds] = useState([]);
     const [addressId, setAddressId] = useState(0);
     const [orderNotes, setOrderNotes] = useState('');
+
+    useEffect(() => {
+        validateUser('customer');
+    }, [])
 
     useEffect(() => {
         console.log(cartIds);

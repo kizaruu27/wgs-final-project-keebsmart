@@ -5,6 +5,7 @@ import OrderTable from "../../../Layouts/Admin Dashboard/Order Table/OrderTable"
 import DashboardNavbar from "../../../Layouts/DashboardNavbar";
 import DashboardSideMenu from "../../../Layouts/DashboardSideMenu";
 import { getOrders } from "../../../../server/orderController";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function AdminOrderPending() {
     const [orders, setOrders] = useState([]);
@@ -16,6 +17,10 @@ export default function AdminOrderPending() {
             console.log(error);
         })
     },[0]);
+
+    useEffect(() => {
+        validateUser('admin');
+    }, []);
 
     return (
         <DashboardFragment>

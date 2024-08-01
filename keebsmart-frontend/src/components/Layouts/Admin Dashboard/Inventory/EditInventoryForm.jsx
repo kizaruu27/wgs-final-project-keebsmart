@@ -10,6 +10,7 @@ import { getVariations } from "../../../../server/variationController";
 import { GoToPage } from "../../../../server/pageController";
 import { Dropdown } from "flowbite-react";
 import InventoryItem from "../../../elements/Items/InventoryItem";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function EditInventoryForm() {
     const { id } = useParams();
@@ -24,6 +25,10 @@ export default function EditInventoryForm() {
     const [categoryId, setCategoryId] = useState(0);
     const [newItemFields, setNewiItemFields] = useState([]);
     const [enabledInputs, setEnabledInputs] = useState({});
+
+    useEffect(() => {
+        validateUser('admin');
+    }, [])
 
     useEffect(() => {
         getAllCategory((data) => {

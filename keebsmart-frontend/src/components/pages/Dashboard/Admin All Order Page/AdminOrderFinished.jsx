@@ -6,6 +6,7 @@ import { getOrders, deleteOrder } from "../../../../server/orderController";
 import { useEffect, useState } from "react";
 import OrderTable from "../../../Layouts/Admin Dashboard/Order Table/OrderTable";
 import OrderCalculationStatusSection from "../../../Layouts/Admin Dashboard/Order Detail/OrderCalculationStatusSection";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function AdminOrderFinished () {
     const [orders, setOrders] = useState([]);
@@ -22,7 +23,11 @@ export default function AdminOrderFinished () {
         }, (error) => {
             console.log(error);
         })
-    },[0])
+    },[0]);
+
+    useEffect(() => {
+        validateUser('admin');
+    }, [])
 
     return (
         <DashboardFragment>

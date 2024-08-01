@@ -5,6 +5,7 @@ import DashboardSideMenu from "../../../Layouts/DashboardSideMenu";
 import { useState, useEffect } from "react";
 import { getKeyboardsData } from "../../../../server/productController";
 import ProductCategoryDetail from "../../../Layouts/Admin Dashboard/Product Detail/Product Category/ProductCategoryDetail";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function AdminKeyboardProducts() {
     // Variable to store keyboards data
@@ -22,6 +23,10 @@ export default function AdminKeyboardProducts() {
             setTotalProducts(data.length);
         });
     }, [0]);
+
+    useEffect(() => {
+        validateUser('admin');
+    }, [])
 
     return (
         <DashboardFragment>

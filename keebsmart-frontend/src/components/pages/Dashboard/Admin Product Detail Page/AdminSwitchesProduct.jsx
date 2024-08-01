@@ -5,6 +5,7 @@ import DashboardSideMenu from "../../../Layouts/DashboardSideMenu";
 import { useState, useEffect } from "react";
 import { getSwitchesData } from "../../../../server/productController";
 import ProductCategoryDetail from "../../../Layouts/Admin Dashboard/Product Detail/Product Category/ProductCategoryDetail";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function AdminSwitchesProduct() {
     // Variable to store swtiches data
@@ -20,6 +21,10 @@ export default function AdminSwitchesProduct() {
             setTotalProducts(data.length);
         });
     }, [0]);
+
+    useEffect(() => {
+        validateUser('admin');
+    }, [])
 
     return (
         <DashboardFragment>

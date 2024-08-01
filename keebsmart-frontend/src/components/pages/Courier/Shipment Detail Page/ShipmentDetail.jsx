@@ -12,6 +12,7 @@ import ShipmentOrderTimeline from "../../../elements/Shipment and Order Detail/S
 import { getShipmentDetail } from "../../../../server/shipmentController";
 import DashboardCourierSideMenu from "../../../Layouts/DashboardCourierSideMenu";
 import { getUserData } from "../../../../server/userDataController";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function ShipmentDetail () {
     const { id } = useParams();
@@ -27,6 +28,9 @@ export default function ShipmentDetail () {
     const [lastUpdate, setLastUpdate] = useState('');
     const [allStatus, setAllStatus] = useState([]);
     
+    useEffect(() => {
+        validateUser('courier');
+    }, [])
 
     const canCancel = () => {
         if (status === 'Canceled') return false;

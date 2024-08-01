@@ -8,10 +8,15 @@ import { getOrders, setOrderStatus } from "../../../../server/orderController";
 import DashboardCourierSideMenu from "../../../Layouts/DashboardCourierSideMenu";
 import { createNewShipment } from "../../../../server/shipmentController";
 import { convertCurrency } from "../../../../server/currency";
+import { validateUser } from "../../../../server/userValidation";
 
 export default function CourierDashboardPage() {
     const [orders, setOrders] = useState([]);
     const [courier, setCourier] = useState([]);
+
+    useEffect(() => {
+        validateUser('courier');
+    }, []);
 
     const changeStatusColor = (status) => {
         let color = '';

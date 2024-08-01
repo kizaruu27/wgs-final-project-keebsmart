@@ -77,7 +77,6 @@ export default function App() {
                     <Route path="/courier/shipment/ongoing" Component={CourierOnGoingDeliveryPage}/>
                     <Route path="/courier/shipment/delivered" Component={CourierFinishedDeliveryPage}/>
                     <Route path="/admin/inventory" Component={AdminInventoryPage}/>
-                    <Route path="/admin/inventory" Component={AdminInventoryPage}/>
                     <Route path="/admin/inventory/update/:id" Component={EditInventoryForm}/>
                     <Route path="/admin/product/update/:id" Component={EditProductItemForm}/>
                 </Routes>
