@@ -4,7 +4,7 @@ import { GoToPage } from "../../../server/pageController";
 import { getProductItemDetail } from "../../../server/productController";
 import { convertCurrency } from "../../../server/currency";
 
-export default function CartItem({id, productItemId, image, qty, price, productName, variationValue, onChecked}) {
+export default function CartItem({id, productItemId, image, qty, price, productName, variationValue, onChecked ,itemsChecked}) {
     const [currentQty, setCurrentQty] = useState(qty);
     const [isChecked, setIsChecked] = useState(false);
     const [productPrice, setProductPrice] = useState(0); // statis
@@ -78,7 +78,11 @@ export default function CartItem({id, productItemId, image, qty, price, productN
             setIsChecked(savedChecked);
             onChecked(savedChecked, id, totalPrice);
         }
-    }, [totalPrice, id])
+    }, [totalPrice, id]);
+
+    useEffect(() => {
+        setIsChecked(itemsChecked)
+    }, [itemsChecked]);
 
     return (
         <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">

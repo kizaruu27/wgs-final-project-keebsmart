@@ -11,10 +11,11 @@ import { validateUser } from "../../../../server/userValidation";
 
 export default function CartPage() {
     const navigate = useNavigate();
-
     const [cart, setCart] = useState([]);
     const [selectedCartId, setSelectedCartId] = useState([]);
     const [subTotalPrice, setSubTotalPrice] = useState(0);
+    const [onCheckAll, setOnCheckAll] = useState(false);
+    const [itemChecked, setItemChecked] = useState(false);
 
     useEffect(() => {
         validateUser('customer');
@@ -43,6 +44,13 @@ export default function CartPage() {
         });
     };
 
+    const selectAllCart = (e) => {
+        const checked = e.target.checked;
+        setItemChecked(checked);
+        setOnCheckAll(checked);
+        cart.map((item) => setChecked(checked, item.id, item.subTotalPrice));
+    }
+
     const postNewPendingOrder = () => {
         const cartIds = selectedCartId.map(item => item.id);
         navigate('/checkout', {state: {cartIds}})
@@ -54,9 +62,13 @@ export default function CartPage() {
             <section className="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
                 <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
                     <CartHeader text='My Cart' />
+                    <div className="flex gap-5 items-center my-5">
+                        <input type="checkbox" checked={onCheckAll} onChange={e => selectAllCart(e)} />
+                        <p>Select All</p>
+                    </div>
                     <div className="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
                         {/* Cart List Section */}
-                        <CartSection cart={cart} setChecked={setChecked} />
+                        <CartSection setItemChecked={setItemChecked} cart={cart} setChecked={setChecked} itemsChecked={itemChecked} />
 
                         {/* Order summary */}
                         <CartOrderSummary subTotalPrice={subTotalPrice} onCheckOut={postNewPendingOrder} />
