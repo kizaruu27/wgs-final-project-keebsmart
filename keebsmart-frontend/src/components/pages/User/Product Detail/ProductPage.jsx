@@ -10,6 +10,9 @@ import AddToCartButton from "../../../elements/Buttons/AddToCart";
 import ProductDescriptionSection from "./ProductDescriotionSection";
 import { convertCurrency } from "../../../../server/currency";
 import { validateUser } from "../../../../server/userValidation";
+import { useDispatch } from "react-redux";
+import { setCarts } from "../../../../redux/cartSlice";
+import { getUserCart } from "../../../../server/cartController";
 
 export default function ProductPage() {
     const { id } = useParams();
@@ -30,6 +33,8 @@ export default function ProductPage() {
     // state for making cart request
     const [selectedItemId, setSelectedItemId] = useState(null);
     const [qty, setQty] = useState(1);
+
+    const dispatch = useDispatch();
 
     useEffect(() => {
         getProductDetail(id, (data) => {
@@ -104,11 +109,15 @@ export default function ProductPage() {
         }
     };
 
-    const postNewCart = () => {
-        addNewCart(selectedItemId, qty, (data) => {
+    const postNewCart = async () => {
+        await addNewCart(selectedItemId, qty, (data) => {
             console.log(data);
             setShowNotif(true);
         });
+
+        await getUserCart((data) => {
+            dispatch(setCarts(data));
+        })
     };
 
     useEffect(() => {

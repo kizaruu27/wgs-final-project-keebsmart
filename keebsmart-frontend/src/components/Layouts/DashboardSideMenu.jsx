@@ -3,6 +3,18 @@ import { userLogout } from "../../server/auth"
 import { GoToPage } from "../../server/pageController";
 import { getUserData } from "../../server/userDataController";
 import { getOrders } from "../../server/orderController";
+import { Sidebar } from "flowbite-react";
+import {
+    HiArrowSmRight,
+    HiChartPie,
+    HiArchive,
+    HiOutlineMinusSm,
+    HiOutlinePlusSm,
+    HiShoppingBag,
+    HiOutlineCurrencyDollar,
+    HiUser,
+} from "react-icons/hi";
+import { twMerge } from "tailwind-merge";
 
 export default function DashboardSideMenu() {
     const [access, setAccess] = useState('');
@@ -26,15 +38,98 @@ export default function DashboardSideMenu() {
     useEffect(() => {
         getUserData((data) => {
             setAccess(data.access)
-            // console.log(data);
+            console.log(data.access);
         }, (error) => {
             console.log(error);
         })
-    })
+    });
 
     return (
         <>
-            <button data-drawer-target="sidebar-multi-level-sidebar" data-drawer-toggle="sidebar-multi-level-sidebar" aria-controls="sidebar-multi-level-sidebar" type="button" className="inline-flex items-center p-2 mt-20 mb-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+            <Sidebar aria-label="Sidebar with multi-level dropdown example" className="fixed top-16 left-0 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0">
+                <div className="bg-white h-full p-5 rounded-xl shadow-md">
+                    <Sidebar.Items>
+                        <Sidebar.ItemGroup>
+                            <Sidebar.Item href={ access === 'super-admin' ? '/super-admin' : "/admin"} icon={HiChartPie} >
+                                <p className="font-semibold">Dashboard</p>
+                            </Sidebar.Item>
+
+                            { access === 'admin' && 
+                                <>
+                                    <Sidebar.Collapse
+                                        icon={HiShoppingBag}
+                                        label="Products"
+                                        className="font-semibold"
+                                        renderChevronIcon={(theme, open) => {
+                                        const IconComponent = open ? HiOutlineMinusSm : HiOutlinePlusSm;
+
+                                        return <IconComponent aria-hidden className={twMerge(theme.label.icon.open[open ? 'on' : 'off'])} />;
+                                        }}
+                                    >
+                                        <Sidebar.Item href="/admin/products">
+                                            <p className="font-semibold">All Products</p>
+                                        </Sidebar.Item>
+                                        <Sidebar.Item href="/admin/products/keyboards">
+                                            <p className="font-semibold">Keyboards</p>
+                                        </Sidebar.Item>
+                                        <Sidebar.Item href="/admin/products/keycaps">
+                                            <p className="font-semibold">Keycaps</p>
+                                        </Sidebar.Item>
+                                        <Sidebar.Item href="/admin/products/switches">
+                                            <p className="font-semibold">Switches</p>
+                                        </Sidebar.Item>
+                                    </Sidebar.Collapse>
+                                    <Sidebar.Collapse
+                                        icon={HiOutlineCurrencyDollar}
+                                        label="Orders"
+                                        className="font-semibold"
+                                        renderChevronIcon={(theme, open) => {
+                                        const IconComponent = open ? HiOutlineMinusSm : HiOutlinePlusSm;
+
+                                        return <IconComponent aria-hidden className={twMerge(theme.label.icon.open[open ? 'on' : 'off'])} />;
+                                        }}
+                                    >
+                                        <Sidebar.Item href="/admin/orders">
+                                            <p className="font-semibold">All Orders</p>
+                                        </Sidebar.Item>
+                                        <Sidebar.Item href="/admin/order/pending">
+                                            <p className="font-semibold">Pending Orders {orders !== 0 && <span className="p-1 px-3 mx-3 rounded-full bg-red-500 text-white text-sm">{orders}</span>} </p>
+                                        </Sidebar.Item>
+                                        <Sidebar.Item href="/admin/order/processed">
+                                            <p className="font-semibold">Processed Orders</p>
+                                        </Sidebar.Item>
+                                        <Sidebar.Item href="/admin/order/ondelivery">
+                                            <p className="font-semibold">On Delivery</p>
+                                        </Sidebar.Item>
+                                        <Sidebar.Item href="/admin/order/canceled">
+                                            <p className="font-semibold">Canceled Orders</p>
+                                        </Sidebar.Item>
+                                        <Sidebar.Item href="/admin/order/finish">
+                                            <p className="font-semibold">Finished Orders</p>
+                                        </Sidebar.Item>
+                                    </Sidebar.Collapse>
+                                    <Sidebar.Item href="/admin/inventory" icon={HiArchive}>
+                                        <p className="font-semibold">Inventory</p>
+                                    </Sidebar.Item>
+                                    <Sidebar.Item href="/admin/couriers" icon={HiUser}>
+                                        <p className="font-semibold">Couriers</p>
+                                    </Sidebar.Item>
+                                    <Sidebar.Item href="/admin/users" icon={HiUser}>
+                                        <p className="font-semibold">Users</p>
+                                    </Sidebar.Item>
+                                    <hr />
+                                    <Sidebar.Item icon={HiArrowSmRight}>
+                                        <p onClick={logout} className="cursor-pointer font-semibold">Sign Out</p>
+                                    </Sidebar.Item>
+                                </>
+                            }
+                        </Sidebar.ItemGroup>
+                    </Sidebar.Items>
+                </div>
+            </Sidebar>
+
+
+            {/* <button data-drawer-target="sidebar-multi-level-sidebar" data-drawer-toggle="sidebar-multi-level-sidebar" aria-controls="sidebar-multi-level-sidebar" type="button" className="inline-flex items-center p-2 mt-20 mb-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
                 <span className="sr-only">Open sidebar</span>
                     <svg className="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path clipRule="evenodd" fillRule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
@@ -55,7 +150,7 @@ export default function DashboardSideMenu() {
                         </li>
                         { access === 'admin' && 
                             <li>
-                                <button type="button" className="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="producs" data-collapse-toggle="products">
+                                <button type="button" className="flex items-center w-full p-2 text-base text-gray-900 transition duration-75 rounded-lg group hover:bg-gray-100 dark:text-white dark:hover:bg-gray-700" aria-controls="products" data-collapse-toggle="products">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z" />
                                 </svg>
@@ -163,6 +258,8 @@ export default function DashboardSideMenu() {
                     </ul>
                 </div>
             </aside>
+        */}
+
         </>
     )
 }

@@ -3,6 +3,18 @@ import { userLogout } from "../../server/auth"
 import { GoToPage } from "../../server/pageController";
 import { getUserData } from "../../server/userDataController";
 import { getOrders } from "../../server/orderController";
+import { Sidebar } from "flowbite-react";
+import {
+    HiArrowSmRight,
+    HiChartPie,
+    HiArchive,
+    HiOutlineMinusSm,
+    HiOutlinePlusSm,
+    HiShoppingBag,
+    HiOutlineCurrencyDollar,
+    HiUser,
+} from "react-icons/hi";
+import { twMerge } from "tailwind-merge";
 
 export default function DashboardCourierSideMenu() {
     const [access, setAccess] = useState('');
@@ -29,18 +41,69 @@ export default function DashboardCourierSideMenu() {
         }, (error) => {
             console.log(error);
         })
-    },[0])
+    },[0]);
+
+    const courierIcon = () => {
+        return (
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 0 0-3.213-9.193 2.056 2.056 0 0 0-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 0 0-10.026 0 1.106 1.106 0 0 0-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+            </svg>
+        )
+    }
+
+    const orderIcon = () => {
+        return (
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 8.25h19.5M2.25 9h19.5m-16.5 5.25h6m-6 2.25h3m-3.75 3h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Z" />
+            </svg>
+        )
+    }
 
     return (
         <>
-            <button data-drawer-target="sidebar-multi-level-sidebar" data-drawer-toggle="sidebar-multi-level-sidebar" aria-controls="sidebar-multi-level-sidebar" type="button" className="inline-flex items-center p-2 mt-20 mb-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+            <Sidebar aria-label="Sidebar with multi-level dropdown example" className="fixed top-16 left-0 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0">
+                    <div className="bg-white h-full p-5 rounded-xl shadow-md">
+                        <Sidebar.Items>
+                            <Sidebar.ItemGroup>
+                                <Sidebar.Item href='/courier' icon={HiChartPie} >
+                                    <p className="font-semibold">Dashboard</p>
+                                </Sidebar.Item>
+                                <Sidebar.Collapse
+                                    icon={courierIcon}
+                                    label="My Shipments"
+                                    className="font-semibold"
+                                    renderChevronIcon={(theme, open) => {
+                                    const IconComponent = open ? HiOutlineMinusSm : HiOutlinePlusSm;
+
+                                    return <IconComponent aria-hidden className={twMerge(theme.label.icon.open[open ? 'on' : 'off'])} />;
+                                    }}
+                                >
+                                    <Sidebar.Item href="/courier/shipments">
+                                        <p className="font-semibold">All Shipments</p>
+                                    </Sidebar.Item>
+                                    <Sidebar.Item href="/courier/shipment/ongoing">
+                                        <p className="font-semibold">On Going</p>
+                                    </Sidebar.Item>
+                                    <Sidebar.Item href="/courier/shipment/delivered">
+                                        <p className="font-semibold">Delivered</p>
+                                    </Sidebar.Item>
+                                </Sidebar.Collapse>
+                                <hr />
+                                <Sidebar.Item icon={HiArrowSmRight}>
+                                    <p onClick={logout} className="cursor-pointer font-semibold">Sign Out</p>
+                                </Sidebar.Item>
+                            </Sidebar.ItemGroup>
+                        </Sidebar.Items>
+                    </div>
+                </Sidebar>
+            {/* <button data-drawer-target="sidebar-multi-level-sidebar" data-drawer-toggle="sidebar-multi-level-sidebar" aria-controls="sidebar-multi-level-sidebar" type="button" className="inline-flex items-center p-2 mt-20 mb-3 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
                 <span className="sr-only">Open sidebar</span>
                     <svg className="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path clipRule="evenodd" fillRule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
                     </svg>
-            </button>
+            </button> */}
 
-            <aside id="sidebar-multi-level-sidebar" className="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
+            {/* <aside id="sidebar-multi-level-sidebar" className="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
                 <div className="h-full px-3 py-4 overflow-y-auto bg-white dark:bg-gray-800">
                     <ul className="my-20 space-y-2 font-medium">
                         <li>
@@ -96,7 +159,7 @@ export default function DashboardCourierSideMenu() {
                         </li>
                     </ul>
                 </div>
-            </aside>
+            </aside> */}
         </>
     )
 }

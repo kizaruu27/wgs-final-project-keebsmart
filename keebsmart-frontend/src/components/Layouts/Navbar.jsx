@@ -7,11 +7,17 @@ import NavbarUsername from "../elements/NavbarUsername"
 import { useState, useEffect } from "react"
 import { getUserData } from "../../server/userDataController"
 import { GoToPage } from "../../server/pageController"
+import { useDispatch } from "react-redux"
+import { setCarts } from "../../redux/cartSlice"
+import { getUserCart } from "../../server/cartController"
 
 export default function Navbar() {
     const backToHome = () => window.location.href = '/';
     const [username, setUsername] = useState('');
     const [totalOrders, setTotalOrders] = useState(0);
+
+    // carts values
+    const dispatch = useDispatch();
 
     const onSuccessGetUserData = (data) => {
         console.log(data);
@@ -27,6 +33,12 @@ export default function Navbar() {
     useEffect(() => {
         getUserData(onSuccessGetUserData, onFailedGetUserData, onTokenEmpty);
     }, [0]);
+
+    useEffect(() => {
+        getUserCart((data) => {
+            dispatch(setCarts(data));
+        })
+    }, [])
 
     return (
         <NavbarFragment>

@@ -2,6 +2,7 @@ import { Modal, Alert } from "flowbite-react";
 import { HiInformationCircle } from "react-icons/hi";
 import { useState } from "react";
 import { courierRegistration } from "../../../../server/auth";
+import { GoToPage } from "../../../../server/pageController";
 
 export default function AddCourierForm({openModal, onCloseModal}) {
     const [name, setName] = useState('');

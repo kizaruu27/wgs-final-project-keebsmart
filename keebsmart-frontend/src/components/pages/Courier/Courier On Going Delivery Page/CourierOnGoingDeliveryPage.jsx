@@ -16,7 +16,7 @@ export default function CourierOnGoingDeliveryPage() {
     const [mustReceiveMoney, setMustReceiveMoney] = useState(0);
 
     useEffect(() => {
-        validateUser('admin');
+        validateUser('courier');
     }, [])
 
     useEffect(() => {
