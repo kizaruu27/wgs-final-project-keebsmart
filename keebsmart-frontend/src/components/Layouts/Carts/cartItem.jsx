@@ -1,17 +1,23 @@
 import { useEffect, useState } from "react"
-import { deleteCart, updateUserCart } from "../../../server/cartController";
+import { deleteCart, getUserCart, updateUserCart } from "../../../server/cartController";
 import { GoToPage } from "../../../server/pageController";
 import { getProductItemDetail } from "../../../server/productController";
 import { convertCurrency } from "../../../server/currency";
 
-export default function CartItem({id, productItemId, image, qty, price, checked, productName, variationValue, handleCheckboxChange}) {
+export default function CartItem({cart, setCart, id, productItemId, image, qty, price, productName, variationValue, onChecked, checked, handleCheckbox}) {
     const [currentQty, setCurrentQty] = useState(qty);
+    const [isChecked, setIsChecked] = useState(false);
     const [productPrice, setProductPrice] = useState(0); // statis
     const [productQty, setProductQty] = useState(0); // qty fromm product item
     const [productId, setProductId] = useState(0);
 
     // data dinamis
     const [totalPrice, setTotalPrice] = useState(price); // harus dikirim ke luar
+
+    const handleCheckboxChange = (event) => {
+        handleCheckbox(id);
+        onChecked(event.target.checked, id, totalPrice);
+    };
 
     const increaseCartQty = (id) => {
             setCurrentQty(prevQty => {
@@ -25,7 +31,15 @@ export default function CartItem({id, productItemId, image, qty, price, checked,
                 // Call updateUserCart with the new values
                 updateUserCart(id, newQty, newTotalPrice, (data) => {
                     console.log(data);
+                    getUserCart((data) => {
+                        const isChecked = cart.map(item => item.isChecked);
+                        setCart(data.map((item, index) => ({
+                            ...item,
+                            isChecked: isChecked[index]
+                        })));
+                    });
                 });
+
 
                 return newQty;
         });
@@ -43,11 +57,17 @@ export default function CartItem({id, productItemId, image, qty, price, checked,
             setTotalPrice(newTotalPrice);
             updateUserCart(id, newQty, newTotalPrice, (data) => {
                 console.log(data);
+                getUserCart((data) => {
+                    const isChecked = cart.map(item => item.isChecked);
+                    setCart(data.map((item, index) => ({
+                        ...item,
+                        isChecked: isChecked[index]
+                    })));
+                });
             });
         
                 return newQty;
         });
-        // GoToPage('/cart', 50);
     };
 
     const removeCart = (id) => {
@@ -66,17 +86,13 @@ export default function CartItem({id, productItemId, image, qty, price, checked,
     }, []);
 
     useEffect(() => {
-        const savedChecked = JSON.parse(localStorage.getItem(`cart-${id}`));
-        if (savedChecked !== null) {
-            // setIsChecked(savedChecked);
-            handleCheckboxChange(id);
-        }
+        onChecked(checked, id, totalPrice);
     }, [totalPrice, id]);
 
     return (
         <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
             <div className="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0"> 
-            <input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" onChange={() => handleCheckboxChange(id)} checked={checked} />
+            <input id="default-checkbox" type="checkbox" value="" className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" onChange={(e) => handleCheckboxChange(e)} checked={checked} />
             <a href="#" className="shrink-0 md:order-1">
                 <img className="rounded-xl h-20 w-20 dark:hidden" src={image} alt="imac image" />
             </a>
