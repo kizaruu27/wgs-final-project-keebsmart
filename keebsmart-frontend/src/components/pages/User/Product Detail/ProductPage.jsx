@@ -46,21 +46,21 @@ export default function ProductPage() {
             console.dir(data.productImage.imagePreviewUrl);
         }, (data) => {
             // set product item data
-            const firstItem = data[0];
-            setSelectedItemId(firstItem.id);
-            setDefaultPrice(firstItem.price);
+            const item = data.filter(item => item.qty !== 0)[0];
+            setSelectedItemId(item.id);
+            setDefaultPrice(item.price);
             setProductItem(data);
-            setVariationValue(firstItem.variationOption.variationValue);
-            setTotalPrice(firstItem.price);
-            const updatedItemQty = firstItem.qty - qty;
+            setVariationValue(item.variationOption.variationValue);
+            setTotalPrice(item.price);
+            const updatedItemQty = item.qty - qty;
             setItemQty(updatedItemQty);
             if (updatedItemQty <= 0) {
                 setQty(0);
             } else {
                 setQty(Math.min(qty, updatedItemQty));
             }
-            setProductQty(firstItem.qty);
-            setProductImagePreview(firstItem.imageURLs[0]);
+            setProductQty(item.qty);
+            setProductImagePreview(item.imageURLs[0]);
             console.log(data);
         });
     }, []);
@@ -80,7 +80,7 @@ export default function ProductPage() {
                 newQty = 0;
             }
     
-            setQty(newQty);
+            setQty(data.qty === 0 ? 0 : 1);
             setProductQty(data.qty);
             setItemQty(data.qty - newQty);
             setProductImagePreview(data.imageURLs[0]);

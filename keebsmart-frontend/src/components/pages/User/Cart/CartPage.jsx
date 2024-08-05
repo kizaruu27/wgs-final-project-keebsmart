@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setAllChecked } from "../../../../redux/cartSlice";
 
 export default function CartPage() {
-    const allChecked = useSelector(state => state.carts.allChecked);
+    // const allChecked = useSelector(state => state.carts.allChecked);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -96,7 +96,7 @@ export default function CartPage() {
                         <CartSection setCart={setCart} selectAll={selectAll} handleCheckboxChange={handleCheckboxChange} cart={cart} setChecked={setChecked} />
 
                         {/* Order summary */}
-                        <CartOrderSummary subTotalPrice={subTotalPrice} onCheckOut={postNewPendingOrder} />
+                        <CartOrderSummary subTotalPrice={subTotalPrice} onCheckOut={postNewPendingOrder} selectedCartIds={selectedCartId} />
                     </div>
                 </div>
             </section>

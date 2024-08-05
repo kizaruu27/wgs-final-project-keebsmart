@@ -1,6 +1,6 @@
 import { convertCurrency } from "../../../server/currency";
 
-export default function CartOrderSummary({subTotalPrice, onCheckOut}) {
+export default function CartOrderSummary({subTotalPrice, onCheckOut, selectedCartIds}) {
     return (
         <div className="mx-auto mt-6 max-w-4xl flex-1 space-y-6 lg:mt-0 lg:w-full">
             <div className="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 sm:p-6">
@@ -24,11 +24,11 @@ export default function CartOrderSummary({subTotalPrice, onCheckOut}) {
                 </dl>
             </div>
 
-            <button onClick={onCheckOut} className="flex w-full bg-black text-white items-center justify-center rounded-lg px-5 py-2.5 text-sm font-medium hover:bg-gray-800 focus:outline-none focus:ring-4  dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Proceed to Checkout</button>
+            <button disabled={selectedCartIds.length === 0 ? true : false} onClick={onCheckOut} className={`flex w-full ${selectedCartIds.length === 0 ? 'bg-gray-400' : 'bg-black hover:bg-gray-800'} text-white items-center justify-center rounded-lg px-5 py-2.5 text-sm font-medium focus:outline-none focus:ring-4 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800`}>Proceed to Checkout</button>
 
             <div className="flex items-center justify-center gap-2">
                 <span className="text-sm font-normal text-gray-500 dark:text-gray-400"> or </span>
-                <a href="#" title="" className="inline-flex items-center gap-2 text-sm font-medium text-primary-700 underline hover:no-underline dark:text-primary-500">
+                <a href="/" title="" className="inline-flex items-center gap-2 text-sm font-medium text-primary-700 underline hover:no-underline dark:text-primary-500">
                     Continue Shopping
                 <svg className="h-5 w-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 12H5m14 0-4 4m4-4-4-4" />

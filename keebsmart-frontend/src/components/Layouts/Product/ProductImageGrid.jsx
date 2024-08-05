@@ -1,19 +1,32 @@
-import { ImageList, ImageListItem } from "@mui/material";
+import { useEffect, useState } from "react";
 
 export function ProductImageGrid({productImages, imagePreview}) {
-    return (
-      <ImageList variant="masonry" cols={2} gap={12}>
-        <ImageListItem>
-          <img src={imagePreview} alt="" className="rounded-xl duration-500 hover:scale-110" />
-        </ImageListItem>
-        {productImages.map((item, key) => (
-          <ImageListItem key={key}>
-            <img
-              src={`${item}`}
-              className="rounded-xl"
-            />
-          </ImageListItem>
-        ))}
-      </ImageList>
-    )
+  const [selectedImage, setSelectedImage] = useState('');
+
+  useEffect(() => {
+    setSelectedImage(imagePreview);
+  }, [imagePreview])
+
+  return (
+    <div>
+      <img src={selectedImage} alt="" className="rounded-xl mx-auto" style={{width: 650}} />
+      <div className="container mt-1 p-4 mx-auto">
+          <div className="overflow-x-auto whitespace-nowrap">
+              <div className="inline-flex space-x-4">
+                {productImages.map((item, key) => (
+                    <img
+                      key={key}
+                      src={`${item}`}
+                      className="rounded-xl cursor-pointer hover:opacity-50"
+                      style={{
+                        width: 150
+                      }}
+                      onClick={() => setSelectedImage(item)}
+                    />
+                ))}
+              </div>
+          </div>
+      </div>
+    </div>
+  )
 }

@@ -10,6 +10,7 @@ import { GoToPage } from "../../server/pageController"
 import { useDispatch } from "react-redux"
 import { setCarts } from "../../redux/cartSlice"
 import { getUserCart } from "../../server/cartController"
+import { userLogout } from "../../server/auth"
 
 export default function Navbar() {
     const backToHome = () => window.location.href = '/';
@@ -28,6 +29,12 @@ export default function Navbar() {
     
     const onFailedGetUserData = (error) => {
         GoToPage('/login');
+    };
+
+    const logout = () => {
+        userLogout(() => {
+            GoToPage('/login', 500);
+        })
     }
 
     useEffect(() => {
@@ -48,7 +55,7 @@ export default function Navbar() {
                 <NavbarMenu linkTo='/keycaps' text='Keycaps' />
                 <NavbarMenu linkTo='/switches' text='Switches' />
                 <CartIcon linkTo='/cart' size={6}/>
-                <NavbarUsername linkTo='/profile' text={username} totalOrders={totalOrders}/>
+                <NavbarUsername linkTo='/profile' text={username} totalOrders={totalOrders} onLogout={logout}/>
             </NavbarMenuContainer>
         </NavbarFragment>
     )
