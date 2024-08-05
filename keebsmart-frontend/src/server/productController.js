@@ -54,6 +54,16 @@ export const getAllProducts = async (setProducts) => {
     }
 };
 
+export const getProductsForCustomer = async (onSuccess) => {
+    try {
+        const response = await axios.get(`${urlEndpoint}/products/user`);
+        onSuccess(response.data);
+    } catch (error) {
+        console.log(error);
+        
+    }
+}
+
 export const getProductById = async (id, onSucces) => {
     try {
         const response = await axios.get(`${urlEndpoint}/product/${id}`);
@@ -329,6 +339,15 @@ export const getKeycapsForCustomer = async (onSucces) => {
     try {
         const response = await axios.get(`${urlEndpoint}/keycaps`);
         onSucces(response.data.keycaps);
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const searchProducts = async (searchKey, onSuccess) => {
+    try {
+        const response = await axios.get(`${urlEndpoint}/product/search/?key=${searchKey}`);
+        onSuccess(response.data);
     } catch (error) {
         console.log(error);
     }

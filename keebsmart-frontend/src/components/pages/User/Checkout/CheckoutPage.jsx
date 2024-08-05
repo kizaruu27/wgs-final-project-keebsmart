@@ -6,6 +6,7 @@ import { createNewAddress } from "../../../../server/userDataController";
 import { useNavigate } from "react-router-dom";
 import { convertCurrency } from "../../../../server/currency";
 import { validateUser } from "../../../../server/userValidation";
+import { Spinner } from "flowbite-react";
 
 export default function CheckoutPage() {
     const location = useLocation();
@@ -30,6 +31,9 @@ export default function CheckoutPage() {
     const [targetedCartIds, setTargetedCartIds] = useState([]);
     const [addressId, setAddressId] = useState(0);
     const [orderNotes, setOrderNotes] = useState('');
+
+    // loading state
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         validateUser('customer');
@@ -56,24 +60,27 @@ export default function CheckoutPage() {
         console.log(addressData);
         setAddressId(addressData.newAddress.id);
         setTargetedCartIds(cartIds);
+        setIsLoading(true);
 
-        navigate('/order/summary', {
-            state: {
-                name,
-                phoneNumber,
-                targetedCartIds: cartIds,
-                addressId: addressData.newAddress.id,
-                orderNotes,
-                carts,
-                street,
-                kecamatan,
-                kelurahan,
-                province,
-                city,
-                postCode,
-                totalPrice
-            }
-        });
+        setTimeout(() => {
+            navigate('/order/summary', {
+                state: {
+                    name,
+                    phoneNumber,
+                    targetedCartIds: cartIds,
+                    addressId: addressData.newAddress.id,
+                    orderNotes,
+                    carts,
+                    street,
+                    kecamatan,
+                    kelurahan,
+                    province,
+                    city,
+                    postCode,
+                    totalPrice
+                }
+            });
+        }, 2000);
     }
 
     return (
@@ -241,7 +248,10 @@ export default function CheckoutPage() {
                             </div>
 
                             <div className="space-y-3">
-                                <button type="submit" className="flex w-full items-center justify-center rounded-xl bg-black px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4  focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800">Proceed to Payment</button>
+                                <button type="submit" className={`flex w-full items-center justify-center rounded-xl ${isLoading ? 'bg-gray-300 text-gray-500' : 'bg-black text-white hover:bg-primary-800'}  px-5 py-2.5 text-sm font-medium   focus:outline-none focus:ring-4  focus:ring-primary-300 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800`} disabled={isLoading}>  
+                                    {isLoading && <Spinner size='sm' className="mr-3" />}
+                                    <span>{ isLoading ? 'Processing...' : 'Proceed to Payment' }</span> 
+                                </button>
                             </div>
                         </div>
                     </div>

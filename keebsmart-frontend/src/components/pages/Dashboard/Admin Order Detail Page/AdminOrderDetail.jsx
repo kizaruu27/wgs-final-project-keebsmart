@@ -24,6 +24,7 @@ export default function AdminOrderDetail () {
     const [statusColor, setStatusColor] = useState('');
     const [status, setStatus] = useState('');
     const [currentStatus, setCurrentStatus] = useState([]);
+    const [shippingId, setShippingId] = useState('');
 
     const canCancel = () => {
         if (status === 'Canceled') return false;
@@ -86,6 +87,7 @@ export default function AdminOrderDetail () {
             setPaymentMethod(data.paymentMethod);
             setStatus(data.currentStatus[data.currentStatus.length - 1].status.status);
             setCurrentStatus(data.currentStatus);
+            setShippingId(data.shippingId);
             console.dir(data.currentStatus);
         })
     }, [0]);
@@ -107,6 +109,13 @@ export default function AdminOrderDetail () {
                     <BuyerDetailSection buyerName={buyerName} phoneNumber={phoneNumber} address={address} />
                     <OrderDetailSection order={order} paymentMethod={paymentMethod} status={status} statusColor={statusColor} />
                     <OrderItemSection carts={carts} order={order} paymentMethod={paymentMethod} onCancelOrder={() => cancelOrder('Canceled')} canCancel={canCancel} status={status} id={id} />
+                    { status === 'Courier Pick Up' || status === 'On Delivery' || status === 'Cash On Delivery Paid' || status === 'Delivered' &&
+                        <div className="bg-white rounded-xl shadow-md p-5 col-span-2">
+                            <div className="mb-3 p-1 font-semibold text-nowrap bg-green-500 text-white rounded-full text-center w-36">{status}</div>
+                            <p className="font-semibold text-lg mb-2">Shipment ID: <span className="font-light">{shippingId.replace(/-/g, '').toUpperCase()}</span></p>
+                            <p className="font-semibold text-lg">Courier: <span className="font-light">{shipping.user.name}</span></p>
+                        </div>
+                    }
                     <OrderTimeline order={order} currentStatus={currentStatus} />
                 </div>
             </DashboardContent>

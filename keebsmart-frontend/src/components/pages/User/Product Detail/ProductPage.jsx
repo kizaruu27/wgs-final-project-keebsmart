@@ -53,43 +53,30 @@ export default function ProductPage() {
         }, (data) => {
             // set product item data
             const item = data.filter(item => item.qty !== 0)[0];
-            setSelectedItemId(item.id);
-            setDefaultPrice(item.price);
             setProductItem(data);
-            setVariationValue(item.variationOption.variationValue);
-            setTotalPrice(item.price);
-            const updatedItemQty = item.qty - qty;
+            setSelectedItemId(item !== undefined && item.id);
+            setDefaultPrice(item !== undefined && item.price);
+            setVariationValue(item !== undefined && item.variationOption.variationValue);
+            setTotalPrice(item !== undefined && item.price);
+            const updatedItemQty = item !== undefined ? item.qty - qty : 0;
             setItemQty(updatedItemQty);
-            if (updatedItemQty <= 0) {
-                setQty(0);
-            } else {
-                setQty(Math.min(qty, updatedItemQty));
-            }
-            setProductQty(item.qty);
-            setProductImagePreview(item.imageURLs[0]);
+            setQty(item !== undefined ? (item.qty <= 0 ? 0 : 1) : 0);
+            setProductQty(item !== undefined? item.qty : 0);
+            setProductImagePreview(item !== undefined ? item.imageURLs[0] : data.map(item => item.imageURLs)[0]);
             console.log(data);
         });
     }, []);
 
     const onClickProductItem = (id) => {
         getProductItemDetail(id, (data) => {
+            setProductImagePreview(data.imageURLs[0]);
             setSelectedItemId(id);
             setDefaultPrice(data.price);
-            setTotalPrice(qty === 0 ? data.price :  data.price * qty);
+            setTotalPrice(data.price);
             setVariationValue(data.variationOption.variationValue);
-            
-            // Adjust qty and itemQty logic
-            let newQty = qty;
-            if (newQty === 0) {
-                newQty = 1;
-            } else if (itemQty >= 0) {
-                newQty = 0;
-            }
-    
             setQty(data.qty === 0 ? 0 : 1);
             setProductQty(data.qty);
-            setItemQty(data.qty - newQty);
-            setProductImagePreview(data.imageURLs[0]);
+            setItemQty(data.qty - 1);
         });
     };
 

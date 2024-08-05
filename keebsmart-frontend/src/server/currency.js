@@ -1,6 +1,7 @@
 export const convertCurrency = (price) => {
-    return new Intl.NumberFormat("id-ID", {
-        style: "currency",
+    const convertedPrice = new Intl.NumberFormat("id-ID", {
         currency: "IDR"
     }).format(price);
+
+    return `Rp. ${convertedPrice}`
 }

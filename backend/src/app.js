@@ -747,6 +747,59 @@ app.get('/products', async (req, res) => {
     }
 });
 
+// get products for customer
+app.get('/products/user', async (req, res) => {
+    try {
+        const products = await prisma.products.findMany({
+            include: {
+                category: true,
+                productItem: {
+                    where: {
+                        isDeleted: false
+                    }
+                },
+                productImage: true
+            },
+            where: {
+                isDeleted: false,
+                isActive: true
+            }
+        });
+
+        res.json(products);
+    } catch (error) {
+        console.log(error.message);
+    }
+});
+
+// API for search product by search key
+app.get('/product/search', async (req, res) => {
+    try {
+        const { key } = req.query;
+        const products = await prisma.products.findMany({
+            where: {
+                productName: {
+                    search: key
+                },
+                isDeleted: false,
+                isActive: true
+            },
+            include: {
+                productImage: true
+            }
+        });
+
+        res.json({
+            products,
+            msg: 'Successfully find product'
+        })
+    } catch (error) {
+        res.json(error);
+        console.log(error);
+        
+    }
+})
+
 // API for get product item by id
 app.get('/product/:id', async (req, res) => {
     try {
@@ -1709,9 +1762,19 @@ app.post('/shipment', accessValidation, async (req, res) => {
             data: {
                 userId, orderId
             }
+        });
+
+        const updateOrderShipment = await prisma.orders.update({
+            where: {
+                orderId
+            },
+            data: {
+                shippingId: newShipment.id
+            }
         })
         res.status(201).json({
             newShipment,
+            updateOrderShipment,
             msg: 'New Shipment Added'
         })
     } catch (error) {
@@ -1956,7 +2019,8 @@ app.post('/cart', accessValidation, async (req, res) => {
                     id: similarCart.id,
                 },
                 data: {
-                    qty: similarCart.qty + qty
+                    qty: {increment: qty},
+                    subTotalPrice: {increment: productItem.price * qty}
                 }
             }) 
             :
@@ -2165,7 +2229,29 @@ app.post('/order', accessValidation, async (req, res) => {
                     }
                 })
             })
-        )
+        );
+
+        const productItemIds = carts.map(item => item.productItemId);
+        const productItem = await prisma.productItem.findMany({
+            where: {
+                id: {
+                    in: productItemIds
+                }
+            }
+        });
+
+        await Promise.all(
+            productItem.map(async (item) => item.qty <= 0 && 
+                await prisma.productItem.update({
+                    where: {
+                        id: item.id
+                    },
+                    data: {
+                        status: 'empty'
+                    }
+                })
+            )
+        );
 
         res.json({
             carts,

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import Navbar from "../../../Layouts/Navbar";
 import { useLocation } from "react-router-dom";
 import { validateUser } from "../../../../server/userValidation";
+import { GoToPage } from "../../../../server/pageController";
 
 export default function OrderConfirmation() {
     const location = useLocation();
@@ -19,7 +20,7 @@ export default function OrderConfirmation() {
 
     useState(() => {
         console.log(orderId, date, paymentMethod, name, address, phoneNumber);
-        console.log(typeof orderId);
+        if (orderId === '') GoToPage('/', 50);
     }, [])
 
     return (

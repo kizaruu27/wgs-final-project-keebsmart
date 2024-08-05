@@ -36,6 +36,7 @@ import AllUserOrdersPage from './components/pages/User/Orders/AllUserOrdersPage'
 import OrderDetailPage from './components/pages/User/Product Detail/OrderDetailPage';
 import AdminOrderPending from './components/pages/Dashboard/Admin All Order Page/AdminOrderPending';
 import AdminCouriersPage from './components/pages/Dashboard/Admin All Couriers Page/AdminCouriersPage';
+import AllProductPage from './components/pages/User/Product List/All Product Page/AllProductPage';
 
 export default function App() {
     return (
@@ -45,6 +46,7 @@ export default function App() {
                     <Route path="/" Component={HomePage}/>
                     <Route path="/login" Component={LoginPage}/>
                     <Route path="/register" Component={RegisterPage}/>
+                    <Route path="/products" Component={AllProductPage}/>
                     <Route path="/keyboards" Component={KeyboardPage}/>
                     <Route path="/keycaps" Component={KeycapsPage}/>
                     <Route path="/switches" Component={SwitchPage}/>

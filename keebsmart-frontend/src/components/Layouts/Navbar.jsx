@@ -11,6 +11,7 @@ import { useDispatch } from "react-redux"
 import { setCarts } from "../../redux/cartSlice"
 import { getUserCart } from "../../server/cartController"
 import { userLogout } from "../../server/auth"
+import SearchBar from "../elements/Search Bar/SearchBar"
 
 export default function Navbar() {
     const backToHome = () => window.location.href = '/';
@@ -50,7 +51,9 @@ export default function Navbar() {
     return (
         <NavbarFragment>
             <NavbarLogo onClick={backToHome}/>
+            <SearchBar />
             <NavbarMenuContainer>
+                <NavbarMenu linkTo='/products' text='All Products' />
                 <NavbarMenu linkTo='/keyboards' text='Keyboard' />
                 <NavbarMenu linkTo='/keycaps' text='Keycaps' />
                 <NavbarMenu linkTo='/switches' text='Switches' />

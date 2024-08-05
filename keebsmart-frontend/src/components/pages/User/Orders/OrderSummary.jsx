@@ -1,9 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../../../Layouts/Navbar";
 import { useNavigate, useLocation } from "react-router-dom";
 import { makeNewOrder } from "../../../../server/orderController";
 import { convertCurrency } from "../../../../server/currency";
 import { validateUser } from "../../../../server/userValidation";
+import { Spinner } from "flowbite-react";
+import { GoToPage } from "../../../../server/pageController";
 
 export default function OrderSummaryPage() {
     const location = useLocation();
@@ -23,8 +25,11 @@ export default function OrderSummaryPage() {
     const postCode = location.state?.postCode || [];
     const totalPrice = location.state?.totalPrice || []; // sent for orders
 
+    const [isLoading, setIsLoading] = useState(false);
+
     useEffect(() => {
         console.log(name, phoneNumber, cartIds, addressId, orderNotes, carts);
+        if (cartIds.length <= 0) GoToPage('/', 50);
     }, []);
 
     useEffect(() => {
@@ -33,19 +38,23 @@ export default function OrderSummaryPage() {
 
     const postNewOrder = (e) => {
         e.preventDefault();
-        makeNewOrder(cartIds, name, phoneNumber, totalPrice, orderNotes, 1, addressId, (data) => {
-            console.log(data);
-            navigate('/order/confirmation', {
-                state: {
-                    orderId: data.newOrder.orderId,
-                    date: data.newOrder.orderDate,
-                    paymentMethod: data.newOrder.paymentMethod.paymentType,
-                    name,
-                    address: `${street}, ${kelurahan}, ${kecamatan}, ${city}, ${province}, ${postCode}`,
-                    phoneNumber
-                }
+        setIsLoading(true);
+
+        setTimeout(() => {
+            makeNewOrder(cartIds, name, phoneNumber, totalPrice, orderNotes, 1, addressId, (data) => {
+                console.log(data);
+                navigate('/order/confirmation', {
+                    state: {
+                        orderId: data.newOrder.orderId,
+                        date: data.newOrder.orderDate,
+                        paymentMethod: data.newOrder.paymentMethod.paymentType,
+                        name,
+                        address: `${street}, ${kelurahan}, ${kecamatan}, ${city}, ${province}, ${postCode}`,
+                        phoneNumber
+                    }
+                })
             })
-        })
+        }, 3000);
     }
 
     return (
@@ -97,8 +106,11 @@ export default function OrderSummaryPage() {
                                 </div>
 
                             <div className="gap-4 sm:flex sm:items-center">
-                                <a href="/" type="button" className="w-full rounded-lg  border text-center border-gray-200 bg-gray-100 px-5  py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-100 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">Return to Shopping</a>
-                                <button type="submit" className="mt-4 flex w-full items-center justify-center rounded-lg bg-black  px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-800 focus:outline-none focus:ring-4 focus:ring-primary-300  dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 sm:mt-0">Send the order</button>
+                                <button type="button" onClick={() => GoToPage('/', 50)} disabled={isLoading} className={`${isLoading ? 'bg-gray-300 text-gray-500' : 'text-gray-900 hover:bg-gray-100 bg-gray-100 hover:text-primary-700'}  w-full rounded-lg  border text-center border-gray-200 px-5  py-2.5 text-sm font-medium   focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700`}>Return to Shopping</button>
+                                <button disabled={isLoading} type="submit" className={`${isLoading ? 'bg-gray-300 text-gray-500' : 'bg-black text-white'}  mt-4 flex w-full items-center justify-center rounded-lg px-5 py-2.5 text-sm font-medium hover:bg-primary-800 focus:outline-none focus:ring-4 dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800 sm:mt-0`}>
+                                    {isLoading &&  <Spinner size='sm' className="mr-4" />}
+                                    <span>{isLoading ? 'Processing...' : 'Send the order'}</span>
+                                </button>
                             </div>
                             </div>
                         </div>
