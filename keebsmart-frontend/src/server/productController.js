@@ -289,7 +289,7 @@ export const getProductItemDetail = async (id, onSucces) => {
     }
 }
 
-export const addNewCart = async (productItemId, qty, onSuccess) => {
+export const addNewCart = async (productItemId, qty, onSuccess, onFailed) => {
     try {
         const response = await axios.post(`${urlEndpoint}/cart`, {
             productItemId, qty
@@ -298,6 +298,9 @@ export const addNewCart = async (productItemId, qty, onSuccess) => {
                 Authorization: `Bearer ${token}`
             }
         });
+
+        if (response.status === 200) return onFailed(response.data.msg);
+        
         onSuccess(response.data);
     } catch (error) {
         console.error(error);

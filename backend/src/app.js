@@ -1942,6 +1942,14 @@ app.post('/cart', accessValidation, async (req, res) => {
             }
         });
 
+        if (similarCart) {
+            if (similarCart.qty >= productItem.qty) {
+                return res.status(200).json({
+                    msg: 'You cant add more cart'
+                })
+            }
+        }
+
         const newCart = similarCart ? 
             await prisma.cart.update({
                 where: {
@@ -1950,7 +1958,8 @@ app.post('/cart', accessValidation, async (req, res) => {
                 data: {
                     qty: similarCart.qty + qty
                 }
-            }) :
+            }) 
+            :
             await prisma.cart.create({
                 data: {
                     userId, productItemId, qty, 
@@ -1958,7 +1967,7 @@ app.post('/cart', accessValidation, async (req, res) => {
                 }
             })
 
-        res.json({
+        res.status(201).json({
             newCart,
             productItem
         });  

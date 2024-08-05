@@ -5,6 +5,8 @@ export const cartSlice = createSlice({
     initialState: {
         userCarts: [],
         allChecked: false,
+        cartMessege: '',
+        cartMessegeColor: ''
     },
     reducers: {
         setCarts: (state, action) => {
@@ -12,9 +14,15 @@ export const cartSlice = createSlice({
         },
         setAllChecked: (state, action) => {
             state.allChecked = action.payload;
+        },
+        setCartMessege: (state, action) => {
+            state.cartMessege = action.payload;
+        },
+        setCartMessegeColor: (state, action) => {
+            state.cartMessegeColor = action.payload;
         }
     }
 })
 
-export const { setCarts, setAllChecked } = cartSlice.actions;
+export const { setCarts, setAllChecked, setCartMessege, setCartMessegeColor } = cartSlice.actions;
 export default cartSlice.reducer;

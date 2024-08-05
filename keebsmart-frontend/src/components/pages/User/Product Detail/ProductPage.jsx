@@ -10,9 +10,11 @@ import AddToCartButton from "../../../elements/Buttons/AddToCart";
 import ProductDescriptionSection from "./ProductDescriotionSection";
 import { convertCurrency } from "../../../../server/currency";
 import { validateUser } from "../../../../server/userValidation";
-import { useDispatch } from "react-redux";
-import { setCarts } from "../../../../redux/cartSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { setCartMessege, setCartMessegeColor, setCarts } from "../../../../redux/cartSlice";
 import { getUserCart } from "../../../../server/cartController";
+import NotificationCartItem from "../../../elements/Notification/NotificationCartIcon";
+import WarningNotificationIcon from "../../../elements/Notification/WarningNotificationIcon";
 
 export default function ProductPage() {
     const { id } = useParams();
@@ -34,7 +36,11 @@ export default function ProductPage() {
     const [selectedItemId, setSelectedItemId] = useState(null);
     const [qty, setQty] = useState(1);
 
+    // state for cart messege
+    const cartMessege = useSelector(state => state.carts.cartMessege);
+    const cartMessegeColor = useSelector(state => state.carts.cartMessegeColor);
     const dispatch = useDispatch();
+    const [notificationIcon, setNotificationIcon] = useState('');
 
     useEffect(() => {
         getProductDetail(id, (data) => {
@@ -111,8 +117,19 @@ export default function ProductPage() {
 
     const postNewCart = async () => {
         await addNewCart(selectedItemId, qty, (data) => {
+            // Successfull add new cart
             console.log(data);
             setShowNotif(true);
+            setNotificationIcon(NotificationCartItem);
+            dispatch(setCartMessege('Successfully add item to cart.'));
+            dispatch(setCartMessegeColor('bg-gray-50 text-black'))
+        }, (msg) => {
+            // failed add new cart
+            console.log(msg);
+            setShowNotif(true);
+            setNotificationIcon(WarningNotificationIcon);
+            dispatch(setCartMessege(msg));
+            dispatch(setCartMessegeColor('bg-red-500 text-white'))
         });
 
         await getUserCart((data) => {
@@ -129,7 +146,7 @@ export default function ProductPage() {
             <Navbar />
             {/* grid */}
             <div className="text-center">
-                <AddCartNotification showNotif={showNotif} setShowNotif={setShowNotif} />
+                <AddCartNotification showNotif={showNotif} icon={notificationIcon} setShowNotif={setShowNotif} msg={cartMessege} color={cartMessegeColor} />
             </div>
 
             <div className="m-8 p-5 grid grid-cols-2 gap-5">
