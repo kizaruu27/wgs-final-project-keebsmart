@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
   previewFeatures = ["fullTextSearch"]
 }
 
@@ -120,6 +120,7 @@ model User {
   cart        Cart[]
   inventory   Inventory[]
   messeges    Messeges[]
+  moneyKeep   MoneyKeep[]
   orders      Orders[]
   ProductLog  ProductLog[]
   shipment    Shipping[]
@@ -138,6 +139,16 @@ model UserAddress {
   isDefault Boolean
   orders    Orders[]
   user      User     @relation(fields: [userId], references: [id])
+}
+
+model MoneyKeep {
+  id         Int      @id @default(autoincrement())
+  amount     Int
+  userId     String?
+  isReceived Boolean  @default(false)
+  shippingId String   @unique
+  order      Shipping @relation(fields: [shippingId], references: [id])
+  user       User?    @relation(fields: [userId], references: [id])
 }
 
 model PaymentMethods {
@@ -162,13 +173,14 @@ model Cart {
 }
 
 model Shipping {
-  id           String   @id @default(uuid())
-  shipmentName String   @default("KeebsMart Express")
+  id           String     @id @default(uuid())
+  shipmentName String     @default("KeebsMart Express")
   userId       String
-  orderId      String   @unique
-  createdAt    DateTime @default(now())
-  order        Orders   @relation(fields: [orderId], references: [orderId])
-  user         User     @relation(fields: [userId], references: [id])
+  orderId      String     @unique
+  createdAt    DateTime   @default(now())
+  moneyKeep    MoneyKeep?
+  order        Orders     @relation(fields: [orderId], references: [orderId])
+  user         User       @relation(fields: [userId], references: [id])
 }
 
 model PendingOrders {

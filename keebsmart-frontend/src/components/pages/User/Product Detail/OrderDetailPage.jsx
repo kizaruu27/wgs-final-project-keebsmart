@@ -8,6 +8,7 @@ import DeleteModal from "../../../Layouts/Modals/DeleteModal";
 import { GoToPage } from "../../../../server/pageController";
 import { convertCurrency } from "../../../../server/currency";
 import { validateUser } from "../../../../server/userValidation";
+import { getUserData } from "../../../../server/userDataController";
 
 export default function OrderDetailPage() {
     const { id } = useParams();
@@ -23,6 +24,7 @@ export default function OrderDetailPage() {
     const [courier, setCourier] = useState('');
     const [statusColor, setStatusColor] = useState('');
     const [shippingId, setShippingId] = useState('');
+    const [access, setAccess] = useState('');
 
     useEffect(() => {
         validateUser('customer');
@@ -30,14 +32,14 @@ export default function OrderDetailPage() {
 
     useEffect(() => {
         getOrderDetail(id, (data) => {
-            console.log(data);
+            // console.log(data.currentStatus.filter(item => item.status.status !== 'Order Completed' && item.status.status !== 'Cash Payment Accepted'));
             setOrderItem(data.carts);
             setOrder(data);
             setOrderId(data.orderId);
             setCurrentStatus(data.currentStatus);
             setPaymentMethod(data.paymentMethod.paymentType);
             setAddress(`${data.address.street}, ${data.address.kelurahan}, ${data.address.kecamatan}, ${data.address.city}, ${data.address.province}, ${data.address.postCode}`)
-            setLatestStatus(data.currentStatus.map(item => item.status.status)[data.currentStatus.map(item => item.status.status).length - 1])
+            setLatestStatus(data.currentStatus.filter(item => item.status.status !== 'Order Completed' && item.status.status !== 'Cash Payment Accepted').map(item => item.status.status)[data.currentStatus.map(item => item.status.status).length - 1])
             setShipping(data.shipping);
             setCourier(data.shipping.user);
             setShippingId(data.shippingId);
@@ -46,7 +48,13 @@ export default function OrderDetailPage() {
 
     useEffect(() => {
         changeStatusColor(latestStatus, setStatusColor);
-    })
+    });
+
+    useEffect(() => {
+        getUserData((data) => {
+            setAccess(data.access);
+        })
+    }, [])
 
     const cancelOrder = (id, status) => {
         setOrderStatus(id, status, () => {
@@ -145,13 +153,13 @@ export default function OrderDetailPage() {
                             </div>
                             }
 
-                            <OrderTimeline order={order} currentStatus={currentStatus} courierName={courier.name} />
-                            { latestStatus == 'Checkout Success' && 
+                            <OrderTimeline order={order} currentStatus={currentStatus} courierName={courier.name} access={access} />
+                            { latestStatus === 'Checkout Success' && 
                             <div className="gap-4 sm:flex sm:items-center mt-8">
                                 <button type="button" onClick={() => setOpenCancelOrder(true)} className="w-full bg-red-500 text-white rounded-xl  border border-gray-200  px-5  py-2.5 text-sm font-medium hover:bg-red-700 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">Cancel the order</button>
                             </div> }
 
-                            { latestStatus == 'Delivered' && 
+                            { latestStatus === 'Delivered' || latestStatus === 'Cash Payment Accepted' || latestStatus === 'Order Completed' &&
                             <div className="gap-4 sm:flex sm:items-center mt-8">
                                 <button type="button" onClick={() => setOrderStatus(id, 'Finish', () => GoToPage(`/order/${id}`))} className="w-full bg-green-500 text-white rounded-xl  border border-gray-200  px-5  py-2.5 text-sm font-medium hover:bg-green-700 hover:text-primary-700 focus:z-10 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white dark:focus:ring-gray-700">Finish order</button>
                             </div> }

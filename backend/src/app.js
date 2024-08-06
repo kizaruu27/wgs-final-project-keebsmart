@@ -32,6 +32,7 @@ const accessValidation = (req, res, next) => {
         const decoded = jwt.verify(token, SECRET);
         if (invalidTokens.has(token)) return res.status(401).json('Invalid Token');
         req.userId = decoded.userId;
+        req.access = decoded.access;
         next();
     } catch (error) {
         res.status(401).json({error: 'Invalid Token'})
@@ -75,7 +76,27 @@ app.get('/users', accessValidation, async (req, res) => {
         const users = await prisma.user.findMany({
             include: {
                 orders: true,
-                shipment: true
+                shipment: {
+                    include: {
+                        moneyKeep: true
+                    }
+                },
+                moneyKeep: {
+                    where: {
+                        isReceived: false
+                    },
+                    include: {
+                        order: {
+                            include: {
+                                order: {
+                                    include: {
+                                        currentStatus: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             },
             orderBy: {
                 createdAt: 'desc'
@@ -1708,7 +1729,6 @@ app.get('/user/address/:id', async (req, res) => {
     } catch (error) {
         res.json(error);
         console.log(error);
-        
     }
 })
 
@@ -1991,6 +2011,107 @@ app.get('/shipment/:id', accessValidation, async (req, res) => {
             currentStatus,
             lastUpdate,
             msg: 'Get shipment detail successfully'
+        });
+    } catch (error) {
+        res.json(error);
+        console.log(error);
+    }
+});
+
+// API for add moneykeep for courier
+app.post('/money', accessValidation, async (req, res) => {
+    try {
+        const { amount, shippingId } = req.body;
+        const userId = req.userId;
+        const access = req.access;
+
+        if (access !== 'courier') return res.json('Only courier can access this');
+
+        const moneyKeep = await prisma.moneyKeep.create({
+            data: {
+                amount,
+                userId,
+                shippingId
+            }
+        });
+
+        res.json(moneyKeep);
+    } catch (error) {
+        res.json(error);
+        console.log(error);
+    }
+});
+
+// API for set moneykeep is received
+app.patch('/money', accessValidation, async (req, res) => {
+    try {
+        const { id } = req.body;
+        const access = req.access;
+
+        if (access !== 'admin') return res.json('Only admin can access this!');
+
+        const moneyKeep = await prisma.moneyKeep.updateMany({
+            where: {
+                id: {
+                    in: id
+                }
+            },
+            data: {
+                isReceived: true
+            }
+        });
+
+        const updatedMoneyKeep = await prisma.moneyKeep.findMany({
+            where: {
+                id: {
+                    in: id
+                }
+            },
+            include: {
+                order: {
+                    include: {
+                        order: true
+                    }
+                }
+            }
+        });
+        
+        const acceptedCashStatus = await prisma.orderStatus.findFirst({
+            where: {
+                status: 'Cash Payment Accepted'
+            }
+        });
+
+        const orderCompleteStatus = await prisma.orderStatus.findFirst({
+            where: {
+                status: 'Order Completed'
+            }
+        });
+        
+        const orderIds = updatedMoneyKeep.map(item => item.order.order.orderId);
+        const acceptedStatusData = orderIds.map(orderId => ({
+            orderId: orderId,
+            orderStatusId: acceptedCashStatus.id
+        }));
+
+        const orderCompleteData = orderIds.map(orderId => ({
+            orderId: orderId,
+            orderStatusId: orderCompleteStatus.id
+        }));
+
+        const acceptedStatusUpdate = await prisma.currentStatus.createMany({
+            data: acceptedStatusData
+        });
+
+        const completedOrderStatus = await prisma.currentStatus.createMany({
+            data: orderCompleteData
+        });
+
+        res.json({
+            moneyKeep,
+            updatedMoneyKeep,
+            orderIds,
+            completedOrderStatus
         });
     } catch (error) {
         res.json(error);

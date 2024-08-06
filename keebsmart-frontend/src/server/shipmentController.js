@@ -109,4 +109,21 @@ export const getDeliveredShipment = async (onSucces) => {
     } catch (error) {
         console.log(error);
     }
+};
+
+export const assignMoneyPayment = async (amount, shippingId, onSucces) => {
+    try {
+        const data = {
+            amount, shippingId
+        }
+        const response = await axios.post(`${urlEndpoint}/money`, data, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        onSucces(response.data);
+    } catch (error) {
+        console.log(error);
+    }
 }

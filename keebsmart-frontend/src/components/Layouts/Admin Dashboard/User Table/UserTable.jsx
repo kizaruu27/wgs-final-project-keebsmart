@@ -1,10 +1,24 @@
 import { Button } from "flowbite-react";
 import AddCourierForm from "../Courier Forms/AddCourierForm";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { convertCurrency } from "../../../../server/currency";
+import { receiveMoneyFromCourier } from "../../../../server/orderController";
+import { GoToPage } from "../../../../server/pageController";
 
 export default function UserTable({users, setuserStatus, access}) {
     const [openAddCourierModal, setOpenAddCourierModal] = useState(false);
+
+    const handleReceiveMoney = (id) => {
+        // update status money keep jadi received
+        receiveMoneyFromCourier(id, (data) => {
+            console.log(data);
+            GoToPage('/admin/couriers', 50);
+        });
+    };
+
+    useEffect(() => {
+        console.log(users.map(item => item.moneyKeep.map(item => item.id) )); 
+    }, [])
 
     return (
         <div className="bg-white rounded-xl shadow-md p-7">
@@ -32,9 +46,14 @@ export default function UserTable({users, setuserStatus, access}) {
                                 Status
                             </th>
                             { access === 'courier' &&
-                                <th scope="col" className="px-6 py-3 text-nowrap">
-                                    Total Shipments
-                                </th>
+                                <>
+                                    <th scope="col" className="px-6 py-3 text-nowrap">
+                                        Total Shipments
+                                    </th>
+                                    <th scope="col" className="px-6 py-3 text-nowrap">
+                                        Total Money Amount
+                                    </th>
+                                </>
                             }
 
                             {access === 'customer' && 
@@ -68,9 +87,14 @@ export default function UserTable({users, setuserStatus, access}) {
                                 {user.isActive ? <span className="bg-green-100 text-green-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl dark:bg-green-900 dark:text-green-300">active</span> : <span className="bg-red-100 text-red-800 text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl dark:bg-green-900 dark:text-green-300">inactive</span>}
                             </td>
                             { access === 'courier' &&
-                                <td className="px-6 py-4 text-nowrap">
-                                    {user.shipment.length}
-                                </td>
+                                <>
+                                    <td className="px-6 py-4 text-nowrap">
+                                        {user.shipment.length}
+                                    </td>
+                                    <td className="px-6 py-4 text-nowrap">
+                                        {convertCurrency(user.moneyKeep.map(item => item.amount).reduce((acc, accValue) => acc + accValue, 0))}
+                                    </td>
+                                </>
                             }
                             {access == 'customer' && 
                                 <>
@@ -83,6 +107,7 @@ export default function UserTable({users, setuserStatus, access}) {
                                 </>
                             }
                             <td className="px-6 py-4 text-nowrap">
+                                {access === 'courier' && convertCurrency(user.moneyKeep.map(item => item.amount).reduce((acc, accValue) => acc + accValue, 0)) !== 'Rp. 0' && <span onClick={() => handleReceiveMoney(user.moneyKeep.map(item => item.id))} className="bg-green-100 text-green-800 cursor-pointer text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl dark:bg-yellow-900 dark:text-yellow-300">receive money</span>}
                                 {user.isActive ? <span onClick={() => setuserStatus(user.id, false)} className="bg-yellow-100 text-yellow-800 cursor-pointer text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl dark:bg-yellow-900 dark:text-yellow-300">deactivate</span> : <span onClick={() => setuserStatus(user.id, true)} className="bg-green-100 text-green-800 cursor-pointer text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl dark:bg-green-900 dark:text-green-300">activate</span>}
                             </td>
                         </tr>

@@ -211,4 +211,20 @@ export const getUserOrders = async (onSuccess) => {
     } catch (error) {
         console.log(error);
     }
+};
+
+export const receiveMoneyFromCourier = async (id, onSuccess) => {
+    try {
+        const data = { id }
+        const response = await axios.patch(`${urlEndpoint}/money`, data, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        onSuccess(response.data);
+    } catch (error) {
+        console.log(error);
+        
+    }
 }

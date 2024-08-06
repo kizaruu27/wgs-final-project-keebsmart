@@ -27,6 +27,8 @@ export default function ShipmentDetail () {
     const [carts, setCarts] = useState([]);
     const [lastUpdate, setLastUpdate] = useState('');
     const [allStatus, setAllStatus] = useState([]);
+    const [shipmentId, setShipmentId] = useState(0);
+    const [access, setAccess] = useState([]);
     
     useEffect(() => {
         validateUser('courier');
@@ -47,7 +49,7 @@ export default function ShipmentDetail () {
 
     useEffect(() => {
         getShipmentDetail(id, (data) => {
-            console.log(data.shipment.order.buyerName);
+            console.log(data.allStatus);
             setBuyer(data.shipment.order.buyerName);
             setPhoneNumber(data.shipment.order.phoneNumber);
             setAddress(data.shipment.order.address);
@@ -57,16 +59,16 @@ export default function ShipmentDetail () {
             setPaymentMethod(data.shipment.order.paymentMethod);
             setCarts(data.shipment.order.carts);
             setLastUpdate(data.lastUpdate);
-            setAllStatus(data.allStatus);
+            setAllStatus(data.allStatus.filter(item => item.status.status !== 'Finish'));
         })
     }, [0]);
 
     useEffect(() => {
         getUserData((data) => {
             setCourier(data);
-            console.log(data.access);
+            setAccess(data.access);
         })
-    }, [0])
+    }, [0]);
 
     return (
         <DashboardFragment>
@@ -76,9 +78,9 @@ export default function ShipmentDetail () {
                 <OrderShipmentDetailFragment>
                     <UserSection customerStatus='Recipient' customerName={buyer} customerPhoneNumber={phoneNumber} customerAddress={address}/>
 
-                    <ShipmentOrderInfo condition='Shipment ID' id={shipment.id} orderDate={order.orderDate} paymentMethod={paymentMethod.paymentType} status={status} shipmentName={shipment.shipmentName} />
+                    <ShipmentOrderInfo condition='Shipment ID' id={shipment.id} orderDate={order.orderDate} paymentMethod={paymentMethod.paymentType} status={status === 'Cash Payment Accepted' || status === 'Order Completed' || status === 'Finish' ? 'Delivered' : status} shipmentName={shipment.shipmentName} />
 
-                    <ShipmentOrderItems canCancel={canCancel} carts={carts} order={order} paymentType={paymentMethod.paymentType} access={courier.access} status={status} redirect={`/courier/shipment/${shipment.id}`} />
+                    <ShipmentOrderItems shipmentId={shipment.id} canCancel={canCancel} carts={carts} order={order} paymentType={paymentMethod.paymentType} access={courier.access} status={status} redirect={`/courier/shipment/${shipment.id}`} />
 
                     <ShipmentOrderTimeline lastUpdate={lastUpdate} allStatus={allStatus}/>
                 </OrderShipmentDetailFragment>

@@ -2,15 +2,25 @@ import { useState } from "react";
 import { setOrderStatus } from "../../server/orderController";
 import { GoToPage } from "../../server/pageController";
 import { getUserData } from "../../server/userDataController";
+import { assignMoneyPayment } from "../../server/shipmentController";
 
-export default function SetOrderButton({status, orderId, paymentMethod, access, redirect}) {
+export default function SetOrderButton({status, orderId, paymentMethod, access, redirect, shipmentId, orderPrice}) {
     const [userAccess, setUserAccess] = useState({});
 
     const setStatus = (orderStatus) => {
         setOrderStatus(orderId, orderStatus, (data) => {
             console.log(data);
+
+            if (orderStatus === 'Cash On Delivery Paid') {
+                // create new money keep data
+                assignMoneyPayment(orderPrice, shipmentId, (data) => {
+                    console.log(data);
+                })
+            }
+
             GoToPage(redirect, 100);
         })
+        
     } 
 
     useState(() => {

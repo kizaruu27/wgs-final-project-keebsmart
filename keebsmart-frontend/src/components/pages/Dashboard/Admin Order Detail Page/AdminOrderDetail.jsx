@@ -11,6 +11,7 @@ import OrderDetailSection from "../../../Layouts/Admin Dashboard/Order Detail/Or
 import OrderItemSection from "../../../Layouts/Admin Dashboard/Order Detail/OrderItemSection";
 import OrderTimeline from "../../../Layouts/Admin Dashboard/Order Detail/OrderTimeline";
 import { validateUser } from "../../../../server/userValidation";
+import { getUserData } from "../../../../server/userDataController";
 
 export default function AdminOrderDetail () {
     const { id } = useParams();
@@ -25,13 +26,11 @@ export default function AdminOrderDetail () {
     const [status, setStatus] = useState('');
     const [currentStatus, setCurrentStatus] = useState([]);
     const [shippingId, setShippingId] = useState('');
+    const [courierName, setCourierName] = useState('');
+    const [access, setAccess] = useState('');
 
     const canCancel = () => {
-        if (status === 'Canceled') return false;
-        if (status === 'Delivered') return false;
-        if (status === 'Finish') return false;
-        if (status === 'Courier Pick Up') return false;
-        if (status === 'Waiting Courier For Pick Up' || status === 'Courier Pick Up' || status === 'On Delivery' || status === 'Cash On Delivery Paid' ) return false;
+        if (status !== 'Checkout Success' || status !== 'On Process' || status !== 'On Packing' ) return false;
         else return true;
     }
 
@@ -84,9 +83,10 @@ export default function AdminOrderDetail () {
             setCarts(data.carts);
             setAddress(data.address);
             setShipping(data.shipping);
+            setCourierName(data.shipping.user.name);
             setPaymentMethod(data.paymentMethod);
             setStatus(data.currentStatus[data.currentStatus.length - 1].status.status);
-            setCurrentStatus(data.currentStatus);
+            setCurrentStatus(data.currentStatus.filter(item => item.status.status !== 'Finish'));
             setShippingId(data.shippingId);
             console.dir(data.currentStatus);
         })
@@ -95,6 +95,12 @@ export default function AdminOrderDetail () {
     useEffect(() => {
         changeStatusColor(status);
     }, [status]);
+
+    useEffect(() => {
+        getUserData((data) => {
+            setAccess(data.access);
+        })
+    }, [])
 
     useEffect(() => {
         validateUser('admin');
@@ -109,14 +115,14 @@ export default function AdminOrderDetail () {
                     <BuyerDetailSection buyerName={buyerName} phoneNumber={phoneNumber} address={address} />
                     <OrderDetailSection order={order} paymentMethod={paymentMethod} status={status} statusColor={statusColor} />
                     <OrderItemSection carts={carts} order={order} paymentMethod={paymentMethod} onCancelOrder={() => cancelOrder('Canceled')} canCancel={canCancel} status={status} id={id} />
-                    { status === 'Courier Pick Up' || status === 'On Delivery' || status === 'Cash On Delivery Paid' || status === 'Delivered' &&
+                    { status === 'Courier Pick Up' || status === 'On Delivery' || status === 'Cash On Delivery Paid' || status === 'Delivered' || status === 'Finish' || status === 'Cash Payment Accepted' || status === 'Order Completed' ?
                         <div className="bg-white rounded-xl shadow-md p-5 col-span-2">
                             <div className="mb-3 p-1 font-semibold text-nowrap bg-green-500 text-white rounded-full text-center w-36">{status}</div>
                             <p className="font-semibold text-lg mb-2">Shipment ID: <span className="font-light">{shippingId.replace(/-/g, '').toUpperCase()}</span></p>
-                            <p className="font-semibold text-lg">Courier: <span className="font-light">{shipping.user.name}</span></p>
+                            <p className="font-semibold text-lg">Courier: <span className="font-light">{courierName}</span></p>
                         </div>
-                    }
-                    <OrderTimeline order={order} currentStatus={currentStatus} />
+                    : null}
+                    <OrderTimeline order={order} currentStatus={currentStatus} access={access} courierName={courierName} />
                 </div>
             </DashboardContent>
         </DashboardFragment>

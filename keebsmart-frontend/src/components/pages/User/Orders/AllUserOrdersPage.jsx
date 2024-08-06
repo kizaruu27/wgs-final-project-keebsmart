@@ -16,7 +16,7 @@ export default function AllUserOrdersPage() {
     }, [])
 
     const currentStatus = (item) => {
-        return item.currentStatus.map(item => item.status.status)[item.currentStatus.map(item => item.status.status).length - 1];
+        return item.currentStatus.map(item => item.status.status)[item.currentStatus.map(item => item.status.status).length - 1] === 'Order Completed' || item.currentStatus.map(item => item.status.status)[item.currentStatus.map(item => item.status.status).length - 1] === 'Cash Payment Accepted' ? 'Finish' : item.currentStatus.map(item => item.status.status)[item.currentStatus.map(item => item.status.status).length - 1];
     }
 
     useEffect(() => {
