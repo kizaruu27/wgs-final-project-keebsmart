@@ -30,8 +30,9 @@ export default function AdminOrderDetail () {
     const [access, setAccess] = useState('');
 
     const canCancel = () => {
-        if (status !== 'Checkout Success' || status !== 'On Process' || status !== 'On Packing' ) return false;
-        else return true;
+        if (status !== 'Checkout Success' || status !== 'On Process' || status !== 'On Packing') return true;
+        if ( status !== 'Waiting Courier For Pick Up') return false
+        else return false;
     }
 
     const changeStatusColor = (orderStatus) => {
@@ -83,12 +84,12 @@ export default function AdminOrderDetail () {
             setCarts(data.carts);
             setAddress(data.address);
             setShipping(data.shipping);
-            setCourierName(data.shipping.user.name);
+            setCourierName(data.shipping ? data.shipping.user.name : '');
             setPaymentMethod(data.paymentMethod);
             setStatus(data.currentStatus[data.currentStatus.length - 1].status.status);
             setCurrentStatus(data.currentStatus.filter(item => item.status.status !== 'Finish'));
             setShippingId(data.shippingId);
-            console.dir(data.currentStatus);
+            console.log(data);
         })
     }, [0]);
 

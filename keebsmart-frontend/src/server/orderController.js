@@ -153,6 +153,7 @@ export const getOrderDetail = async (id, setOrderDetail) => {
         });
 
         setOrderDetail(orderDetail.data.order);
+        console.log(orderDetail.data.order);
     } catch (error) {
         console.log(error);
     }

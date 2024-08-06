@@ -5,7 +5,7 @@ export default function OrderTimeline({order, currentStatus, courierName, access
             <h3 className="my-2">Updated at: {new Date(order.updateDate).toDateString()} | {new Date(order.updateDate).toLocaleTimeString()} </h3>
             <div className="p-5">
                 <ol className="relative border-s border-gray-200 dark:border-gray-700">
-                { access === 'customer' && currentStatus.map((item, key) => (
+                { access === 'customer' && currentStatus.filter(item => item.status.status !== 'Cash Payment Accepted' && item.status.status !== 'Order Completed').map((item, key) => (
                     <div key={key}>
                         <li className="mb-10 ms-4">
                             <div className="absolute w-3 h-3 bg-gray-200 rounded-full mt-1.5 -start-1.5 border border-white dark:border-gray-900 dark:bg-gray-700"></div>
