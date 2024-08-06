@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import Navbar from "../../../Layouts/Navbar";
 import { useLocation } from "react-router-dom";
 import { getCartsById } from "../../../../server/cartController";
-import { createNewAddress } from "../../../../server/userDataController";
+import { createNewAddress, getAddressDetail, getUserAddresses } from "../../../../server/userDataController";
 import { useNavigate } from "react-router-dom";
 import { convertCurrency } from "../../../../server/currency";
 import { validateUser } from "../../../../server/userValidation";
-import { Spinner } from "flowbite-react";
+import { Spinner, Label } from "flowbite-react";
+import { Select } from "flowbite-react";
+import AddNewAddressModal from "../../../Layouts/Modals/AddNewAddressModal";
 
 export default function CheckoutPage() {
     const location = useLocation();
@@ -32,12 +34,18 @@ export default function CheckoutPage() {
     const [addressId, setAddressId] = useState(0);
     const [orderNotes, setOrderNotes] = useState('');
 
+    // State for user address
+    const [userAddress, setUserAddress] = useState([]);
+
     // loading state
     const [isLoading, setIsLoading] = useState(false);
 
+    // state for open add address modal
+    const [openAddAddressModal, setOpenAddAddressModal] = useState(false);
+
     useEffect(() => {
         validateUser('customer');
-    }, [])
+    }, []);
 
     useEffect(() => {
         console.log(cartIds);
@@ -48,39 +56,60 @@ export default function CheckoutPage() {
         });
     }, []);
 
+    useEffect(() => {
+        getUserAddresses((data) => {
+            console.log(data.addresses);
+            setUserAddress(data.addresses);
+        })
+    }, [])
+
     const proceedToPayment = async (e) => {
         e.preventDefault();
-
-        const addressData = await new Promise((resolve) => {
-            createNewAddress(street, kelurahan, kecamatan, city, province, postCode, (data) => {
-                resolve(data);
-            });
-        });
-
-        console.log(addressData);
-        setAddressId(addressData.newAddress.id);
+        
         setTargetedCartIds(cartIds);
         setIsLoading(true);
 
-        setTimeout(() => {
-            navigate('/order/summary', {
-                state: {
-                    name,
-                    phoneNumber,
-                    targetedCartIds: cartIds,
-                    addressId: addressData.newAddress.id,
-                    orderNotes,
-                    carts,
-                    street,
-                    kecamatan,
-                    kelurahan,
-                    province,
-                    city,
-                    postCode,
-                    totalPrice
-                }
-            });
-        }, 2000);
+        if (addressId === '' || addressId === null || addressId === 0 || addressId === undefined) {
+            console.log('Please choose your address');
+        } else {
+            setTimeout(() => {
+                navigate('/order/summary', {
+                    state: {
+                        name,
+                        phoneNumber,
+                        targetedCartIds: cartIds,
+                        addressId,
+                        orderNotes,
+                        carts,
+                        street,
+                        kecamatan,
+                        kelurahan,
+                        province,
+                        city,
+                        postCode,
+                        totalPrice
+                    }
+                });
+            }, 2000);
+        }
+
+    };
+
+    const handleAddressChange = (e) => {
+        getAddressDetail(e.target.value, (data) => {
+            console.log(data);
+            setAddressId(data.id);
+            setStreet(data.street);
+            setKecamatan(data.kecamatan);
+            setKelurahan(data.kelurahan);
+            setPostCode(data.postCode);
+            setProvince(data.province);
+            setCity(data.city);
+        })
+    };
+
+    const handleSetAddAddress = () => {
+        setOpenAddAddressModal(true);
     }
 
     return (
@@ -122,8 +151,22 @@ export default function CheckoutPage() {
                             <div className="space-y-4">
                                 <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Delivery Details</h2>
 
+                                {/* Address Dropdown */}
+                                <div>
+                                    <div className="mb-2 block">
+                                        <Label htmlFor="countries" value="Select your address" />
+                                    </div>
+                                    <Select id="countries" required onChange={handleAddressChange}>
+                                        <option value=''>Choose Your Address</option>
+                                        {userAddress.map((address, key) => (
+                                            <option value={address.id} key={key}>{address.street}, {address.kelurahan}, {address.kecamatan}, {address.city}, {address.province}, {address.postCode} </option>
+                                        ))}
+                                    </Select>
+                                    <button onClick={handleSetAddAddress} type="button" className="my-4 text-gray-900 bg-white border border-gray-300 focus:outline-none hover:bg-gray-100 focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700">Add new address</button>
+                                </div>
+
                                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                    <div>
+                                    <div className="mb-4">
                                         <label htmlFor="name" className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Your name </label>
                                         <input onChange={e => setName(e.target.value)} type="text" id="name" className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" required />
                                     </div>
@@ -133,34 +176,46 @@ export default function CheckoutPage() {
                                         <input onChange={e => setPhoneNumber(e.target.value)} type="text" id="phone-number" inputMode="numeric" className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"  required />
                                     </div>
 
-                                    <div>
-                                        <label htmlFor="street" className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Street </label>
-                                        <input onChange={e => setStreet(e.target.value)} type="text" id="street" className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"  required />
+                                    <div className="mb-4">
+                                        <div className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Street </div>
+                                        <div className="block w-full">
+                                            {street}
+                                        </div>
                                     </div>
                                     
                                     <div>
-                                        <label htmlFor="kelurahan" className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Kelurahan </label>
-                                        <input onChange={e => setKelurahan(e.target.value)} type="text" id="kelurahan" className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"  required />
+                                        <div className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Kelurahan </div>
+                                        <div className="block w-full">
+                                            {kelurahan}
+                                        </div>
+                                    </div>
+
+                                    <div className="mb-4">
+                                        <div className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Kecamatan </div>
+                                        <div className="block w-full">
+                                            {kecamatan}
+                                        </div>
                                     </div>
 
                                     <div>
-                                        <label htmlFor="kecamatan" className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Kecamatan </label>
-                                        <input onChange={e => setKecamatan(e.target.value)} type="text" id="kecamatan" className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"  required />
+                                        <div className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> City </div>
+                                        <div className="block w-full">
+                                            {city}
+                                        </div>
                                     </div>
 
                                     <div>
-                                        <label htmlFor="city" className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> City </label>
-                                        <input onChange={e => setCity(e.target.value)} type="text" id="city" className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"  required />
+                                        <div className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Province </div>
+                                        <div className="block w-full">
+                                            {province}
+                                        </div>
                                     </div>
 
                                     <div>
-                                        <label htmlFor="province" className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Province </label>
-                                        <input onChange={e => setProvince(e.target.value)} type="text" id="province" className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500"  required />
-                                    </div>
-
-                                    <div>
-                                        <label htmlFor="post-code" className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Post Code </label>
-                                        <input onChange={e => setPostCode(e.target.value)} type="number" id="post-code" className="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder:text-gray-400 dark:focus:border-primary-500 dark:focus:ring-primary-500" required />
+                                        <div className="mb-2 block text-sm font-medium text-gray-900 dark:text-white"> Post Code </div>
+                                        <div className="block w-full">
+                                            {postCode}
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -257,6 +312,7 @@ export default function CheckoutPage() {
                     </div>
                 </form>
             </section>
+            <AddNewAddressModal openModal={openAddAddressModal} setOpenModal={setOpenAddAddressModal} setUserAddress={setUserAddress} />
         </div>
     )
 }

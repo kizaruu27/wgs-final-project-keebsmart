@@ -75,4 +75,27 @@ export const createNewAddress = async (street, kelurahan, kecamatan, city, provi
     } catch (error) {
         console.log(error);
     }
+};
+
+export const getUserAddresses = async (onSuccess) => {
+    try {
+        const response = await axios.get(`${urlEndpoint}/user/address`, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+        onSuccess(response.data);
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+export const getAddressDetail = async (id, onSuccess) => {
+    try {
+        const response = await axios.get(`${urlEndpoint}/user/address/${id}`);
+        onSuccess(response.data.address);
+    } catch (error) {
+        console.log(error);
+        
+    }
 }

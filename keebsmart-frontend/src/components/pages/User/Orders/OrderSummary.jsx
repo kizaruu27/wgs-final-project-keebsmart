@@ -16,7 +16,7 @@ export default function OrderSummaryPage() {
     const cartIds = location.state?.targetedCartIds || []; // sent for orders
     const carts = location.state?.carts || [];
     const addressId = location.state?.addressId || []; // sent for orders
-    const orderNotes = location.state?.orderNotes || []; // sent for orders
+    const orderNotes = location.state?.orderNotes || ''; // sent for orders
     const street = location.state?.street || [];
     const kecamatan = location.state?.kecamatan || [];
     const kelurahan = location.state?.kelurahan || [];

@@ -111,11 +111,13 @@ export default function OrderDetailPage() {
                                 <h1 className="text-xl font-semibold mb-3">Address</h1>
                                 <p className="text-md">{address}</p>
                             </div>
-
-                            <div className="p-5 shadow-md rounded-xl my-5">
-                                <h1 className="text-xl font-semibold mb-3">Notes</h1>
-                                <p className="text-md">{order.orderNotes}</p>
-                            </div>
+                            
+                            { order.orderNotes !== '' && 
+                                <div className="p-5 shadow-md rounded-xl my-5">
+                                    <h1 className="text-xl font-semibold mb-3">Notes</h1>
+                                    <p className="text-md">{order.orderNotes}</p>
+                                </div>
+                            }
 
                             <div className="p-5 shadow-md rounded-xl my-5">
                                 <h1 className="text-xl font-semibold mb-3">Order Status</h1>

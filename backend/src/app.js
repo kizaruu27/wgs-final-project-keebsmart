@@ -1671,6 +1671,47 @@ app.get('/user/orders', accessValidation, async (req, res) => {
     }
 })
 
+// API for get user address
+app.get('/user/address', accessValidation, async (req, res) => {
+    try {
+        const userId = req.userId;
+        const addresses = await prisma.userAddress.findMany({
+            where: {
+                userId
+            }
+        });
+
+        res.json({
+            addresses,
+            msg: 'Get user addresses succsessfull'
+        })
+    } catch (error) {
+        res.json(error);
+        console.log(error);
+    }
+});
+
+// API for get address detail
+app.get('/user/address/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const address = await prisma.userAddress.findUnique({
+            where: {
+                id: Number(id)
+            }
+        });
+
+        res.json({
+            address,
+            msg: 'Get address successfully'
+        });
+    } catch (error) {
+        res.json(error);
+        console.log(error);
+        
+    }
+})
+
 // API for get order by id
 app.get('/order/:id', accessValidation, async (req, res) => {
     try {

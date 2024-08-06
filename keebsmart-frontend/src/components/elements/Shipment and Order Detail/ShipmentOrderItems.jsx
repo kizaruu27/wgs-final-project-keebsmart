@@ -17,7 +17,7 @@ export default function ShipmentOrderItems({canCancel, carts, order, status, pay
                                 <p className="text-lg font-semibold">{cart.productItem.product.productName}</p>
                                 <p className="text-sm">{cart.productItem.variationOption.variations.variationName} - {cart.productItem.variationOption.variationValue}</p>
                                 <p className="text-sm">{cart.qty} Items</p>
-                                <p className="text-md">Rp. {cart.subTotalPrice}</p>
+                                <p className="text-md">{convertCurrency(cart.subTotalPrice)}</p>
                             </div>
                         </div>
                     ))}
