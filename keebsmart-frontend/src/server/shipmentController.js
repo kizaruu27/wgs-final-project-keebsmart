@@ -29,6 +29,9 @@ export const changeStatusColor = (orderStatus) => {
         case 'Finish':
             statusColor = ('bg-green-100 text-green-800')
             break;
+        case 'Order Completed':
+            statusColor = ('bg-green-100 text-green-800')
+            break;
         case 'Canceled':
             statusColor = ('bg-red-100 text-red-800')
             break;

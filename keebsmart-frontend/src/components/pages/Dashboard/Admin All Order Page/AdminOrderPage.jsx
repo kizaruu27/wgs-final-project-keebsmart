@@ -24,9 +24,9 @@ export default function AdminOrderPage() {
             setOrders(response.orders);
             setProcessedOrders(response.orders.filter(order => currentStatus(order)  === 'On Process' || currentStatus(order) === 'On Packing' ).length);
             setPendingOrders(response.orders.filter(order => currentStatus(order) === 'Checkout Success' || currentStatus(order) === 'Paid' ).length);
-            setOnDeliveryOrders(response.orders.filter(order => currentStatus(order) === 'Courier Pick Up' || currentStatus(order) === 'On Delivery' ).length);
+            setOnDeliveryOrders(response.orders.filter(order => currentStatus(order) === 'Courier Pick Up' || currentStatus(order) === 'On Delivery' || currentStatus(order) === 'Delivered' ).length);
             setCanceledOrders(response.orders.filter(order => currentStatus(order) === 'Canceled').length);
-            setFinishedOrders(response.orders.filter(order => currentStatus(order) === 'Finish' || currentStatus(order) === 'Delivered').length);
+            setFinishedOrders(response.orders.filter(order => currentStatus(order) === 'Finish' || currentStatus(order) === 'Order Completed').length);
         }, (error) => {
             console.log(error);
         })

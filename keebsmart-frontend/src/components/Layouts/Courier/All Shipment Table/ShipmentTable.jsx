@@ -46,7 +46,7 @@ export default function ShipmentTable ({shipments, title}) {
                                         {shipment.shipmentName}
                                     </td>
                                     <td className="px-6 py-4 text-nowrap">
-                                        <span className={`${changeStatusColor(shipmentStatus(shipment))} rounded-xl text-xs font-medium me-2 px-2.5 py-0.5 text-nowrap`}>{shipmentStatus(shipment) === 'Finish' ? 'Delivered' : shipmentStatus(shipment)} </span>
+                                        <span className={`${changeStatusColor(shipmentStatus(shipment))} rounded-xl text-xs font-medium me-2 px-2.5 py-0.5 text-nowrap`}>{shipmentStatus(shipment) === 'Finish' || shipmentStatus(shipment) === 'Order Completed' ? 'Delivered' : shipmentStatus(shipment)} </span>
                                     </td>
                                     <td className="px-6 py-4">
                                         <span className="bg-yellow-100 rounded-xl text-yellow-800 text-xs font-medium me-2 px-2.5 py-0.5 cursor-pointer text-nowrap" onClick={() => GoToPage(`/courier/shipment/${shipment.id}`)}>detail</span>

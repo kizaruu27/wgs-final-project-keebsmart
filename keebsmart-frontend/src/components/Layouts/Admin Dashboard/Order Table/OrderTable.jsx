@@ -8,6 +8,10 @@ export default function OrderTable({orders, onDeleteRedirect, header}) {
     const [onModalShow, setOnModalShow] = useState(false);
     const [deleteOrderId, setDeleteOrderId] = useState(0); 
 
+    const currentStatus = (order) => {
+        return order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1];
+    }
+
     const setDelete = (id) => {
         setOnModalShow(true);
         setDeleteOrderId(id)
@@ -52,6 +56,9 @@ export default function OrderTable({orders, onDeleteRedirect, header}) {
                 color = 'bg-red-100 text-red-800';
                 break;
             case 'Finish':
+                color = 'bg-green-100 text-green-800';
+                break; 
+            case 'Order Completed':
                 color = 'bg-green-100 text-green-800';
                 break; 
             default:
@@ -117,9 +124,19 @@ export default function OrderTable({orders, onDeleteRedirect, header}) {
                                     <td className="px-6 py-4 text-nowrap">
                                         {convertCurrency(order.totalPrice)}
                                     </td>
-                                    <td className="px-6 py-4 text-nowrap">
-                                        <span className={`${changeStatusColor(order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1])} rounded-xl text-xs font-medium me-2 px-2.5 py-0.5`}>{order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1] === 'Checkout Success' ? 'Waiting Confirmation' : order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1]}</span>
-                                    </td>
+
+                                    {currentStatus(order) === 'Checkout Success' &&
+                                        <td className="px-6 py-4 text-nowrap">
+                                            <span className={`${changeStatusColor(currentStatus(order))} rounded-xl text-xs font-medium me-2 px-2.5 py-0.5`}>{currentStatus(order) === 'Checkout Success' ? 'Waiting Confirmation' : currentStatus(order)}</span>
+                                        </td>
+                                    }
+
+                                    {currentStatus(order) !== 'Checkout Success' && 
+                                        <td className="px-6 py-4 text-nowrap">
+                                            <span className={`${changeStatusColor(currentStatus(order))} rounded-xl text-xs font-medium me-2 px-2.5 py-0.5`}>{currentStatus(order) === 'Finish' ? 'Order Completed' : currentStatus(order)}</span>
+                                        </td>
+                                    }
+
                                     <td className="px-6 py-4 flex justify-center">
                                         <span onClick={() => GoToPage(`/admin/order/${order.orderId}`)} className="rounded-xl text-yellow-300 text-xs font-medium me-2 px-2.5 py-0.5 cursor-pointer">
                                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">

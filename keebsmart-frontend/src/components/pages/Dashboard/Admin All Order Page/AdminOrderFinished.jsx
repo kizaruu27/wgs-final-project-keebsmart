@@ -17,9 +17,9 @@ export default function AdminOrderFinished () {
 
     useEffect(() => {
         getOrders((response) => {
-            setOrders(response.orders.filter(order => currentStatus(order) === 'Finish' || currentStatus(order) === 'Delivered'));
-            setTotalDelivered(response.orders.filter(order => currentStatus(order) === 'Delivered').length);
-            setTotalFinished(response.orders.filter(order => currentStatus(order) === 'Finish').length);
+            setOrders(response.orders.filter(order => currentStatus(order) === 'Finish' || currentStatus(order) === 'Order Completed'));
+            // setTotalDelivered(response.orders.filter(order => currentStatus(order) === 'Delivered').length);
+            setTotalFinished(response.orders.filter(order => currentStatus(order) === 'Finish' || currentStatus(order) === 'Order Completed').length);
         }, (error) => {
             console.log(error);
         })
@@ -34,7 +34,7 @@ export default function AdminOrderFinished () {
             <DashboardNavbar />
             <DashboardSideMenu />
             <DashboardContent>
-                <OrderCalculationStatusSection firstValue={totalDelivered} firstHeader='Delivered' secondValue={totalFinished} secondHeader='Finished' bgColor='bg-green-500' />
+                <OrderCalculationStatusSection firstValue={totalFinished} firstHeader='Finished Orders' bgColor='bg-green-500' status='Finished Order' />
                 <OrderTable orders={orders} onDeleteRedirect='/admin/order/finish' header='Finished Orders' />
             </DashboardContent>
         </DashboardFragment>
