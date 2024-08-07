@@ -6,6 +6,7 @@ import { convertCurrency } from "../../../../server/currency";
 import { validateUser } from "../../../../server/userValidation";
 import { Spinner } from "flowbite-react";
 import { GoToPage } from "../../../../server/pageController";
+import Footer from "../../../Layouts/Footer";
 
 export default function OrderSummaryPage() {
     const location = useLocation();
@@ -117,6 +118,7 @@ export default function OrderSummaryPage() {
                     </div>
                 </form>
             </section>
+            <Footer />
         </div>
     )
 }

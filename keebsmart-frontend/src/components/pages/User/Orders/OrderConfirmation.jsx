@@ -3,6 +3,7 @@ import Navbar from "../../../Layouts/Navbar";
 import { useLocation } from "react-router-dom";
 import { validateUser } from "../../../../server/userValidation";
 import { GoToPage } from "../../../../server/pageController";
+import Footer from "../../../Layouts/Footer";
 
 export default function OrderConfirmation() {
     const location = useLocation();
@@ -58,6 +59,7 @@ export default function OrderConfirmation() {
                     </div>
                 </div>
             </section>
+            <Footer />
         </div>
     )
 }

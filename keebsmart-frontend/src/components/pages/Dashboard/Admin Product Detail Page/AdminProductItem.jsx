@@ -14,12 +14,14 @@ import ProductVariationSection from "../../../Layouts/Admin Dashboard/Product De
 import DeleteModal from "../../../Layouts/Modals/DeleteModal";
 import AddProductVariationModal from "../../../Layouts/Admin Dashboard/Product Forms/AddProductVariationModal";
 import { validateUser } from "../../../../server/userValidation";
+import { activateProduct } from "../../../../server/productController";
 
 export default function AdminProductItem() {
     const [product, setProduct] = useState({});
     const [productItems, setProductItems] = useState([]);
     const [category, setCategory] = useState('');
     const [image, setImage] = useState('');
+    const [productIsActive, setProductIsActive] = useState(false);
     const [productItemId, setProductItemId] = useState(0);
     const [openModal, setOpenModal] = useState(false);
     const [chartLabel, setChartLabel] = useState([]);
@@ -36,10 +38,19 @@ export default function AdminProductItem() {
     const onClickDeleteProductItem = (e) => {
         e.preventDefault();
         deleteProductItem(productItemId, onDeleteSuccess, onDeleteFailed)
+    };
+
+    const onSetActive = (e) => {
+        activateProduct(id, !productIsActive);
+        setProductIsActive(e.target.checked);
     }
 
     useEffect(() => {
-        getProductDetail(id, setProduct, setProductItems, setCategory, setImage, (sold, variation) => {
+        getProductDetail(id, (data) => {
+            setProduct(data);
+            console.log(data.isActive);
+            setProductIsActive(data.isActive);
+        }, setProductItems, setCategory, setImage, (sold, variation) => {
             setChartLabel(variation);
             setChartSeries(sold);
         });
@@ -55,7 +66,7 @@ export default function AdminProductItem() {
             <DashboardNavbar />
             <DashboardContent>
                 {/* PRODUCT MAIN INFORMATION */}
-                <ProductInformationSection product={product} image={image} category={category} chartLabel={chartLabel} chartSeries={chartSeries} />
+                <ProductInformationSection id={id} onSetActive={onSetActive} productIsActive={productIsActive} product={product} image={image} category={category} chartLabel={chartLabel} chartSeries={chartSeries} productItems={productItems} />
 
                 {/* VARIATION SECTION */}
                 <ProductVariationSection productItems={productItems} setDelete={setDelete}/>

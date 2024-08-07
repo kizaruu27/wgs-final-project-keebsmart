@@ -1,3 +1,4 @@
+import { Tooltip } from "flowbite-react"
 import { GoToPage } from "../../../../../server/pageController"
 
 export default function ProductListSection({setAdd, products, onActivateProduct, setDelete}) {
@@ -43,10 +44,12 @@ export default function ProductListSection({setAdd, products, onActivateProduct,
                                 {product.category.categoryName}
                             </td>
                             <td className="px-6 py-4">
-                                <label className={`inline-flex items-center mb-5 mt-3 ml-1 ${product.productItem.length <= 0 ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
-                                    <input disabled={product.productItem.length <= 0 ? true : false} defaultChecked={product.isActive ? true : false} type="checkbox" value="true" className={`sr-only peer`} onChange={() => onActivateProduct(product.id, product.isActive ? false : true)}/>
-                                    <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
-                                </label>
+                                <Tooltip content='This product must have a variant before set it active to store' className={`${product.productItem.length <= 0 ? '' : 'hidden'}`}>
+                                    <label className={`inline-flex items-center mb-5 mt-3 ml-1 ${product.productItem.length <= 0 ? 'cursor-not-allowed' : 'cursor-pointer'}`}>
+                                        <input disabled={product.productItem.length <= 0 ? true : false} defaultChecked={product.isActive ? true : false} type="checkbox" value="true" className={`sr-only peer`} onChange={() => onActivateProduct(product.id, product.isActive ? false : true)}/>
+                                        <div className="relative w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:w-5 after:h-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                    </label>
+                                </Tooltip>
                             </td>
                             <td className="px-6 py-4">
                                 <span onClick={() => setDelete(product.id)} className="cursor-pointer text-red-500 text-xs font-medium me-2 px-2.5 py-0.5 rounded-xl dark:bg-red-900 dark:text-red-300">

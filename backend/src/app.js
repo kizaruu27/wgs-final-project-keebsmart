@@ -857,6 +857,7 @@ app.get('/product/:id', async (req, res) => {
                 brand: true,
                 category: true,
                 productImage: true,
+                isActive: true,
                 productItem: {
                     include: {
                         variationOption: {

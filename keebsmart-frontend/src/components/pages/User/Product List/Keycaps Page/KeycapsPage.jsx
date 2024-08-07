@@ -4,6 +4,7 @@ import ProductList from "../../../../Layouts/Product/ProductList";
 import ProductListHeader from "../../../../Layouts/Product/ProductListHeader";
 import { getKeycapsForCustomer } from "../../../../../server/productController";
 import { validateUser } from "../../../../../server/userValidation";
+import Footer from "../../../../Layouts/Footer";
 
 export default function KeycapsPage() {
     const [keycaps, setKeycaps] = useState([]);
@@ -23,6 +24,7 @@ export default function KeycapsPage() {
             <Navbar />
             <ProductListHeader category='Keycaps' headerDescription='We produce high quality PBT keycaps to match your mechanical keyboards, with double-shot legends (and dye-sublimated legends) designed by community members like you!' />
             <ProductList products={keycaps} />
+            <Footer />
         </div>
     )
 }

@@ -9,6 +9,7 @@ import { GoToPage } from "../../../../server/pageController";
 import { convertCurrency } from "../../../../server/currency";
 import { validateUser } from "../../../../server/userValidation";
 import { getUserData } from "../../../../server/userDataController";
+import Footer from "../../../Layouts/Footer";
 
 export default function OrderDetailPage() {
     const { id } = useParams();
@@ -175,6 +176,7 @@ export default function OrderDetailPage() {
                 </div>
             </section>
             <DeleteModal onClickDelete={() => cancelOrder(id, 'Canceled')} openConfirmationModal={openCancelOrder} setOpenConfirmationModal={setOpenCancelOrder} msg='Are you sure want to cancel the order?' />
+            <Footer />
         </div>
     )
 }

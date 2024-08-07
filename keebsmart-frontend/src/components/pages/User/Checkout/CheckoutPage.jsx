@@ -9,6 +9,7 @@ import { validateUser } from "../../../../server/userValidation";
 import { Spinner, Label } from "flowbite-react";
 import { Select } from "flowbite-react";
 import AddNewAddressModal from "../../../Layouts/Modals/AddNewAddressModal";
+import Footer from "../../../Layouts/Footer";
 
 export default function CheckoutPage() {
     const location = useLocation();
@@ -313,6 +314,7 @@ export default function CheckoutPage() {
                 </form>
             </section>
             <AddNewAddressModal openModal={openAddAddressModal} setOpenModal={setOpenAddAddressModal} setUserAddress={setUserAddress} />
+            <Footer />
         </div>
     )
 }

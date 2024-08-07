@@ -5,6 +5,7 @@ import ProductListHeader from "../../../../Layouts/Product/ProductListHeader";
 import ProductList from "../../../../Layouts/Product/ProductList";
 import { validateUser } from "../../../../../server/userValidation";
 import { Dropdown } from "flowbite-react";
+import Footer from "../../../../Layouts/Footer";
 
 export default function AllProductPage() {
     const [products, setProducts] = useState([]);
@@ -40,6 +41,7 @@ export default function AllProductPage() {
                 </Dropdown>
             </div>
             <ProductList products={products} />
+            <Footer />
         </div>
     )
 }

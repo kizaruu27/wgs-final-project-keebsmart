@@ -5,6 +5,7 @@ import FeaturedProductItem from "../../../../elements/FeaturedProductItem";
 import ProductListHeader from "../../../../Layouts/Product/ProductListHeader";
 import ProductList from "../../../../Layouts/Product/ProductList";
 import { validateUser } from "../../../../../server/userValidation";
+import Footer from "../../../../Layouts/Footer";
 
 export default function KeyboardPage() {
     const [keyboards, setKeyboards] = useState([]);
@@ -25,6 +26,7 @@ export default function KeyboardPage() {
             <Navbar />
             <ProductListHeader category='Mechanical Keyboards' headerDescription='Mechanical keyboards differ from traditional membrane keyboards in that they use physical switches under the keycaps, meaning each key press can be felt and heard. They are ideal for typing as they optimize the feel and sound of your keyboard.' />
             <ProductList products={keyboards} />
+            <Footer />
         </div>
     )
 }

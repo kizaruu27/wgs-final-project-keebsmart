@@ -15,6 +15,7 @@ import { setCartMessege, setCartMessegeColor, setCarts } from "../../../../redux
 import { getUserCart } from "../../../../server/cartController";
 import NotificationCartItem from "../../../elements/Notification/NotificationCartIcon";
 import WarningNotificationIcon from "../../../elements/Notification/WarningNotificationIcon";
+import Footer from "../../../Layouts/Footer";
 
 export default function ProductPage() {
     const { id } = useParams();
@@ -163,6 +164,7 @@ export default function ProductPage() {
                     <ProductDescriptionSection product={product} specs={specs} />
                 </div>
             </div>
+            <Footer />
         </div>
     )
 }

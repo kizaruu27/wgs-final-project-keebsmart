@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { validateUser } from "../../../../server/userValidation";
 import { useDispatch, useSelector } from "react-redux";
 import { setAllChecked } from "../../../../redux/cartSlice";
+import Footer from "../../../Layouts/Footer";
 
 export default function CartPage() {
     // const allChecked = useSelector(state => state.carts.allChecked);
@@ -100,6 +101,7 @@ export default function CartPage() {
                     </div>
                 </div>
             </section>
+            <Footer />
         </div>
     )
 }

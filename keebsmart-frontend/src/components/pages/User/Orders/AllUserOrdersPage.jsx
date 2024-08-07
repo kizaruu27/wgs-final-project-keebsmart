@@ -5,6 +5,7 @@ import DeleteModal from "../../../Layouts/Modals/DeleteModal";
 import { GoToPage } from "../../../../server/pageController";
 import { convertCurrency } from "../../../../server/currency";
 import { validateUser } from "../../../../server/userValidation";
+import Footer from "../../../Layouts/Footer";
 
 export default function AllUserOrdersPage() {
     const [orders, setOrders] = useState([]);
@@ -98,6 +99,7 @@ export default function AllUserOrdersPage() {
                 </div>
             </section>
             <DeleteModal onClickDelete={() => cancelOrder(selectedCanceledOrder, 'Canceled')} openConfirmationModal={openCancelOrder} setOpenConfirmationModal={setOpenCancelOrder} msg='Are you sure want to cancel the order?' />
+            <Footer />
         </div>
     )
 }
