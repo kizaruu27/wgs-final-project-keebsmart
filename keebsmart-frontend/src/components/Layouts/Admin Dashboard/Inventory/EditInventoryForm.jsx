@@ -11,6 +11,7 @@ import { GoToPage } from "../../../../server/pageController";
 import { Dropdown } from "flowbite-react";
 import InventoryItem from "../../../elements/Items/InventoryItem";
 import { validateUser } from "../../../../server/userValidation";
+import AlertItem from "../../../elements/Alert";
 
 export default function EditInventoryForm() {
     const { id } = useParams();
@@ -25,6 +26,7 @@ export default function EditInventoryForm() {
     const [categoryId, setCategoryId] = useState(0);
     const [newItemFields, setNewiItemFields] = useState([]);
     const [enabledInputs, setEnabledInputs] = useState({});
+    const [showAlert, setShowAlert] = useState(false);
 
     useEffect(() => {
         validateUser('admin');
@@ -57,7 +59,7 @@ export default function EditInventoryForm() {
     }, [])
 
      // Function to toggle the enabled state of inputs for a specific iteration
-     const toggleInputs = key => {
+    const toggleInputs = key => {
         setEnabledInputs(prevState => ({
             ...prevState,
             [key]: !prevState[key]
@@ -112,24 +114,32 @@ export default function EditInventoryForm() {
 
     const postUpdateInventory = (e) => {
         e.preventDefault();
-        const data = {
-            productName: productName, 
-            brand, 
-            categoryId: Number(categoryId),
-            specs: specsFields,
-            description,
-            items: newItemFields.map(item => ({
-                qty: Number(item.qty),
-                variation: item.variation,
-                variationId: Number(item.variationId)
-            }))
-        };
+        const isEditInventoryITem = Object.values(enabledInputs).some(value => value === true);
 
-        console.log(data.categoryId);
-        updateInventory(id, data, (data) => {
-            console.log(data);
-            GoToPage('/admin/inventory', 100);
-        })
+        if (isEditInventoryITem) {
+            console.log('Please finish your item edit!');
+            setShowAlert(true);
+        } else {
+            const data = {
+                productName: productName, 
+                brand, 
+                categoryId: Number(categoryId),
+                specs: specsFields,
+                description,
+                items: newItemFields.map(item => ({
+                    qty: Number(item.qty),
+                    variation: item.variation,
+                    variationId: Number(item.variationId)
+                }))
+            };
+    
+            console.log(data.categoryId);
+            updateInventory(id, data, (data) => {
+                console.log(data);
+                GoToPage('/admin/inventory', 100);
+            })
+        }
+
     }
 
     return (
@@ -139,6 +149,9 @@ export default function EditInventoryForm() {
             <DashboardContent>
             <div className="space-y-6">
                 <form className="bg-white p-5 rounded-xl shadow-md" onSubmit={e => postUpdateInventory(e)} >
+                    { showAlert &&
+                        <AlertItem type='warning' msg='Please finish your edit inventory item first' className='my-5' />
+                    }
                     <h1 className="mb-8 text-center text-2xl font-semibold">Edit Inventory</h1>
                     <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
                         <div className="sm:col-span-2">
@@ -152,8 +165,8 @@ export default function EditInventoryForm() {
                         <div>
                             <label htmlFor="category" className="block mb-2 text-sm font-medium text-gray-900">Category</label>
                             <select required id="variationId" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" onChange={e => setCategoryId(e.target.value)}>
-                                <option value={categoryId}>-- {category.categoryName} --</option>
-                                {allCategories.map((cat, key) => (
+                                <option value={categoryId}>{category.categoryName}</option>
+                                {allCategories.filter(item => item.categoryName !== category.categoryName).map((cat, key) => (
                                     <option key={key} value={cat.id}>{cat.categoryName}</option>
                                 ))}
                             </select>

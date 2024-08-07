@@ -60,7 +60,6 @@ export const getProductsForCustomer = async (onSuccess) => {
         onSuccess(response.data);
     } catch (error) {
         console.log(error);
-        
     }
 }
 

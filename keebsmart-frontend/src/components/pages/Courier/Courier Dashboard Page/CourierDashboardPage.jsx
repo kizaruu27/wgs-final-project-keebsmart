@@ -81,7 +81,6 @@ export default function CourierDashboardPage() {
     useEffect(() => {
         getUserData((data) => {
             console.log(data);
-            if (data.access !== 'courier') GoToPage('/login', 100);
             setCourier(data)
         }, (error) => {
             console.log(error);

@@ -118,6 +118,7 @@ model User {
   updatedAt   DateTime      @updatedAt
   isDeleted   Boolean       @default(false)
   cart        Cart[]
+  errorLog    ErrorLog[]
   inventory   Inventory[]
   messeges    Messeges[]
   moneyKeep   MoneyKeep[]
@@ -151,6 +152,11 @@ model MoneyKeep {
   user       User?    @relation(fields: [userId], references: [id])
 }
 
+model TotalIncome {
+  id     Int @id @default(autoincrement())
+  amount Int
+}
+
 model PaymentMethods {
   id          Int      @id @default(autoincrement())
   paymentType String
@@ -178,6 +184,7 @@ model Shipping {
   userId       String
   orderId      String     @unique
   createdAt    DateTime   @default(now())
+  isDeleted    Boolean    @default(false)
   moneyKeep    MoneyKeep?
   order        Orders     @relation(fields: [orderId], references: [orderId])
   user         User       @relation(fields: [userId], references: [id])
@@ -201,6 +208,7 @@ model Orders {
   updateDate      DateTime        @default(now())
   buyerName       String          @default("")
   phoneNumber     String          @default("")
+  isDeleted       Boolean         @default(false)
   address         UserAddress     @relation(fields: [addressId], references: [id])
   paymentMethod   PaymentMethods  @relation(fields: [paymentMethodId], references: [id])
   user            User            @relation(fields: [userId], references: [id])
@@ -238,4 +246,12 @@ model ProductLog {
   createdAt DateTime @default(now())
   process   String
   User      User     @relation(fields: [userId], references: [id])
+}
+
+model ErrorLog {
+  id        Int      @id @default(autoincrement())
+  userId    String?
+  createdAt DateTime @default(now())
+  errorMsg  String
+  user      User?    @relation(fields: [userId], references: [id])
 }

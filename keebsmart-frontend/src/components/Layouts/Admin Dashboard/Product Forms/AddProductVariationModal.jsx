@@ -32,12 +32,22 @@ export default function AddProductVariationModal({openModal, setOpenModal}) {
     }, []);
 
     const onVariantChange = (id) => {
-        getInventoryItem(id, (data) => {
-            setInventoryItemId(data.id);
-            setInventoryIsUsed(data.isUsed);
-            setQty(data.qty);
-            setIsSelected(true);
-        })
+        setOnShowAlert(false);
+        setOnShowQtyAlert(false);
+        setItemQty(0);
+        setPrice(0);
+        setManufacturer('');
+        if (id === '') {
+            setQty(0);
+            setIsSelected(false);
+        } else {
+            getInventoryItem(id, (data) => {
+                setInventoryItemId(data.id);
+                setInventoryIsUsed(data.isUsed);
+                setQty(data.qty);
+                setIsSelected(true);
+            });
+        }
     };
 
     const postNewProductItem = (e) => {
@@ -66,8 +76,8 @@ export default function AddProductVariationModal({openModal, setOpenModal}) {
                     <div className="grid grid-cols-2 gap-3">
                         <div className="col-span-2">
                             <label htmlFor="variant">Variant</label>
-                            <select onChange={e => onVariantChange(e.target.value)} id="variant" className="my-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <option defaultChecked>Choose a variation</option>
+                            <select required onChange={e => onVariantChange(e.target.value)} id="variant" className="my-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <option value=''>Choose a variation</option>
                                 {inventoryItem.map((item, key) => (
                                     <option key={key} value={item.id}>{item.variation}</option>
                                 ))}
@@ -75,27 +85,27 @@ export default function AddProductVariationModal({openModal, setOpenModal}) {
                         </div>
                         <div>
                             <label htmlFor="qty">Qty</label>
-                            <input disabled={!isSelected} onChange={e => handleOnQtyChange(e)} type="number" id="qty" className="my-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                            <input disabled={!isSelected} value={itemQty} onChange={e => handleOnQtyChange(e)} type="number" id="qty" className="my-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
                             <p className="text-sm text-gray-500">Qty: {qty}</p>
                         </div>
                         {!inventoryIsUsed && 
                             <div>
                                 <label htmlFor="price">Price</label>
-                                <input disabled={!isSelected}  onChange={e => setPrice(e.target.value)} type="number" id="price" className="my-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                                <input disabled={!isSelected} value={price} onChange={e => setPrice(e.target.value)} type="number" id="price" className="my-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
                             </div>
                         }
                         
                         {!inventoryIsUsed && 
                             <div>
                                 <label htmlFor="manufacturer">Manufacturer</label>
-                                <input disabled={!isSelected}  onChange={e => setManufacturer(e.target.value)} type="text" id="manufacturer" className="my-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
+                                <input disabled={!isSelected} value={manufacturer}  onChange={e => setManufacturer(e.target.value)} type="text" id="manufacturer" className="my-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
                             </div>
                         }
-
+                        
                         <div>
                             <label htmlFor="status">Status</label>
-                            <select disabled={!isSelected}  onChange={e => setStatus(e.target.value)} id="status" className="my-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
-                                <option defaultChecked>Choose status</option>
+                            <select disabled={!isSelected} required onChange={e => setStatus(e.target.value)} id="status" className="my-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+                                <option value=''>Choose status</option>
                                 <option value="in stock">In Stock</option>
                                 <option value="empty">Empty</option>
                             </select>
@@ -108,8 +118,8 @@ export default function AddProductVariationModal({openModal, setOpenModal}) {
                             </div>
                         }
                         <div className="my-4">
-                            <button disabled={onShowQtyAlert} type="submit" 
-                            className={`${onShowQtyAlert ? 'text-gray-400' : 'text-gray-900 hover:bg-gray-100'}  bg-white border border-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700`}>Add Variant</button>
+                            <button disabled={onShowQtyAlert || !isSelected} type="submit" 
+                            className={`${onShowQtyAlert || !isSelected ? 'text-gray-400' : 'text-gray-900 hover:bg-gray-100'}  bg-white border border-gray-300 focus:outline-none focus:ring-4 focus:ring-gray-100 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-gray-800 dark:text-white dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-600 dark:focus:ring-gray-700`}>Add Variant</button>
                         </div>
                     </div>
                 </form>

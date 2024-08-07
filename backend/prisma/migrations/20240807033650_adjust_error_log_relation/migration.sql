@@ -1,0 +1,6 @@
+-- AlterTable
+ALTER TABLE "ErrorLog" ALTER COLUMN "userId" DROP NOT NULL,
+ALTER COLUMN "userId" SET DATA TYPE TEXT;
+
+-- AddForeignKey
+ALTER TABLE "ErrorLog" ADD CONSTRAINT "ErrorLog_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE SET NULL ON UPDATE CASCADE;

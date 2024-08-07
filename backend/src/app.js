@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const path = require('path');
 const cookieParser = require('cookie-parser');
+const { handleError } = require('./Utils/errorHandler');
 const { body, validationResult} = require('express-validator');
 const multer = require('multer');
 const { PrismaClient } = require('@prisma/client');
@@ -75,7 +76,11 @@ app.get('/users', accessValidation, async (req, res) => {
     try {
         const users = await prisma.user.findMany({
             include: {
-                orders: true,
+                orders: {
+                    where: {
+                        isDeleted: false
+                    }
+                },
                 shipment: {
                     include: {
                         moneyKeep: true
@@ -111,6 +116,8 @@ app.get('/users', accessValidation, async (req, res) => {
         })
     } catch (error) {
         console.log(error.messege);
+        const userId = req.userId;
+        handleError(userId, error, res);
     }
 });
 
@@ -134,7 +141,8 @@ app.patch('/user/:id', accessValidation, async (req, res) => {
         })
     } catch (error) {
         console.error(error);
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error, res);
     }
 });
 
@@ -205,8 +213,8 @@ app.delete('/user/:id', accessValidation, async (req, res) => {
             msg: 'User deleted!'
         })
     } catch (error) {
-        console.log(error);
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error, res);
     }
 })
 
@@ -267,6 +275,7 @@ app.post('/registration', registrationValidation, async (req, res) => {
         })
     } catch (error) {
         console.log(error);
+        handleError(null, error, res);
     }
 });
 
@@ -303,6 +312,7 @@ app.post('/registration/admin', accessValidation, async (req, res) => {
         })
     } catch (error) {
         console.log(error);
+        handleError(null, error, res);
     }
 });
 
@@ -450,7 +460,8 @@ app.post('/logout', accessValidation, (req, res) => {
         });
     } catch (error) {
         console.log(error);
-        res.json(error.messege);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
     }
 })
 
@@ -461,7 +472,11 @@ app.get('/user', accessValidation, async (req, res) => {
         const response = await prisma.user.findUnique({
             where: {id},
             include: {
-                orders: true
+                orders: {
+                    where: {
+                        isDeleted: false
+                    }
+                }
             }
         });
         res.json({
@@ -469,9 +484,8 @@ app.get('/user', accessValidation, async (req, res) => {
             msg: 'Successfull get user data!'
         })
     } catch (error) {
-        res.json({
-            msg: error
-        })
+        const userId = req.userId;
+        handleError(userId, error.message, res);
     }
     
 })
@@ -496,7 +510,7 @@ app.post('/inventory', accessValidation, async (req, res) => {
             msg: 'Success add new stuff in inventory!'
         })
     } catch (error) {
-        res.json(error);
+        handleError(userId, error.message, res);
         console.log(error);
     }
 });
@@ -527,7 +541,8 @@ app.get('/inventory', accessValidation, async (req, res) => {
             msg: 'Get inventory success'
         });
     } catch (error) {
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
         console.log(error);
     }
 });
@@ -556,7 +571,8 @@ app.get('/inventory/unused', accessValidation, async (req, res) => {
             msg: 'Get inventory success'
         });
     } catch (error) {
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
         console.log(error);
     }
 });
@@ -588,8 +604,9 @@ app.get('/inventory/:id', accessValidation, async (req, res) => {
             msg: 'Get inventory success'
         });
     } catch (error) {
-        res.json(error);
-        console.log(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
+        console.log(error.message);
     }
 });
 
@@ -612,7 +629,8 @@ app.delete('/inventory/:id', accessValidation, async (req, res) => {
             msg: 'Delete inventory successful',
         });
     } catch (error) {
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
         console.log(error);
     }
 });
@@ -665,7 +683,8 @@ app.put('/inventory/:id', accessValidation, async (req, res) => {
 
         res.json({updatedInventory, updatedItem, msg: 'Update success'})
     } catch (error) {
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
         console.log(error);
     }
 });
@@ -691,7 +710,8 @@ app.put('/inventory/item/:id', accessValidation, async (req, res) => {
             msg: 'Inventory item successfully updated'
         })
     } catch (error) {
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
         console.log(error);
     }
 });
@@ -711,7 +731,8 @@ app.delete('/inventory/item/:id', accessValidation, async (req, res) => {
 
         res.json(deletedInventoryItem);
     } catch (error) {
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
         console.log(error);
     }
 })
@@ -729,7 +750,8 @@ app.get('/inventory/item/:id', accessValidation, async (req, res) => {
 
         res.json(inventoryItem);
     } catch (error) {
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
         console.log(error);
     }
 })
@@ -740,7 +762,7 @@ app.get('/variations', async (req, res) => {
         const variations = await prisma.variations.findMany();
         res.json(variations);
     } catch (error) {
-        console.log(error);
+        handleError(null, error.message, res);
     }
 })
 
@@ -764,6 +786,7 @@ app.get('/products', async (req, res) => {
 
         res.json(response);
     } catch (error) {
+        handleError(null, error.message, res);
         console.log(error.message);
     }
 });
@@ -789,6 +812,7 @@ app.get('/products/user', async (req, res) => {
 
         res.json(products);
     } catch (error) {
+        handleError(null, error.message, res);
         console.log(error.message);
     }
 });
@@ -815,7 +839,7 @@ app.get('/product/search', async (req, res) => {
             msg: 'Successfully find product'
         })
     } catch (error) {
-        res.json(error);
+        handleError(null, error.message, res);
         console.log(error);
         
     }
@@ -867,6 +891,7 @@ app.get('/product/:id', async (req, res) => {
         res.json(response);
     } catch (error) {
         console.log(error);
+        handleError(null, error.message, res);
     }
 });
 
@@ -911,57 +936,59 @@ app.get('/product/sales/:id', async (req, res) => {
         
         res.json(response);
     } catch (error) {
+        handleError(null, error.message, res);
         console.log(error);
     }
 });
 
 // API for get product sales
 app.get('/sales', async (req, res) => {
-    const products = await prisma.products.findMany({
-        select: {
-            id: true,
-            productName: true,
-            soldTotal: true,
-            category: {
-                select: {
-                    categoryName: true
+    try {
+        const products = await prisma.products.findMany({
+            select: {
+                id: true,
+                productName: true,
+                soldTotal: true,
+                category: {
+                    select: {
+                        categoryName: true
+                    }
+                },
+                productItem: {
+                    where: {
+                        isDeleted: false
+                    },
+                    select: {
+                        sold: true,
+                        price: true
+                    }
                 }
             },
-            productItem: {
-                where: {
-                    isDeleted: false
-                },
-                select: {
-                    sold: true,
-                    price: true
-                }
-            }
-        },
-        // where: {
-        //     isDeleted: false
-        // }
-    });
-
-    let totalIncome = 0;
-
-    const updatedProducts = products.map(product => {
-        const soldTotal = product.productItem.reduce((acc, item) => acc + item.sold, 0);
-        const productIncome = product.productItem.reduce((acc, item) => acc + (item.sold * item.price), 0);
-        totalIncome += productIncome;
-        return {
-        ...product,
-        soldTotal: soldTotal
-        };
-    });
-
-    await Promise.all(updatedProducts.map(product => {
-        return prisma.products.update({
-            where: { id: product.id },
-            data: { soldTotal: product.soldTotal }
         });
-    }));
-
-    res.json(updatedProducts);
+    
+        let totalIncome = 0;
+    
+        const updatedProducts = products.map(product => {
+            const soldTotal = product.productItem.reduce((acc, item) => acc + item.sold, 0);
+            const productIncome = product.productItem.reduce((acc, item) => acc + (item.sold * item.price), 0);
+            totalIncome += productIncome;
+            return {
+            ...product,
+            soldTotal: soldTotal
+            };
+        });
+    
+        await Promise.all(updatedProducts.map(product => {
+            return prisma.products.update({
+                where: { id: product.id },
+                data: { soldTotal: product.soldTotal }
+            });
+        }));
+    
+        res.json(updatedProducts);
+    } catch (error) {
+        handleError(null, error.message, res);
+    }
 })
 
 // API for add new product
@@ -1006,7 +1033,8 @@ app.post('/product', accessValidation, upload.fields([
             });
         } catch (error) {
             console.log(error);
-            res.json(error);
+            const userId = req.userId;
+            handleError(userId, error.message, res);
         }
 });
 
@@ -1095,8 +1123,9 @@ app.post('/product/item/add', accessValidation, upload.array('images', 10), asyn
             msg: 'Product Item berhasil ditambah!'
         });
     } catch (error) {
+        const userId = req.userId;
+        handleError(userId, error.message, res);
         console.log(error);
-        res.json(error);
     }
 });
 
@@ -1106,22 +1135,26 @@ app.get('/category', async (req, res) => {
         const response = await prisma.productCategory.findMany();
         res.json(response);
     } catch (error) {
-        res.json({error});
+        handleError(null, error.message, res);
     }
 })
 
 
 // API for get variation from product
 app.get('/product/variation/:id', async (req, res) => {
-    const { id } = req.params;
-
-    const variation = await prisma.variations.findMany({
-        where: {
-            categoryId: Number(id)
-        } 
-    }); 
-
-    res.json(variation);
+    try {
+        const { id } = req.params;
+    
+        const variation = await prisma.variations.findMany({
+            where: {
+                categoryId: Number(id)
+            } 
+        }); 
+    
+        res.json(variation);
+    } catch (error) {
+        handleError(null, error.message, res);
+    }
 });
 
 // API for get switch products - customer
@@ -1151,7 +1184,7 @@ app.get('/switches', async (req, res) => {
             msg: 'Berhasil mendapatkan data switches!'
         })
     } catch (error) {
-        res.json({error})
+        handleError(null, error.message, res);
     }
 });
 
@@ -1182,7 +1215,7 @@ app.get('/keyboards', async (req, res) => {
             msg: 'Berhasil mendapatkan data keyboards!'
         })
     } catch (error) {
-        res.json({error})
+        handleError(null, error.message, res);
     }
 });
 
@@ -1213,7 +1246,7 @@ app.get('/keycaps', async (req, res) => {
             msg: 'Berhasil mendapatkan data keycaps!'
         })
     } catch (error) {
-        res.json({error})
+        handleError(null, error.message, res);
     }
 });
 
@@ -1247,7 +1280,7 @@ app.get('/products/keyboards', async (req, res) => {
             msg: 'Berhasil mendapatkan data keyboards!'
         })
     } catch (error) {
-        res.json({error})
+        handleError(null, error.message, res);
     }
 });
 
@@ -1278,7 +1311,7 @@ app.get('/products/keycaps', async (req, res) => {
             msg: 'Berhasil mendapatkan data keycaps!'
         })
     } catch (error) {
-        res.json({error})
+        handleError(null, error.message, res);
     }
 });
 
@@ -1309,7 +1342,7 @@ app.get('/products/switch', async (req, res) => {
             msg: 'Berhasil mendapatkan data switches!'
         })
     } catch (error) {
-        res.json({error})
+        handleError(null, error.message, res);
     }
 });
 
@@ -1355,9 +1388,8 @@ app.put('/product/update/:id', accessValidation, upload.fields([
                 msg: 'Product berhasil diubah!'
             });
         } catch (error) {
-            res.json({
-                error
-            });
+            const userId = req.userId;
+            handleError(userId, error.message, res);
             console.log(error);
         }
 });
@@ -1418,7 +1450,8 @@ app.put('/product/item/update/:id', accessValidation, upload.array('images', 10)
             msg: 'Product item berhasil diubah!'
         });
     } catch (error) {
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
         console.log(error);
     }
 });
@@ -1444,7 +1477,8 @@ app.patch('/product/activate/:id', accessValidation, async (req, res) => {
         })
     } catch (error) {
         console.log(error);
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
     }
 })
 
@@ -1484,7 +1518,8 @@ app.delete('/product/item/:id', accessValidation,  async (req, res) => {
         });
         
     } catch (error) {
-        console.log(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
         res.json(error)
     }
 
@@ -1525,7 +1560,7 @@ app.get('/product/item/:id', async (req, res) => {
 
         res.json(productItem);
     } catch (error) {
-        res.json(error);
+        handleError(null, error.message, res);
         console.error(error);
     }
 })
@@ -1593,7 +1628,8 @@ app.delete('/product/:id', accessValidation, async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
     }
 });
 
@@ -1611,6 +1647,9 @@ app.get('/orders', async (req, res) => {
                     }
                 }
             },
+            where: {
+                isDeleted: false
+            },
             orderBy: {
                 orderDate: 'desc'
             }
@@ -1621,7 +1660,7 @@ app.get('/orders', async (req, res) => {
         });
     } catch (error) {
         console.log(error);
-        res.json(error);
+        handleError(null, error.message, res);
     }
 });
 
@@ -1651,7 +1690,8 @@ app.patch('/order/status/:id', accessValidation, async (req, res) => {
         });
     } catch (error) {
         console.log(error);
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
     }
 });
 
@@ -1661,7 +1701,8 @@ app.get('/user/orders', accessValidation, async (req, res) => {
         const userId = req.userId;
         const orders = await prisma.orders.findMany({
             where: {
-                userId
+                userId,
+                isDeleted: false
             },
             include: {
                 address: true,
@@ -1687,7 +1728,8 @@ app.get('/user/orders', accessValidation, async (req, res) => {
             msg: 'Get user order successfull'
         });
     } catch (error) {
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
         console.log(error);
     }
 })
@@ -1707,7 +1749,8 @@ app.get('/user/address', accessValidation, async (req, res) => {
             msg: 'Get user addresses succsessfull'
         })
     } catch (error) {
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
         console.log(error);
     }
 });
@@ -1727,7 +1770,7 @@ app.get('/user/address/:id', async (req, res) => {
             msg: 'Get address successfully'
         });
     } catch (error) {
-        res.json(error);
+        handleError(null, error.message, res);
         console.log(error);
     }
 })
@@ -1739,6 +1782,7 @@ app.get('/order/:id', accessValidation, async (req, res) => {
         const order = await prisma.orders.findUnique({
             where: {
                 orderId: id,
+                isDeleted: false
             },
             include: {
                 carts: {
@@ -1780,7 +1824,8 @@ app.get('/order/:id', accessValidation, async (req, res) => {
         })
     } catch (error) {
         console.log(error);
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
     }
 });
 
@@ -1809,7 +1854,8 @@ app.post('/pending-order', accessValidation, async (req, res) => {
             msg: 'Successfull add pending orders'
         })
     } catch (error) {
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
         console.log(error);
     }
 })
@@ -1827,7 +1873,8 @@ app.post('/shipment', accessValidation, async (req, res) => {
 
         const updateOrderShipment = await prisma.orders.update({
             where: {
-                orderId
+                orderId,
+                isDeleted: false
             },
             data: {
                 shippingId: newShipment.id
@@ -1840,7 +1887,8 @@ app.post('/shipment', accessValidation, async (req, res) => {
         })
     } catch (error) {
         console.log(error);
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
     }
 })
 
@@ -1874,7 +1922,8 @@ app.get('/shipments', accessValidation, async (req, res) => {
         })
     } catch (error) {
         console.log(error);
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
     }
 });
 
@@ -1916,7 +1965,8 @@ app.get('/shipments/ongoing', accessValidation, async (req, res) => {
         })
     } catch (error) {
         console.log(error);
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
     }
 });
 
@@ -1954,7 +2004,8 @@ app.get('/shipments/finished', accessValidation, async (req, res) => {
         })
     } catch (error) {
         console.log(error);
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
     }
 })
 
@@ -2013,7 +2064,8 @@ app.get('/shipment/:id', accessValidation, async (req, res) => {
             msg: 'Get shipment detail successfully'
         });
     } catch (error) {
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
         console.log(error);
     }
 });
@@ -2037,7 +2089,8 @@ app.post('/money', accessValidation, async (req, res) => {
 
         res.json(moneyKeep);
     } catch (error) {
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
         console.log(error);
     }
 });
@@ -2106,18 +2159,48 @@ app.patch('/money', accessValidation, async (req, res) => {
         const completedOrderStatus = await prisma.currentStatus.createMany({
             data: orderCompleteData
         });
+        const totalAmmount = updatedMoneyKeep.map(item => item.amount).reduce((acc, accvalue) => acc + accvalue, 0);
+
+        // Update income
+        const updatedIncome = await prisma.totalIncome.update({
+            where: {
+                id: 1
+            },
+            data: {
+                amount: { increment: totalAmmount }
+            }
+        })
 
         res.json({
             moneyKeep,
             updatedMoneyKeep,
             orderIds,
-            completedOrderStatus
+            completedOrderStatus,
+            updatedIncome
         });
     } catch (error) {
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
         console.log(error);
     }
-})
+});
+
+// API for get total income
+app.get('/income', accessValidation, async (req, res) => {
+    try {
+        const totalIncome = await prisma.totalIncome.findUnique({
+            where: {
+                id: 1
+            }
+        });
+
+        res.json(totalIncome);
+    } catch (error) {
+        console.log(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
+    }
+});
 
 // API for get all cart
 app.get('/cart', async (req, res) => {
@@ -2126,7 +2209,7 @@ app.get('/cart', async (req, res) => {
         res.json(cart);
     } catch (error) {
         console.log(error);
-        res.json(error);
+        handleError(null, error.message, res);
     }
 });
 
@@ -2143,7 +2226,8 @@ app.get('/user/cart', accessValidation, async (req, res) => {
         res.json(cart);
     } catch (error) {
         console.log(error);
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
     }
 });
 
@@ -2161,6 +2245,7 @@ app.post('/cart', accessValidation, async (req, res) => {
 
         const similarCart = await prisma.cart.findFirst({
             where: {
+                userId: userId,
                 productItemId,
                 isDeleted: false,
                 isOrdered: false
@@ -2200,7 +2285,8 @@ app.post('/cart', accessValidation, async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
     }
 });
 
@@ -2219,7 +2305,8 @@ app.delete('/cart/:id', accessValidation, async (req, res) => {
 
         res.json(deletedCart);
     } catch (error) {
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
         console.log(error);
     }
 })
@@ -2249,7 +2336,8 @@ app.get('/cart/user', accessValidation, async (req, res) => {
 
         res.json(carts);
     } catch (error) {
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
         console.log(error);
     }
 });
@@ -2271,7 +2359,8 @@ app.patch('/cart/user/:id', accessValidation, async (req, res) => {
 
         res.json(updatedCart);
     } catch (error) {
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
         console.log(error);
     }
 })
@@ -2297,7 +2386,7 @@ app.get('/selected/cart', async (req, res) => {
         });
         res.json(cart);
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        handleError(null, error.message, res);
         console.log(error);
     }
 });
@@ -2321,6 +2410,8 @@ app.post('/address', accessValidation, async (req, res) => {
         })
     } catch (error) {
         console.log(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
     }
 })
 
@@ -2423,7 +2514,8 @@ app.post('/order', accessValidation, async (req, res) => {
 
     } catch (error) {
         console.log(error);
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
     }
 });
 
@@ -2431,24 +2523,22 @@ app.post('/order', accessValidation, async (req, res) => {
 app.delete('/order/:id', accessValidation, async (req, res) => {
     try {
         const { id } = req.params;
-        const currentStatus = await prisma.currentStatus.deleteMany({
+        const deletedOrder = await prisma.orders.update({
             where: {
                 orderId: id
-            }
-        })
-
-        const deletedOrder = await prisma.orders.delete({
-            where: {
-                orderId: id
+            },
+            data: {
+                isDeleted: true
             }
         });
 
         res.json({deletedOrder, msg: 'Order deleted successfully'});
     } catch (error) {
         console.log(error);
-        res.json(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
     }
-})
+});
 
 
 app.listen(PORT, () => {

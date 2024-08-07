@@ -25,7 +25,6 @@ export default function SuperAdminAllAdminPage() {
     useEffect(() => {
         getUserData((data) => {
             console.log(data);
-            if (data.access !== 'super-admin') GoToPage('/login', 100);
         }, (error) => {
             console.log(error);
         }, () => {

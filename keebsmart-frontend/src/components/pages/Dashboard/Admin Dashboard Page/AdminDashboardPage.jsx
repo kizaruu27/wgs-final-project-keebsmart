@@ -11,6 +11,8 @@ import TotalProductSalesChart from '../../../Layouts/Admin Dashboard/Dashboard/T
 import ProductCategorySalesChart from '../../../Layouts/Charts Section/ProductCategorySalesChart';
 import GridThreeCols from '../../../fragments/Dashboard/GridThreeCols';
 import { validateUser } from '../../../../server/userValidation';
+import { getIncome } from '../../../../server/incomeController';
+import { convertCurrency } from '../../../../server/currency';
 
 export default function AdminDashboardPage() {
     // Data chart keyboard
@@ -64,12 +66,8 @@ export default function AdminDashboardPage() {
     }, [0]);
 
     useState(() => {
-        getOrders((data) => {
-            const totalIncome = data.orders.filter(order => order.currentStatus[order.currentStatus.length - 1].status.status === 'Finish').map(order => order.totalPrice).reduce((acc, accValue) => acc + accValue, 0);
-            setIncome(new Intl.NumberFormat('id-ID', {
-                style: 'currency',
-                currency: 'IDR'
-            }).format(totalIncome));
+        getIncome((data) => {
+            setIncome(data);
         })
     }, [0]);
 
@@ -89,7 +87,7 @@ export default function AdminDashboardPage() {
             <DashboardContent>
                 <div className="grid grid-cols-2 gap-4 mb-4">
                     {/* Total Income */}
-                    <TotalActiveIncomeSection income={income} />
+                    <TotalActiveIncomeSection income={convertCurrency(income)} />
                     
                     {/* Total Active Products */}
                     <TotalActiveProducts totalActiveProducts={totalActiveProducts} />

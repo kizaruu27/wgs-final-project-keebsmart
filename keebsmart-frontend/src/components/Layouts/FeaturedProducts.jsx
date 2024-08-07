@@ -15,7 +15,7 @@ export default function FeaturedProducts ({icon, title, description, buttonText,
                 </div>
                 <div className="container mt-1 p-4">
                     <div className="overflow-x-auto whitespace-nowrap">
-                        <div className="inline-flex space-x-4">
+                        <div className="inline-flex space-x-6">
                             {/* <!-- Card 1 --> */}
                             {children}
                         </div>

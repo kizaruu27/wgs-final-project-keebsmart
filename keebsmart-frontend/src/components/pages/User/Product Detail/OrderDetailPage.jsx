@@ -39,7 +39,7 @@ export default function OrderDetailPage() {
             setCurrentStatus(data.currentStatus);
             setPaymentMethod(data.paymentMethod.paymentType);
             setAddress(`${data.address.street}, ${data.address.kelurahan}, ${data.address.kecamatan}, ${data.address.city}, ${data.address.province}, ${data.address.postCode}`)
-            setLatestStatus(data.currentStatus.map(item => item.status.status)[data.currentStatus.map(item => item.status.status).length - 1] === 'Order Completed' ? 'Delivered' : data.currentStatus.map(item => item.status.status)[data.currentStatus.map(item => item.status.status).length - 1])
+            setLatestStatus(data.currentStatus.map(item => item.status.status)[data.currentStatus.map(item => item.status.status).length - 1] === 'Order Completed' ? 'Finish' : data.currentStatus.map(item => item.status.status)[data.currentStatus.map(item => item.status.status).length - 1])
             setShipping(data.shipping);
             setCourier(data.shipping.user);
             setShippingId(data.shippingId);
