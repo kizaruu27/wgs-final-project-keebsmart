@@ -1,6 +1,7 @@
 import axios from "axios";
 import { urlEndpoint, token } from "./url";
 
+// Function for get all category
 export const getAllCategory = async (setCategories) => {
     try {
         const response = (await axios.get(`${urlEndpoint}/category`)).data;
@@ -11,6 +12,7 @@ export const getAllCategory = async (setCategories) => {
     }
 }
 
+// Function for add new product
 export const addNewProduct = async (inventoryId, productName, description, brand, categoryId, specs, imagePreviewUrl, imageUrls, onSuccess, onFailed) => {
     try {
         const formData = new FormData();
@@ -44,6 +46,7 @@ export const addNewProduct = async (inventoryId, productName, description, brand
     }
 };
 
+// Function for get all products for admins
 export const getAllProducts = async (setProducts) => {
     try {
         const response = (await axios.get(`${urlEndpoint}/products`)).data;
@@ -54,6 +57,7 @@ export const getAllProducts = async (setProducts) => {
     }
 };
 
+// Function for get all products for customer
 export const getProductsForCustomer = async (onSuccess) => {
     try {
         const response = await axios.get(`${urlEndpoint}/products/user`);
@@ -63,6 +67,7 @@ export const getProductsForCustomer = async (onSuccess) => {
     }
 }
 
+// Function for get product by id
 export const getProductById = async (id, onSucces) => {
     try {
         const response = await axios.get(`${urlEndpoint}/product/${id}`);
@@ -72,6 +77,7 @@ export const getProductById = async (id, onSucces) => {
     }
 }
 
+// Function for get product details
 export const getProductDetail = async (id, setProduct, setProductItems, setCategory, setImage, onGetStatistic) => {
     try {
         const response = (await axios.get(`${urlEndpoint}/product/${id}`)).data;
@@ -94,6 +100,7 @@ export const getProductDetail = async (id, setProduct, setProductItems, setCateg
     }
 }
 
+// Function for get product variation data
 export const getProductVariation = async (id, setVariation) => {
     try {
         const response = (await axios.get(`${urlEndpoint}/product/variation/${id}`)).data;
@@ -104,6 +111,7 @@ export const getProductVariation = async (id, setVariation) => {
     }
 }
 
+// Function for add product item data
 export const addProductItem = async ( productId, price, qty, status, manufacturer, inventoryItemId, images, onSuccess, onFailed) => {
     try {
         const formData = new FormData();
@@ -133,6 +141,7 @@ export const addProductItem = async ( productId, price, qty, status, manufacture
     }
 };
 
+// Function for get all switches data for admins
 export const getSwitchesData = async (setSwitch) => {
     try {
         const response = await axios.get(`${urlEndpoint}/products/switch`);
@@ -143,6 +152,7 @@ export const getSwitchesData = async (setSwitch) => {
     }
 }
 
+// Function for get all keycaps data for admins
 export const getKeycapsData = async (setKeycaps) => {
     try {
         const response = await axios.get(`${urlEndpoint}/products/keycaps`);
@@ -153,6 +163,7 @@ export const getKeycapsData = async (setKeycaps) => {
     }
 }
 
+// Function for get all keyboards data for admins
 export const getKeyboardsData = async (setKeyboards, onGetStatistic) => {
     try {
         const response = await axios.get(`${urlEndpoint}/products/keyboards`);
@@ -178,6 +189,7 @@ export const getKeyboardsData = async (setKeyboards, onGetStatistic) => {
     }
 }
 
+// Function for delete a product
 export const deleteProduct = async (productId, onDelete, onFailed) => {
     try {
         const response = await axios.delete (`${urlEndpoint}/product/${productId}`, {
@@ -192,6 +204,7 @@ export const deleteProduct = async (productId, onDelete, onFailed) => {
     }
 }
 
+// FUnction for delete a product item
 export const deleteProductItem = async (id, onSuccess, onFailed) => {
     try {
         const response = await axios.delete(`${urlEndpoint}/product/item/${id}`, {
@@ -206,6 +219,7 @@ export const deleteProductItem = async (id, onSuccess, onFailed) => {
     }
 }
 
+// Function for update a product
 export const updateProduct = async (id, productName, description, brand, categoryId, imagePreview, images, onSuccess, onFailed) => {
     try {
         const formData = new FormData();
@@ -235,9 +249,9 @@ export const updateProduct = async (id, productName, description, brand, categor
     }
 }
 
+// Function for update product item
 export const updateProductItem = async (id, price, qty, status, manufacturer, images, onSuccess, onFailed) => {
     try {
-
         const formData = new FormData();
         formData.append('price', price);
         formData.append('qty', qty);
@@ -263,6 +277,7 @@ export const updateProductItem = async (id, price, qty, status, manufacturer, im
     }
 }
 
+// Function for handle product activation
 export const activateProduct = async (id, isActive) => {
     try {
         const response = await axios.patch(`${urlEndpoint}/product/activate/${id}`, {
@@ -280,6 +295,7 @@ export const activateProduct = async (id, isActive) => {
     }
 }
 
+// Function for get product sales statistics
 export const getSalesStatistic = async (onSuccess) => {
     try {
         const sales = await axios.get(`${urlEndpoint}/sales`);
@@ -289,6 +305,7 @@ export const getSalesStatistic = async (onSuccess) => {
     }
 };
 
+// Function for get product item detail
 export const getProductItemDetail = async (id, onSucces) => {
     try {
         const response = await axios.get(`${urlEndpoint}/product/item/${id}`);
@@ -298,6 +315,7 @@ export const getProductItemDetail = async (id, onSucces) => {
     }
 }
 
+// Function for add new cart
 export const addNewCart = async (productItemId, qty, onSuccess, onFailed) => {
     try {
         const response = await axios.post(`${urlEndpoint}/cart`, {
@@ -316,6 +334,7 @@ export const addNewCart = async (productItemId, qty, onSuccess, onFailed) => {
     }
 }
 
+// Function for get switches data for customer
 export const getSwitchesForCustomer = async (onSucces) => {
     try {
         const response = await axios.get(`${urlEndpoint}/switches`);
@@ -325,6 +344,7 @@ export const getSwitchesForCustomer = async (onSucces) => {
     }
 }
 
+// Function for get keyboards data for customer
 export const getKeyboardsForCustomer = async (onSucces) => {
     try {
         const response = await axios.get(`${urlEndpoint}/keyboards`);
@@ -334,6 +354,7 @@ export const getKeyboardsForCustomer = async (onSucces) => {
     }
 }
 
+// Function for get keycaps data for customer
 export const getKeycapsForCustomer = async (onSucces) => {
     try {
         const response = await axios.get(`${urlEndpoint}/keycaps`);
@@ -343,6 +364,7 @@ export const getKeycapsForCustomer = async (onSucces) => {
     }
 };
 
+// Function for search products
 export const searchProducts = async (searchKey, onSuccess) => {
     try {
         const response = await axios.get(`${urlEndpoint}/product/search/?key=${searchKey}`);

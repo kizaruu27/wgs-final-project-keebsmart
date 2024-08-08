@@ -3,7 +3,7 @@ import DashboardContent from "../../../fragments/DashboardContent";
 import DashboardFragment from "../../../fragments/DashboardFragment";
 import DashboardNavbar from "../../../Layouts/DashboardNavbar";
 import DashboardSideMenu from "../../../Layouts/DashboardSideMenu";
-import { getOrderDetail, orderStatus, setOrderStatus } from "../../../../server/orderController";
+import { getOrderDetail, setOrderStatus } from "../../../../server/orderController";
 import { useParams } from "react-router-dom";
 import { GoToPage } from "../../../../server/pageController";
 import BuyerDetailSection from "../../../Layouts/Admin Dashboard/Order Detail/BuyerDetailSection";
@@ -14,7 +14,9 @@ import { validateUser } from "../../../../server/userValidation";
 import { getUserData } from "../../../../server/userDataController";
 
 export default function AdminOrderDetail () {
-    const { id } = useParams();
+    const { id } = useParams(); // Get the order ID from URL parameters
+
+    // State variables to hold order details
     const [order, setOrder] = useState([]);
     const [buyerName, setBuyerName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
@@ -29,53 +31,57 @@ export default function AdminOrderDetail () {
     const [courierName, setCourierName] = useState('');
     const [access, setAccess] = useState('');
 
+    // Determine if the order can be canceled based on its current status
     const canCancel = () => {
-        if (status !== 'Checkout Success' || status !== 'On Process' || status !== 'On Packing') return true;
-        if ( status !== 'Waiting Courier For Pick Up') return false
-        else return false;
+        if (status !== 'Checkout Success' && status !== 'On Process' && status !== 'On Packing') return true;
+        if (status !== 'Waiting Courier For Pick Up') return false;
+        return false;
     }
 
+    // Change the status color based on the order status
     const changeStatusColor = (orderStatus) => {
         switch (orderStatus) {
             case 'Checkout Success':
-                setStatusColor('bg-yellow-100 text-yellow-800')
+                setStatusColor('bg-yellow-100 text-yellow-800');
                 break;
             case 'On Process':
-                setStatusColor('bg-blue-100 text-blue-800')
+                setStatusColor('bg-blue-100 text-blue-800');
                 break;
             case 'On Packing':
-                setStatusColor('bg-blue-100 text-blue-800')
+                setStatusColor('bg-blue-100 text-blue-800');
                 break;
             case 'Waiting Courier For Pick Up':
-                setStatusColor('bg-blue-100 text-blue-800')
+                setStatusColor('bg-blue-100 text-blue-800');
                 break;
             case 'Courier Pick Up':
-                setStatusColor('bg-blue-100 text-blue-800')
+                setStatusColor('bg-blue-100 text-blue-800');
                 break;
             case 'On Delivery':
-                setStatusColor('bg-blue-100 text-blue-800')
+                setStatusColor('bg-blue-100 text-blue-800');
                 break;
             case 'Delivered':
-                setStatusColor('bg-green-100 text-green-800')
+                setStatusColor('bg-green-100 text-green-800');
                 break;
             case 'Finish':
-                setStatusColor('bg-green-100 text-green-800')
+                setStatusColor('bg-green-100 text-green-800');
                 break;
             case 'Canceled':
-                setStatusColor('bg-red-100 text-red-800')
+                setStatusColor('bg-red-100 text-red-800');
                 break;
             default:
-                setStatusColor('bg-blue-100 text-blue-800')
+                setStatusColor('bg-blue-100 text-blue-800');
                 break;
         }
     }
 
+    // Function to handle order cancellation
     const cancelOrder = (status) => {
         setOrderStatus(id, status, () => {
-            GoToPage(`/admin/order/${id}`, 100);
-        })
+            GoToPage(`/admin/order/${id}`, 100); // Redirect to the order detail page after cancellation
+        });
     }
 
+    // Fetch order details when the component mounts
     useEffect(() => {
         getOrderDetail(id, (data) => {
             setOrder(data);
@@ -90,22 +96,25 @@ export default function AdminOrderDetail () {
             setCurrentStatus(data.currentStatus.filter(item => item.status.status !== 'Finish'));
             setShippingId(data.shippingId);
             console.log(data);
-        })
-    }, [0]);
+        });
+    }, [id]); // Dependency on `id` ensures this effect runs whenever `id` changes
 
+    // Update status color whenever status changes
     useEffect(() => {
         changeStatusColor(status);
     }, [status]);
 
+    // Fetch user access data when the component mounts
     useEffect(() => {
         getUserData((data) => {
             setAccess(data.access);
-        })
-    }, [])
+        });
+    }, []);
 
+    // Validate user access when the component mounts
     useEffect(() => {
         validateUser('admin');
-    }, [])
+    }, []);
 
     return (
         <DashboardFragment>
@@ -113,19 +122,36 @@ export default function AdminOrderDetail () {
             <DashboardSideMenu />
             <DashboardContent>
                 <div className="grid grid-cols-2 gap-5">
+                    {/* Section displaying buyer's details */}
                     <BuyerDetailSection buyerName={buyerName} phoneNumber={phoneNumber} address={address} />
+                    
+                    {/* Section displaying order details */}
                     <OrderDetailSection order={order} paymentMethod={paymentMethod} status={status} statusColor={statusColor} />
-                    <OrderItemSection carts={carts} order={order} paymentMethod={paymentMethod} onCancelOrder={() => cancelOrder('Canceled')} canCancel={canCancel} status={status} id={id} />
-                    { status === 'Courier Pick Up' || status === 'On Delivery' || status === 'Cash On Delivery Paid' || status === 'Delivered' || status === 'Finish' || status === 'Cash Payment Accepted' || status === 'Order Completed' ?
+                    
+                    {/* Section displaying ordered items and option to cancel the order */}
+                    <OrderItemSection 
+                        carts={carts} 
+                        order={order} 
+                        paymentMethod={paymentMethod} 
+                        onCancelOrder={() => cancelOrder('Canceled')} 
+                        canCancel={canCancel} 
+                        status={status} 
+                        id={id} 
+                    />
+                    
+                    {/* Display shipment details if order status is relevant */}
+                    {status === 'Courier Pick Up' || status === 'On Delivery' || status === 'Cash On Delivery Paid' || status === 'Delivered' || status === 'Finish' || status === 'Cash Payment Accepted' || status === 'Order Completed' ?
                         <div className="bg-white rounded-xl shadow-md p-5 col-span-2">
                             <div className="mb-3 p-1 font-semibold text-nowrap bg-green-500 text-white rounded-full text-center w-36">{status}</div>
                             <p className="font-semibold text-lg mb-2">Shipment ID: <span className="font-light">{shippingId}</span></p>
                             <p className="font-semibold text-lg">Courier: <span className="font-light">{courierName}</span></p>
                         </div>
                     : null}
+                    
+                    {/* Section displaying order timeline */}
                     <OrderTimeline order={order} currentStatus={currentStatus} access={access} courierName={courierName} />
                 </div>
             </DashboardContent>
         </DashboardFragment>
-    )
+    );
 }

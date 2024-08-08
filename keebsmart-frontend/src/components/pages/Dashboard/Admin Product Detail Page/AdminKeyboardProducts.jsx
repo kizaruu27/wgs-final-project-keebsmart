@@ -8,33 +8,48 @@ import ProductCategoryDetail from "../../../Layouts/Admin Dashboard/Product Deta
 import { validateUser } from "../../../../server/userValidation";
 
 export default function AdminKeyboardProducts() {
-    // Variable to store keyboards data
+    // State to store the list of keyboard products
     const [keyboards, setKeyboards] = useState([]);
-    // Total keyboard products
+    
+    // State to store the total number of keyboard products
     const [totalProducts, setTotalProducts] = useState(0);
-    // Variable for set which keyboard that want to be edit
+    
+    // State to manage the selected keyboard for editing
     const [selectedKeyboard, setSelectedKeyboard] = useState([]);
 
-    // Fetch keyboards data
+    // Fetch data for keyboard products when the component mounts
     useEffect(() => {
         getKeyboardsData((data) => {
-            console.log(data);
-            setKeyboards(data);
-            setTotalProducts(data.length);
+            console.log(data); // Debugging: Log the fetched data
+            setKeyboards(data); // Set the keyboards data to state
+            setTotalProducts(data.length); // Set the total number of keyboard products
         });
-    }, [0]);
+    }, []); // Empty dependency array means this effect runs once after the initial render
 
+    // Validate that the user is an admin when the component mounts
     useEffect(() => {
-        validateUser('admin');
-    }, [])
+        validateUser('admin'); // Ensure user has 'admin' access
+    }, []); // Empty dependency array means this effect runs once after the initial render
 
     return (
         <DashboardFragment>
+            {/* Navbar component for the dashboard */}
             <DashboardNavbar />
+            
+            {/* Sidebar component for dashboard navigation */}
             <DashboardSideMenu />
+            
+            {/* Main content area of the dashboard */}
             <DashboardContent>
-                <ProductCategoryDetail category='Keyboards' categoryId={1} setSelectedProduct={setSelectedKeyboard} totalProducts={totalProducts} products={keyboards} />
+                {/* Product category detail component for displaying keyboard products */}
+                <ProductCategoryDetail 
+                    category='Keyboards' // Specify the category as 'Keyboards'
+                    categoryId={1} // Set a static category ID (1)
+                    setSelectedProduct={setSelectedKeyboard} // Function to set the selected keyboard for editing
+                    totalProducts={totalProducts} // Pass the total number of keyboard products
+                    products={keyboards} // Pass the list of keyboard products
+                />
             </DashboardContent>
         </DashboardFragment>
-    )
+    );
 }

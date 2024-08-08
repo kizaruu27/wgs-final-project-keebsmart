@@ -12,14 +12,17 @@ import { getUserData } from "../../../../server/userDataController";
 import Footer from "../../../Layouts/Footer";
 
 export default function OrderDetailPage() {
+    // Get the order ID from URL parameters
     const { id } = useParams();
+
+    // State variables to hold order data and other information
     const [order, setOrder] = useState({});
     const [orderId, setOrderId] = useState('');
     const [orderItem, setOrderItem] = useState([]);
     const [currentStatus, setCurrentStatus] = useState([]);
     const [latestStatus, setLatestStatus] = useState('');
     const [paymentMethod, setPaymentMethod] = useState('');
-    const [openCancelOrder, setOpenCancelOrder] = useState(false);
+    const [openCancelOrder, setOpenCancelOrder] = useState(false); // State to control the cancel order modal visibility
     const [address, setAddress] = useState('');
     const [shipping, setShipping] = useState({});
     const [courier, setCourier] = useState('');
@@ -27,36 +30,44 @@ export default function OrderDetailPage() {
     const [shippingId, setShippingId] = useState('');
     const [access, setAccess] = useState('');
 
+    // Validate user access level as 'customer' on component mount
     useEffect(() => {
         validateUser('customer');
     }, [])
 
+    // Fetch order details when component mounts or `id` changes
     useEffect(() => {
         getOrderDetail(id, (data) => {
+            // Log the latest order status
             console.log(data.currentStatus.map(item => item.status.status)[data.currentStatus.map(item => item.status.status).length - 1]);
+
+            // Update state with fetched order data
             setOrderItem(data.carts);
             setOrder(data);
             setOrderId(data.orderId);
             setCurrentStatus(data.currentStatus);
             setPaymentMethod(data.paymentMethod.paymentType);
-            setAddress(`${data.address.street}, ${data.address.kelurahan}, ${data.address.kecamatan}, ${data.address.city}, ${data.address.province}, ${data.address.postCode}`)
-            setLatestStatus(data.currentStatus.map(item => item.status.status)[data.currentStatus.map(item => item.status.status).length - 1] === 'Order Completed' ? 'Finish' : data.currentStatus.map(item => item.status.status)[data.currentStatus.map(item => item.status.status).length - 1])
+            setAddress(`${data.address.street}, ${data.address.kelurahan}, ${data.address.kecamatan}, ${data.address.city}, ${data.address.province}, ${data.address.postCode}`);
+            setLatestStatus(data.currentStatus.map(item => item.status.status)[data.currentStatus.map(item => item.status.status).length - 1] === 'Order Completed' ? 'Finish' : data.currentStatus.map(item => item.status.status)[data.currentStatus.map(item => item.status.status).length - 1]);
             setShipping(data.shipping);
             setCourier(data.shipping.user);
             setShippingId(data.shippingId);
         });
-    }, []);
+    }, [id]);
 
+    // Update status color whenever `latestStatus` changes
     useEffect(() => {
         changeStatusColor(latestStatus, setStatusColor);
-    });
+    }, [latestStatus]);
 
+    // Fetch user data on component mount
     useEffect(() => {
         getUserData((data) => {
             setAccess(data.access);
         })
     }, [])
 
+    // Function to handle order cancellation
     const cancelOrder = (id, status) => {
         setOrderStatus(id, status, () => {
             GoToPage(`/order/${id}`, 100);

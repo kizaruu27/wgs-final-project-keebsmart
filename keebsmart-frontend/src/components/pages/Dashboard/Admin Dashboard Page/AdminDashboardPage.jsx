@@ -5,7 +5,7 @@ import DashboardContent from '../../../fragments/DashboardContent';
 import DashboardNavbar from '../../../Layouts/DashboardNavbar';
 import { getSalesStatistic, getAllProducts } from '../../../../server/productController';
 import { getOrders } from '../../../../server/orderController';
-import TotalActiveIncomeSection from '../../../Layouts/Admin Dashboard/Dashboard/TotalIncomeSection'
+import TotalActiveIncomeSection from '../../../Layouts/Admin Dashboard/Dashboard/TotalIncomeSection';
 import TotalActiveProducts from '../../../Layouts/Admin Dashboard/Dashboard/TotalActiveProductsSection';
 import TotalProductSalesChart from '../../../Layouts/Admin Dashboard/Dashboard/TotalProductSales';
 import ProductCategorySalesChart from '../../../Layouts/Charts Section/ProductCategorySalesChart';
@@ -15,38 +15,41 @@ import { getIncome } from '../../../../server/incomeController';
 import { convertCurrency } from '../../../../server/currency';
 
 export default function AdminDashboardPage() {
-    // Data chart keyboard
-    const [keyboardLabelChart, setKeyboardLabelChart] = useState([]);
-    const [keyboardSeriesChart, setKeyboardSeriesChart] = useState([]);
+    // States for chart data
+    const [keyboardLabelChart, setKeyboardLabelChart] = useState([]); // Labels for keyboard chart
+    const [keyboardSeriesChart, setKeyboardSeriesChart] = useState([]); // Data series for keyboard chart
 
-    // Data chart keycaps
-    const [keycapsLabelChart, setKeycapsLabelChart] = useState([]);
-    const [keycapsSeriesChart, setKeycapsSeriesChart] = useState([]);
+    const [keycapsLabelChart, setKeycapsLabelChart] = useState([]); // Labels for keycaps chart
+    const [keycapsSeriesChart, setKeycapsSeriesChart] = useState([]); // Data series for keycaps chart
     
-    // Data chart switches
-    const [switchLabelChart, setSwitchLabelChart] = useState([]);
-    const [switchSeriesChart, setSwitchSeriesChart] = useState([]);
+    const [switchLabelChart, setSwitchLabelChart] = useState([]); // Labels for switches chart
+    const [switchSeriesChart, setSwitchSeriesChart] = useState([]); // Data series for switches chart
 
-    // Data all products statistics
-    const [productStat, setProductStat] = useState([]);
-    const [soldStat, setSoldStat] = useState([]);
+    // States for product statistics
+    const [productStat, setProductStat] = useState([]); // Product names for the statistics
+    const [soldStat, setSoldStat] = useState([]); // Quantity sold for each product
 
-    // Data all active products
-    const [totalActiveProducts, setTotalActiveProducts] = useState(0);
+    // State for total active products
+    const [totalActiveProducts, setTotalActiveProducts] = useState(0); // Total count of active products
 
-    // Data for total income
-    const [income, setIncome] = useState(0);
+    // State for total income
+    const [income, setIncome] = useState(0); // Total income value
 
     useEffect(() => {
+        // Fetch sales statistics data and process it
         getSalesStatistic((stat) => {
             const allProductStatistic = stat.data;
+            
+            // Separate statistics by product category
             const keyboardStatistic = stat.data.filter(item => item.category.categoryName === 'Keyboards');
             const keycapsStatistic = stat.data.filter(item => item.category.categoryName === 'Keycaps');
             const switchStatistic = stat.data.filter(item => item.category.categoryName === 'Switches');
 
+            // Set product statistics for the charts
             setProductStat(allProductStatistic.map(item => item.productName));
             setSoldStat(allProductStatistic.map(item => item.soldTotal));
 
+            // Set data for individual category charts
             setKeyboardLabelChart(keyboardStatistic.map(item => item.productName));
             setKeyboardSeriesChart(keyboardStatistic.map(item => item.soldTotal));
             
@@ -55,56 +58,78 @@ export default function AdminDashboardPage() {
             
             setSwitchLabelChart(switchStatistic.map(item => item.productName));
             setSwitchSeriesChart(switchStatistic.map(item => item.soldTotal));
-        })  
-    }, [0]);
-    
-    useState(() => {
+        });
+    }, []); // Empty dependency array means this effect runs once after the initial render
+
+    useEffect(() => {
+        // Fetch all products and count the active ones
         getAllProducts((products) => {
             const allActiveProducts = products.filter(product => product.isActive === true);
             setTotalActiveProducts(allActiveProducts.length);
-        })
-    }, [0]);
+        });
+    }, []); // Empty dependency array means this effect runs once after the initial render
 
-    useState(() => {
+    useEffect(() => {
+        // Fetch total income data
         getIncome((data) => {
             setIncome(data);
-        })
-    }, [0]);
+        });
+    }, []); // Empty dependency array means this effect runs once after the initial render
 
-    useState(() => {
+    useEffect(() => {
+        // Validate that the user has admin access
         validateUser('admin');
-    }, [])
+    }, []); // Empty dependency array means this effect runs once after the initial render
 
     return (
         <DashboardFragment>
-            {/* Navbar */}
+            {/* Navbar component for dashboard */}
             <DashboardNavbar />
             
-            {/* Sidebar */}
+            {/* Sidebar component for dashboard navigation */}
             <DashboardSideMenu />
 
-            {/* Content */}
+            {/* Main content of the dashboard */}
             <DashboardContent>
                 <div className="grid grid-cols-2 gap-4 mb-4">
-                    {/* Total Income */}
+                    {/* Section showing total income */}
                     <TotalActiveIncomeSection income={convertCurrency(income)} />
                     
-                    {/* Total Active Products */}
+                    {/* Section showing total number of active products */}
                     <TotalActiveProducts totalActiveProducts={totalActiveProducts} />
                 </div>
 
-                {/* Total Product Sales Chart */}
+                {/* Chart showing total product sales */}
                 <TotalProductSalesChart productStat={productStat} soldStat={soldStat} />
 
+                {/* Grid for displaying category sales charts */}
                 <GridThreeCols>
-                    {/* Chart penjualan keyboard */}
-                    <ProductCategorySalesChart series={keyboardSeriesChart} label={keyboardLabelChart} showLegend={false} headings='Keyboard Sales' footer='Chart of keyboard sales so far' />
+                    {/* Chart for keyboard sales */}
+                    <ProductCategorySalesChart 
+                        series={keyboardSeriesChart} 
+                        label={keyboardLabelChart} 
+                        showLegend={false} 
+                        headings='Keyboard Sales' 
+                        footer='Chart of keyboard sales so far' 
+                    />
 
-                    {/* chart penjualan keycaps */}
-                    <ProductCategorySalesChart series={keycapsSeriesChart} label={keycapsLabelChart} showLegend={false} headings='Keycaps Sales' footer='Chart of keycaps sales so far' />
+                    {/* Chart for keycaps sales */}
+                    <ProductCategorySalesChart 
+                        series={keycapsSeriesChart} 
+                        label={keycapsLabelChart} 
+                        showLegend={false} 
+                        headings='Keycaps Sales' 
+                        footer='Chart of keycaps sales so far' 
+                    />
 
-                    {/* chart penjualan switch */}
-                    <ProductCategorySalesChart series={switchSeriesChart} label={switchLabelChart} showLegend={false} headings='Switches Sales' footer='Chart of switches sales so far' />
+                    {/* Chart for switches sales */}
+                    <ProductCategorySalesChart 
+                        series={switchSeriesChart} 
+                        label={switchLabelChart} 
+                        showLegend={false} 
+                        headings='Switches Sales' 
+                        footer='Chart of switches sales so far' 
+                    />
                 </GridThreeCols>
             </DashboardContent>
         </DashboardFragment>

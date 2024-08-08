@@ -14,8 +14,11 @@ import DashboardCourierSideMenu from "../../../Layouts/DashboardCourierSideMenu"
 import { getUserData } from "../../../../server/userDataController";
 import { validateUser } from "../../../../server/userValidation";
 
-export default function ShipmentDetail () {
+export default function ShipmentDetail() {
+    // Extract the shipment ID from URL parameters
     const { id } = useParams();
+    
+    // State variables to store shipment details and user data
     const [courier, setCourier] = useState({});
     const [status, setStatus] = useState('');
     const [buyer, setBuyer] = useState('');
@@ -29,27 +32,33 @@ export default function ShipmentDetail () {
     const [allStatus, setAllStatus] = useState([]);
     const [shipmentId, setShipmentId] = useState(0);
     const [access, setAccess] = useState([]);
-    
+
+    // Validate user access on component mount
     useEffect(() => {
         validateUser('courier');
-    }, [])
+    }, []);
 
+    // Determine if the shipment can be canceled based on its current status
     const canCancel = () => {
-        if (status === 'Canceled') return false;
-        if (status === 'Delivered') return false;
-        if (status === 'Finish') return false;
-        else return true;
-    }
+        // Check if the shipment status is one of 'Canceled', 'Delivered', or 'Finish'
+        if (status === 'Canceled' || status === 'Delivered' || status === 'Finish') {
+            return false;
+        }
+        return true;
+    };
 
+    // Function to cancel the shipment and redirect to the shipment detail page
     const cancelShipment = (status) => {
         setOrderStatus(id, status, () => {
             GoToPage(`/courier/shipment/${id}`, 100);
-        })
-    }
+        });
+    };
 
+    // Fetch shipment details on component mount
     useEffect(() => {
         getShipmentDetail(id, (data) => {
             console.log(data.allStatus);
+            // Update state variables with the shipment details
             setBuyer(data.shipment.order.buyerName);
             setPhoneNumber(data.shipment.order.phoneNumber);
             setAddress(data.shipment.order.address);
@@ -59,32 +68,67 @@ export default function ShipmentDetail () {
             setPaymentMethod(data.shipment.order.paymentMethod);
             setCarts(data.shipment.order.carts);
             setLastUpdate(data.lastUpdate);
+            // Filter out statuses that are marked as 'Finish'
             setAllStatus(data.allStatus.filter(item => item.status.status !== 'Finish'));
-        })
-    }, [0]);
+        });
+    }, [id]);
 
+    // Fetch user data on component mount
     useEffect(() => {
         getUserData((data) => {
             setCourier(data);
             setAccess(data.access);
-        })
-    }, [0]);
+        });
+    }, []);
 
     return (
         <DashboardFragment>
             <DashboardNavbar />
             <DashboardCourierSideMenu />
             <DashboardContent>
+                {/* Main content for displaying shipment details */}
                 <OrderShipmentDetailFragment>
-                    <UserSection customerStatus='Recipient' customerName={buyer} customerPhoneNumber={phoneNumber} customerAddress={address}/>
+                    {/* Display user information */}
+                    <UserSection
+                        customerStatus='Recipient'
+                        customerName={buyer}
+                        customerPhoneNumber={phoneNumber}
+                        customerAddress={address}
+                    />
 
-                    <ShipmentOrderInfo condition='Shipment ID' id={shipment.id} orderDate={order.orderDate} paymentMethod={paymentMethod.paymentType} status={status === 'Cash Payment Accepted' || status === 'Order Completed' || status === 'Finish' ? 'Delivered' : status} shipmentName={shipment.shipmentName} />
+                    {/* Display shipment and order information */}
+                    <ShipmentOrderInfo
+                        condition='Shipment ID'
+                        id={shipment.id}
+                        orderDate={order.orderDate}
+                        paymentMethod={paymentMethod.paymentType}
+                        status={
+                            status === 'Cash Payment Accepted' || status === 'Order Completed' || status === 'Finish'
+                                ? 'Delivered'
+                                : status
+                        }
+                        shipmentName={shipment.shipmentName}
+                    />
 
-                    <ShipmentOrderItems shipmentId={shipment.id} canCancel={canCancel} carts={carts} order={order} paymentType={paymentMethod.paymentType} access={courier.access} status={status} redirect={`/courier/shipment/${shipment.id}`} />
+                    {/* Display order items and provide option to cancel if applicable */}
+                    <ShipmentOrderItems
+                        shipmentId={shipment.id}
+                        canCancel={canCancel}
+                        carts={carts}
+                        order={order}
+                        paymentType={paymentMethod.paymentType}
+                        access={courier.access}
+                        status={status}
+                        redirect={`/courier/shipment/${shipment.id}`}
+                    />
 
-                    <ShipmentOrderTimeline lastUpdate={lastUpdate} allStatus={allStatus}/>
+                    {/* Display shipment status timeline */}
+                    <ShipmentOrderTimeline
+                        lastUpdate={lastUpdate}
+                        allStatus={allStatus}
+                    />
                 </OrderShipmentDetailFragment>
             </DashboardContent>
         </DashboardFragment>
-    )
+    );
 }

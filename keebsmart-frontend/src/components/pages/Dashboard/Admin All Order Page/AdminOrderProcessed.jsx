@@ -8,35 +8,56 @@ import OrderTable from "../../../Layouts/Admin Dashboard/Order Table/OrderTable"
 import OrderCalculationStatusSection from "../../../Layouts/Admin Dashboard/Order Detail/OrderCalculationStatusSection";
 import { validateUser } from "../../../../server/userValidation";
 
-export default function AdminOrderProcessed () {
-    const [orders, setOrders] = useState([]);
-    const [totalOnProcess, setTotalOnProcess] = useState(0);
-    const [totalOnPacking, setTotalOnPacking] = useState(0);
+export default function AdminOrderProcessed() {
+    const [orders, setOrders] = useState([]); // State variable to store filtered orders
+    const [totalOnProcess, setTotalOnProcess] = useState(0); // State variable for total number of 'On Process' orders
+    const [totalOnPacking, setTotalOnPacking] = useState(0); // State variable for total number of 'On Packing' orders
 
-    const currentStatus = (order) => order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1];
+    // Function to get the most recent status of an order
+    const currentStatus = (order) => {
+        return order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1];
+    };
 
+    // Fetch orders and filter based on status when the component mounts
     useEffect(() => {
         getOrders((response) => {
-            setOrders(response.orders.filter(order => currentStatus(order) === 'On Process' || currentStatus(order) === 'On Packing' ));
-            setTotalOnProcess(response.orders.filter(order => currentStatus(order) === 'On Process').length);
-            setTotalOnPacking(response.orders.filter(order => currentStatus(order) === 'On Packing').length);
+            const allOrders = response.orders;
+            // Filter orders with 'On Process' or 'On Packing' status
+            const processedOrders = allOrders.filter(order => currentStatus(order) === 'On Process' || currentStatus(order) === 'On Packing');
+            setOrders(processedOrders); // Update state with filtered orders
+            // Set totals for each status
+            setTotalOnProcess(processedOrders.filter(order => currentStatus(order) === 'On Process').length);
+            setTotalOnPacking(processedOrders.filter(order => currentStatus(order) === 'On Packing').length);
         }, (error) => {
-            console.log(error);
-        })
-    },[0]);
+            console.log(error); // Log any errors during fetching
+        });
+    }, []); // Empty dependency array ensures this effect runs only once on mount
 
+    // Validate user access when the component mounts
     useEffect(() => {
         validateUser('admin');
-    }, [])
+    }, []); // Empty dependency array ensures this effect runs only once on mount
 
     return (
         <DashboardFragment>
             <DashboardNavbar />
             <DashboardSideMenu />
             <DashboardContent>
-                <OrderCalculationStatusSection bgColor='bg-blue-500' firstValue={totalOnProcess} firstHeader='Processed Orders' secondValue={totalOnPacking} secondHeader='On Packing Orders' />
-                <OrderTable orders={orders} onDeleteRedirect='admin/order/processed' header='On Processed Orders' />
+                {/* Section showing the count of processed and on packing orders */}
+                <OrderCalculationStatusSection 
+                    bgColor='bg-blue-500' 
+                    firstValue={totalOnProcess} 
+                    firstHeader='Processed Orders' 
+                    secondValue={totalOnPacking} 
+                    secondHeader='On Packing Orders' 
+                />
+                {/* Table displaying orders with 'On Process' or 'On Packing' status */}
+                <OrderTable 
+                    orders={orders} 
+                    onDeleteRedirect='admin/order/processed' 
+                    header='On Processed Orders' 
+                />
             </DashboardContent>
         </DashboardFragment>
-    )
+    );
 }

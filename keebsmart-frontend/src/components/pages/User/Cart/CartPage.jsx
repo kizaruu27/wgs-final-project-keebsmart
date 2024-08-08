@@ -13,94 +13,103 @@ import { setAllChecked } from "../../../../redux/cartSlice";
 import Footer from "../../../Layouts/Footer";
 
 export default function CartPage() {
-    // const allChecked = useSelector(state => state.carts.allChecked);
+    // Dispatch function for Redux actions
     const dispatch = useDispatch();
+    // Navigate function from react-router for programmatic navigation
     const navigate = useNavigate();
 
+    // State to store cart items
     const [cart, setCart] = useState([]);
+    // State to store the IDs and prices of selected cart items
     const [selectedCartId, setSelectedCartId] = useState([]);
+    // State to store the subtotal price of selected items
     const [subTotalPrice, setSubTotalPrice] = useState(0);
 
+    // Effect hook to validate the user as a customer when the component mounts
     useEffect(() => {
         validateUser('customer');
-    }, [])
+    }, []);
 
+    // Effect hook to fetch the user's cart and update state when the component mounts
     useEffect(() => {
         getUserCart((data) => {
-            console.log(data.map(item => ({
-                ...item,
-                isChecked: false
-            })));
-
+            // Initialize cart items with a default 'isChecked' property set to false
             setCart(data.map(item => ({
                 ...item,
                 isChecked: false
             })));
-        })
+        });
     }, []);
 
+    // Function to handle 'Select All' checkbox
     const selectAll = (e) => {
-        const checked = e.target.checked;
-        dispatch(setAllChecked(checked));
-        cart.map((item) => setChecked(checked, item.id, item.subTotalPrice));
-
-        // Checkbox handling
+        const checked = e.target.checked; // Determine if 'Select All' checkbox is checked or not
+        dispatch(setAllChecked(checked)); // Update the Redux state for 'select all' checkbox
+        cart.map((item) => setChecked(checked, item.id, item.subTotalPrice)); // Update individual item selection
+        
+        // Update cart state to reflect 'Select All' status
         const updatedCartItems = cart.map(item => ({
             ...item,
             isChecked: checked
         }));
-        setCart(updatedCartItems)
-        console.log(updatedCartItems);
+        setCart(updatedCartItems);
     };
 
+    // Function to handle individual item checkbox change
     const handleCheckboxChange = (id) => {
-        // Checkbox handling
+        // Toggle the 'isChecked' state of the selected item
         const updatedCartItems = cart.map(item => item.id === id ? ({
             ...item,
             isChecked: !item.isChecked
         }) : item);
+
+        // Check if all items are selected
         const allItemsChecked = updatedCartItems.every(item => item.isChecked);
-        dispatch(setAllChecked(allItemsChecked));
-        setCart(updatedCartItems);
-        console.log(updatedCartItems);
+        dispatch(setAllChecked(allItemsChecked)); // Update the Redux state
+        setCart(updatedCartItems); // Update local cart state
     }
     
+    // Function to update selected items and subtotal price based on checkbox state
     const setChecked = (checked, id, price) => {
         setSelectedCartId(prevSelected => {
             let updatedSelected;
             if (checked) {
+                // Add item to selected list if checked
                 updatedSelected = [...prevSelected, { id, price }];
             } else {
+                // Remove item from selected list if unchecked
                 updatedSelected = prevSelected.filter(item => item.id !== id);
             }
+            // Remove duplicates from the selected list
             const selectedData = Array.from(new Map(updatedSelected.map(item => [item.id, item])).values());
         
-            console.log('Updated selectedCartId:', selectedData);        
+            // Calculate the new subtotal price
             setSubTotalPrice(selectedData.map(item => item.price).reduce((acc, accValue) => acc + accValue, 0));
             return selectedData;
         });
     };
 
+    // Function to navigate to the checkout page with selected cart IDs
     const postNewPendingOrder = () => {
-        const cartIds = selectedCartId.map(item => item.id);
-        navigate('/checkout', {state: {cartIds}})
+        const cartIds = selectedCartId.map(item => item.id); // Extract IDs from selected items
+        navigate('/checkout', { state: { cartIds } }); // Navigate to checkout page with state
     };
 
     return (
         <div className="mx-auto">
             <Navbar />
-            <section className="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
-                <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
-                    <CartHeader text='My Cart' />
-                    <div className="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
-                        {/* Cart List Section */}
-                        <CartSection setCart={setCart} selectAll={selectAll} handleCheckboxChange={handleCheckboxChange} cart={cart} setChecked={setChecked} />
+                <section className="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
+                    <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
+                        <CartHeader text='My Cart' />
+                        <div className="mt-6 sm:mt-8 md:gap-6 lg:flex lg:items-start xl:gap-8">
+                            {/* Cart List Section */}
+                            <CartSection setCart={setCart} selectAll={selectAll} handleCheckboxChange={handleCheckboxChange} cart={cart} setChecked={setChecked} />
 
-                        {/* Order summary */}
-                        <CartOrderSummary subTotalPrice={subTotalPrice} onCheckOut={postNewPendingOrder} selectedCartIds={selectedCartId} />
+                            {/* Order summary */}
+                            <CartOrderSummary subTotalPrice={subTotalPrice} onCheckOut={postNewPendingOrder} selectedCartIds={selectedCartId} />
+                        </div>
                     </div>
-                </div>
-            </section>
+                </section>
             <Footer />
         </div>
     )

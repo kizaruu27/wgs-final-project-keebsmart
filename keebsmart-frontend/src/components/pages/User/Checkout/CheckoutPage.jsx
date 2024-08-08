@@ -12,15 +12,14 @@ import AddNewAddressModal from "../../../Layouts/Modals/AddNewAddressModal";
 import Footer from "../../../Layouts/Footer";
 
 export default function CheckoutPage() {
-    const location = useLocation();
-    const cartIds = location.state?.cartIds || [];
-    const navigate = useNavigate();
+    const location = useLocation(); // Set up location for navigation
+    const cartIds = location.state?.cartIds || []; // cart ids state from cart page
+    const navigate = useNavigate(); // Use navigate for bringing state for the next page
 
-    // cart states
-    const [totalPrice, setTotalPrice] = useState(0);
-    const [carts, setCarts] = useState([]);
+    const [totalPrice, setTotalPrice] = useState(0); // State for handling total price
+    const [carts, setCarts] = useState([]); // State for handling carts data
 
-    // address states
+    // States for address
     const [street, setStreet] = useState('');
     const [kelurahan, setKelurahan] = useState('');
     const [kecamatan, setKecamatan] = useState('');
@@ -28,7 +27,7 @@ export default function CheckoutPage() {
     const [province, setProvince] = useState('');
     const [postCode, setPostCode] = useState(0);
     
-    // state that will sent to next page
+    // State for sent to next page
     const [name, setName] = useState('');
     const [phoneNumber, setPhoneNumber] = useState(0);
     const [targetedCartIds, setTargetedCartIds] = useState([]);
@@ -44,10 +43,12 @@ export default function CheckoutPage() {
     // state for open add address modal
     const [openAddAddressModal, setOpenAddAddressModal] = useState(false);
 
+    // Validate users access
     useEffect(() => {
         validateUser('customer');
     }, []);
 
+    // Fetching carts data by id
     useEffect(() => {
         console.log(cartIds);
         getCartsById(cartIds, (data) => {
@@ -57,6 +58,7 @@ export default function CheckoutPage() {
         });
     }, []);
 
+    // Fetching all user addresses
     useEffect(() => {
         getUserAddresses((data) => {
             console.log(data.addresses);
@@ -64,6 +66,7 @@ export default function CheckoutPage() {
         })
     }, [])
 
+    // Set up for payment
     const proceedToPayment = async (e) => {
         e.preventDefault();
         
@@ -93,9 +96,9 @@ export default function CheckoutPage() {
                 });
             }, 2000);
         }
-
     };
 
+    // Handle when address change
     const handleAddressChange = (e) => {
         getAddressDetail(e.target.value, (data) => {
             console.log(data);
@@ -109,6 +112,7 @@ export default function CheckoutPage() {
         })
     };
 
+    // Handle to show add address modal
     const handleSetAddAddress = () => {
         setOpenAddAddressModal(true);
     }

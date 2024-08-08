@@ -1,77 +1,68 @@
-import LoginRegister from "../fragments/LoginRegister";
-import LoginRegisterCover from "../elements/LoginRegisterCover";
-import LoginLayout from "../Layouts/LoginLayout";
-import Logo from "../elements/Logo";
-import LoginForm from "../elements/LoginForm";
-import { userLogin } from "../../server/auth";
-import { GoToPage } from "../../server/pageController";
-import { useEffect, useState } from "react";
-import AlertItem from "../elements/Alert";
-import { jwtDecode } from "jwt-decode";
+import LoginRegister from "../fragments/LoginRegister"; // Importing LoginRegister fragment
+import LoginRegisterCover from "../elements/LoginRegisterCover"; // Importing LoginRegisterCover element
+import LoginLayout from "../Layouts/LoginLayout"; // Importing LoginLayout layout
+import Logo from "../elements/Logo"; // Importing Logo element
+import LoginForm from "../elements/LoginForm"; // Importing LoginForm element
+import { userLogin } from "../../server/auth"; // Importing userLogin function from the server
+import { GoToPage } from "../../server/pageController"; // Importing GoToPage function from the server
+import { useEffect, useState } from "react"; // Importing useEffect and useState hooks from React
+import AlertItem from "../elements/Alert"; // Importing AlertItem element
+import { jwtDecode } from "jwt-decode"; // Importing jwtDecode function
 
 export default function LoginPage() {
+    // State hooks for managing email and password input values
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    // variables for alert
+    // State hooks for managing alert visibility, type, and message
     const [isClick, setIsClick] = useState(false);
     const [alertType, setAlertType] = useState('success');
     const [alertMsg, setAlertMsg] = useState('');
 
+    // Function to handle admin login success
     const onAdminLogin = () => {
         setAlertType('success');
         setIsClick(true);
-        setAlertMsg('Login as admin successfull!');
-        GoToPage('/admin', 1500)
+        setAlertMsg('Login as admin successful!');
+        GoToPage('/admin', 1500);
     }
 
+    // Function to handle customer login success
     const onCustomerLogin = () => {
         setAlertType('success');
         setIsClick(true);
-        setAlertMsg('Login Successfull!');
+        setAlertMsg('Login Successful!');
         GoToPage('/', 1500);
     }
 
+    // Function to handle super admin login success
     const onSuperAdminLogin = () => {
         setAlertType('success');
         setIsClick(true);
-        setAlertMsg('Login as super admin successfull!');
+        setAlertMsg('Login as super admin successful!');
         GoToPage('/super-admin', 1500);
     }
 
+    // Function to handle courier login success
     const onCourierLogin = () => {
         setAlertType('success');
         setIsClick(true);
-        setAlertMsg('Login as courier successfull!');
+        setAlertMsg('Login as courier successful!');
         GoToPage('/courier', 1500);
     }
 
+    // Function to handle login failure
     const onLoginFailed = (msg) => {
         setAlertMsg(msg);
         setAlertType('error');
         setIsClick(true);
     }
 
+    // Function to handle login form submission
     const login = (e) => {
         e.preventDefault();
-        userLogin(email, password, onAdminLogin, onSuperAdminLogin, onCourierLogin, onCustomerLogin, onLoginFailed)
+        userLogin(email, password, onAdminLogin, onSuperAdminLogin, onCourierLogin, onCustomerLogin, onLoginFailed);
     };
-
-    // useEffect(() => {
-    //     const token = localStorage.getItem('token');
-    //     if (token) {
-    //         const payload = jwtDecode(token);
-    //         switch (payload.access) {
-    //             case 'admin':
-    //                 GoToPage('/admin', 1500);
-    //                 break;
-    //             case 'customer':
-    //                 GoToPage('/', 1500);
-    //             default:
-    //                 break;
-    //         }
-    //     }
-    // }, [0]);
 
     return (
         <LoginRegister>
@@ -82,5 +73,5 @@ export default function LoginPage() {
                 <LoginForm onSubmit={e => login(e)} onEmailChange={(e) => setEmail(e.target.value)} onPasswordChange={(e) => setPassword(e.target.value)} />
             </LoginLayout>
         </LoginRegister>
-    )
+    );
 }

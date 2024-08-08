@@ -8,27 +8,39 @@ import { getOrders } from "../../../../server/orderController";
 import { validateUser } from "../../../../server/userValidation";
 
 export default function AdminOrderPending() {
-    const [orders, setOrders] = useState([]);
+    const [orders, setOrders] = useState([]); // State variable to store the list of pending orders
 
+    // Fetch orders when the component mounts
     useEffect(() => {
         getOrders((response) => {
-            setOrders(response.orders.filter(order => order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1] === 'Checkout Success'));
+            // Filter orders to include only those with 'Checkout Success' status
+            const pendingOrders = response.orders.filter(order => {
+                const statusList = order.currentStatus.map(item => item.status.status);
+                return statusList[statusList.length - 1] === 'Checkout Success';
+            });
+            setOrders(pendingOrders); // Update state with filtered orders
         }, (error) => {
-            console.log(error);
-        })
-    },[0]);
+            console.log(error); // Log any errors during fetching
+        });
+    }, []); // Empty dependency array ensures this effect runs only once on mount
 
+    // Validate user access when the component mounts
     useEffect(() => {
         validateUser('admin');
-    }, []);
+    }, []); // Empty dependency array ensures this effect runs only once on mount
 
     return (
         <DashboardFragment>
             <DashboardNavbar />
             <DashboardSideMenu />
             <DashboardContent>
-                <OrderTable orders={orders} onDeleteRedirect={'admin/order/pending'} header='Pending Orders' />
+                {/* Render a table of pending orders */}
+                <OrderTable 
+                    orders={orders} 
+                    onDeleteRedirect={'admin/order/pending'} 
+                    header='Pending Orders' 
+                />
             </DashboardContent>
         </DashboardFragment>
-    )
+    );
 }
