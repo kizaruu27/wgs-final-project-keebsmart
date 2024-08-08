@@ -21,13 +21,23 @@ const prisma = new PrismaClient();
 const app = express();
 dotenv.config();  
 
-app.use(cors());
+const PORT = process.env.PORT;
+const SECRET = process.env.JWT_SECRET;
+const IP_ADDRESS = process.env.IP_ADDRESS;
+
+app.use(cors({
+    origin: [
+        `http://localhost:${PORT}`, 
+        `http:${IP_ADDRESS}:${PORT}`, 
+        'http://localhost:5173',
+        `http://${IP_ADDRESS}:5173`
+    ],
+    optionsSuccessStatus: 200,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE'
+}));
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.static('public'));
-
-const PORT = process.env.PORT;
-const SECRET = process.env.JWT_SECRET;
 
 // List of blacklisted tokens
 const invalidTokens = new Set();
@@ -125,13 +135,13 @@ const registrationValidation = [
 app.post('/registration', registrationValidation, registerUser);
 
 // API for admin registration
-app.post('/registration/admin', accessValidation, registerAdmin);
+app.post('/registration/admin', accessValidation, registrationValidation, registerAdmin);
 
 // API for delete admin
 app.delete('/delete/admin/:id', accessValidation, deleteAdmin)
 
 // API for courier registration
-app.post('/courier/registration', accessValidation, registerCourier)
+app.post('/courier/registration', accessValidation, registrationValidation, registerCourier)
 
 // API for login
 app.post('/login', login);
@@ -1026,6 +1036,6 @@ app.delete('/order/:id', accessValidation, async (req, res) => {
 });
 
 
-app.listen(PORT, () => {
-    console.log(`Listening to port http://localhost:${PORT}`);
+app.listen(PORT, '0.0.0.0', () => {
+    console.log(`Listening to port http://${IP_ADDRESS}:${PORT}`);
 })

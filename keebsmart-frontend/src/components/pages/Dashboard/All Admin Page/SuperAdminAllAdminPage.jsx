@@ -11,6 +11,8 @@ import { validateUser } from "../../../../server/userValidation";
 export default function SuperAdminAllAdminPage() {
     const [users, setUsers] = useState([]); // State to store admin users
     const [openModal, setOpenModal] = useState(false); // State to manage modal visibility
+    const [errors, setErrors] = useState([]); // State for handling errors
+    const [onShowAlert, setShowAlert] = useState(false); // State for handling alert behaviour
 
     // Fetch all users and filter out admins when the component mounts
     useEffect(() => {
@@ -52,6 +54,12 @@ export default function SuperAdminAllAdminPage() {
         });
     }
 
+    const onOpenModal = (isOpen) => {
+        setOpenModal(isOpen);
+        setShowAlert(false);
+        setErrors([]);
+    }
+
     return (
         <DashboardFragment>
             <DashboardNavbar />
@@ -62,8 +70,12 @@ export default function SuperAdminAllAdminPage() {
                     admins={users}
                     setAdminStatus={setuserStatus}
                     openModal={openModal}
-                    setOpenModal={setOpenModal}
+                    setOpenModal={onOpenModal}
                     onDeleteAdmin={onDeleteAdmin}
+                    errors={errors}
+                    setErrors={setErrors}
+                    setShowAlert={setShowAlert}
+                    onShowAlert={onShowAlert}
                 />
             </DashboardContent>
         </DashboardFragment>

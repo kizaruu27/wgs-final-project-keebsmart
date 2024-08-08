@@ -5,28 +5,29 @@ import { GoToPage } from "../../server/pageController";
 import { HiInformationCircle } from "react-icons/hi";
 import { Alert } from "flowbite-react";
 
-export default function ModalFormAddAdmin({openModal, onCloseModal}) {
+export default function ModalFormAddAdmin({openModal, onCloseModal, errors, setErrors, onShowAlert, setShowAlert}) {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [password, setPassword] = useState('');
     const [confirmationPassword, setConfirmationPassword] = useState('');
-    const [showAlert, setShowAlert] = useState(false);
+    
     const [alertMsg, setAlertMsg] = useState('');
 
     const addNewAdmin = (e) => {
         e.preventDefault();
         if (password !== confirmationPassword) {
             setShowAlert(true);
-            setAlertMsg('Password different!');
-            return;
         } 
+
         adminRegister(name, email, password, phoneNumber, (data) => {
-            // console.log(data);
             GoToPage('/super-admin', 100);
+            console.log(data);
         }, (error) => {
-            setAlertMsg(error);
-            setShowAlert(true);
+            console.log(error.map(err => err.msg));
+            setErrors(error.map(err => err.msg));
+            // setAlertMsg(error);
+            // setShowAlert(true);
         })
     }
 
@@ -37,9 +38,15 @@ export default function ModalFormAddAdmin({openModal, onCloseModal}) {
             </Modal.Header>
             <Modal.Body>
                 <div className="p-8 rounded-xl">
-                    {showAlert && 
-                        <Alert color="failure" icon={HiInformationCircle}>
-                            {alertMsg}
+                    {errors.map((err, key) => (
+                        <Alert key={key} className="mb-4" color="failure" icon={HiInformationCircle}>
+                            {err}
+                        </Alert>
+                    ))}
+
+                    { onShowAlert &&
+                        <Alert className="mb-4" color="failure" icon={HiInformationCircle}>
+                            Password different!
                         </Alert>
                     }
                     
@@ -49,8 +56,8 @@ export default function ModalFormAddAdmin({openModal, onCloseModal}) {
                             <input onChange={e => setName(e.target.value)} type="text" id="name" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" required />
                         </div>
                         <div className="mb-5">
-                            <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
-                            <input onChange={e => setEmail(e.target.value)} type="email" id="email" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" required />
+                            <label htmlFor="admin-email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Email</label>
+                            <input onChange={e => setEmail(e.target.value)} type="text" id="admin-email" className="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" required />
                         </div>
                         <div className="mb-5">
                             <label htmlFor="email" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Phone Number</label>

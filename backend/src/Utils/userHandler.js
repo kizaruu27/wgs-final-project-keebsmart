@@ -35,26 +35,13 @@ const registerAdmin = async (req, res) => {
     try {
         const {name, email, password, phoneNumber} = req.body;
         const access = req.access;
+        const errors = validationResult(req);
 
         if (access !== 'super-admin') return res.json('Only super admin can access this');
     
-        // Validate email
-        const similarEmail = await prisma.user.findFirst({
-            where: { 
-                email,
-                isDeleted: false,
-                access: 'admin'
-            }
-        });
-    
-        if (similarEmail) {
-            return res.json({
-                msg: 'Email is already used! Please use a different email!'
-            })
-        };
+        if (!errors.isEmpty()) return res.status(200).json(errors.array());
 
         const hashPassword = await bcrypt.hash(password, 10);
-    
         const newAdmin = await prisma.user.create({
             data: {
                 name, email, password: hashPassword, phoneNumber, isActive: true, access: 'admin'
@@ -75,23 +62,15 @@ const registerAdmin = async (req, res) => {
 const registerCourier = async (req, res) => {
     try {
         const {name, email, password, phoneNumber} = req.body;
+        const access = req.access;
+        const errors = validationResult(req);
+
+        if (access !== 'admin') return res.json('Only admin can access this');
     
-        // Validate email
-        const similarEmail = await prisma.user.findUnique({
-            where: {
-                email
-            }
-        });
-    
-        if (similarEmail) {
-            return res.json({
-                msg: 'Email sudah digunakan! Silahkan gunakan email yg berbeda!'
-            })
-        };
+        if (!errors.isEmpty()) return res.status(200).json(errors.array());
 
         const hashPassword = await bcrypt.hash(password, 10);
-    
-        const newAdmin = await prisma.user.create({
+        const newCourier = await prisma.user.create({
             data: {
                 name, email, password: hashPassword, phoneNumber, isActive: true, access: 'courier'
             }
@@ -99,12 +78,13 @@ const registerCourier = async (req, res) => {
 
         res.status(201);
         res.json({
-            newAdmin,
-            msg: 'Akun berhasil dibuat!'
+            newCourier,
+            msg: 'Courier successfulyy added!'
         })
     } catch (error) {
         console.log(error);
-        handleError(null, error.message, res);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
     }
 }
 

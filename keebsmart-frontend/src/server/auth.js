@@ -64,7 +64,7 @@ export const userRegister = async (name, email, password, phoneNumber, onRegiste
 };
 
 // Function to handle admin registration
-export const adminRegister = async (name, email, password, phoneNumber, onSuccess, setMsg) => {
+export const adminRegister = async (name, email, password, phoneNumber, onSuccess, onRegisterFailed) => {
     try {
         // Make a POST request to the admin registration endpoint with user details
         const response = await axios.post(`${urlEndpoint}/registration/admin`, {
@@ -78,13 +78,14 @@ export const adminRegister = async (name, email, password, phoneNumber, onSucces
         });
 
         // Check if the response status indicates a failure (e.g., not 201 Created)
-        if (response.status !== 201) {
-            setMsg(response.data.msg);
-            return;
+        if (response.status === 200) {
+            onRegisterFailed(response.data)
+        } else {
+            // Call the success callback with the response data
+            onSuccess(response.data);
+
         }
 
-        // Call the success callback with the response data
-        onSuccess(response.data);
     } catch (error) {
         // Log any errors that occur during the request
         console.log(error);
@@ -92,7 +93,7 @@ export const adminRegister = async (name, email, password, phoneNumber, onSucces
 };
 
 // Function to handle courier registration
-export const courierRegistration = async (name, email, password, phoneNumber, onSuccess, setMsg) => {
+export const courierRegistration = async (name, email, password, phoneNumber, onSuccess, onFailed) => {
     try {
         // Data to be sent in the request
         const data = { name, email, password, phoneNumber };
@@ -105,13 +106,13 @@ export const courierRegistration = async (name, email, password, phoneNumber, on
         });
 
         // Check if the response status indicates a failure (e.g., not 201 Created)
-        if (response.status !== 201) {
-            setMsg(response.data.msg);
-            return;
+        if (response.status === 200) {
+            onFailed(response.data);
+        } else {
+            // Call the success callback with the response data
+            onSuccess(response.data);
         }
 
-        // Call the success callback with the response data
-        onSuccess(response.data);
     } catch (error) {
         // Log any errors that occur during the request
         console.log(error);

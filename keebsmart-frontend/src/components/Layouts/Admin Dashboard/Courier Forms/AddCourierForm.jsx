@@ -4,28 +4,24 @@ import { useState } from "react";
 import { courierRegistration } from "../../../../server/auth";
 import { GoToPage } from "../../../../server/pageController";
 
-export default function AddCourierForm({openModal, onCloseModal}) {
+export default function AddCourierForm({openModal, onCloseModal, errors, setErrors, setShowAlert, showAlert}) {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
     const [phoneNumber, setPhoneNumber] = useState('');
     const [password, setPassword] = useState('');
     const [confirmationPassword, setConfirmationPassword] = useState('');
-    const [showAlert, setShowAlert] = useState(false);
-    const [alertMsg, setAlertMsg] = useState('');
 
     const addNewCourier = (e) => {
         e.preventDefault();
         if (password !== confirmationPassword) {
             setShowAlert(true);
-            setAlertMsg('Password different!');
-            return;
         } 
         courierRegistration(name, email, password, phoneNumber, (data) => {
             console.log(data);
             GoToPage('/admin/couriers', 100);
         }, (error) => {
-            setAlertMsg(error);
-            setShowAlert(true);
+            console.log(error);
+            setErrors(error.map(err => err.msg));
         })
     }
 
@@ -36,9 +32,16 @@ export default function AddCourierForm({openModal, onCloseModal}) {
             </Modal.Header>
             <Modal.Body>
                 <div className="p-8 rounded-xl">
-                    {showAlert && 
-                        <Alert className="my-3" color="failure" icon={HiInformationCircle}>
-                            {alertMsg}
+                    { errors.map((err, key) => (
+                            <Alert key={key} className="my-3" color="failure" icon={HiInformationCircle}>
+                                {err}
+                            </Alert>
+                        )) 
+                    }
+
+                    { showAlert && 
+                        <Alert  className="my-3" color="failure" icon={HiInformationCircle}>
+                            Password different!
                         </Alert>
                     }
                     

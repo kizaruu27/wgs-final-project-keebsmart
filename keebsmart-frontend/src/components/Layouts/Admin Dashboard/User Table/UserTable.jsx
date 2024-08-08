@@ -7,6 +7,14 @@ import { GoToPage } from "../../../../server/pageController";
 
 export default function UserTable({users, setuserStatus, access}) {
     const [openAddCourierModal, setOpenAddCourierModal] = useState(false);
+    const [errors, setErrors] = useState([]); // State for handling errors
+    const [showAlert, setShowAlert] = useState(false); // State for handling alerts rendering
+
+    const onOpenCourierModal = (isOpen) => {
+        setOpenAddCourierModal(isOpen);
+        setErrors([]);
+        setShowAlert(false);
+    }
 
     const handleReceiveMoney = (id) => {
         // update status money keep jadi received
@@ -26,7 +34,7 @@ export default function UserTable({users, setuserStatus, access}) {
             <h3 className='font-light text-gray-500 text-lg my-5'>Total: {users.length}</h3>
             {access === 'courier' &&
                 <div className="my-5">
-                    <Button onClick={() => setOpenAddCourierModal(true)} color="success">+ Add New Courier</Button>
+                    <Button onClick={() => onOpenCourierModal(true)} color="success">+ Add New Courier</Button>
                 </div>
             }
             <div className="relative bg-white overflow-x-auto sm:rounded-lg" style={{height: 450}}>
@@ -115,7 +123,7 @@ export default function UserTable({users, setuserStatus, access}) {
                     </tbody>
                 </table>
             </div>
-            <AddCourierForm openModal={openAddCourierModal} onCloseModal={() => setOpenAddCourierModal(false)} />
+            <AddCourierForm setShowAlert={setShowAlert} showAlert={showAlert} errors={errors} setErrors={setErrors} openModal={openAddCourierModal} onCloseModal={() => setOpenAddCourierModal(false)} />
         </div>
     )
 }

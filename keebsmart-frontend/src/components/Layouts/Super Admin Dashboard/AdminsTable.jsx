@@ -2,7 +2,7 @@ import { useState } from "react"
 import ModalFormAddAdmin from "../ModalFormAddAdmin"
 import DeleteModal from "../Modals/DeleteModal"
 
-export default function AdminsTable({admins, setAdminStatus, openModal, setOpenModal, onDeleteAdmin}) {
+export default function AdminsTable({admins, setAdminStatus, openModal, setOpenModal, onDeleteAdmin, errors, setErrors, onShowAlert, setShowAlert}) {
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [selectedId, setSelectedId] = useState(0);
 
@@ -65,7 +65,7 @@ export default function AdminsTable({admins, setAdminStatus, openModal, setOpenM
                     </tbody>
                 </table>
                 <DeleteModal openConfirmationModal={openDeleteModal} setOpenConfirmationModal={setOpenDeleteModal} msg='Are you sure want to delete this admin?' onClickDelete={() => deleteAdmin(selectedId)} />
-                <ModalFormAddAdmin openModal={openModal} onCloseModal={() => setOpenModal(false)} />
+                <ModalFormAddAdmin setShowAlert={setShowAlert} onShowAlert={onShowAlert} errors={errors} setErrors={setErrors} openModal={openModal} onCloseModal={() => setOpenModal(false)} />
             </div>
         </div>
     )

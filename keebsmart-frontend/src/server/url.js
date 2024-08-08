@@ -8,5 +8,5 @@ export const token = encryptedToken ? CryptoJS.AES.decrypt(encryptedToken, 'WOWO
 export const saveToken = (token) => {
     const encryptedToken = CryptoJS.AES.encrypt(token, 'WOWOWO123').toString();
     // localStorage.setItem('token', encryptedToken); 
-    Cookies.set('token', encryptedToken, {expires: 1, secure: true})
+    Cookies.set('token', encryptedToken, {expires: 1, secure: true, sameSite: 'None', path: '/'})
 }
