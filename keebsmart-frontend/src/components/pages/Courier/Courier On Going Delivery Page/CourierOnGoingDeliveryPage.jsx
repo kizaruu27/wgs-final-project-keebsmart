@@ -7,6 +7,7 @@ import { getShipments } from "../../../../server/shipmentController";
 import ShipmentTable from "../../../Layouts/Courier/All Shipment Table/ShipmentTable";
 import { convertCurrency } from "../../../../server/currency";
 import { validateUser } from "../../../../server/userValidation";
+import CourierOnGoingStatisticSection from "../../../Layouts/Courier/Sections/CourierOnGoingStatisticSection";
 
 export default function CourierOnGoingDeliveryPage() {
     // State variables to manage shipment data and statistics
@@ -70,25 +71,11 @@ export default function CourierOnGoingDeliveryPage() {
             <DashboardCourierSideMenu />
             <DashboardContent>
                 {/* Dashboard statistics grid */}
-                <div className="bg-white rounded-xl shadow-md grid grid-cols-3 gap-4 mb-4 p-5">
-                    {/* Must Receive Money */}
-                    <div className="bg-yellow-300 text-white p-5 text-center rounded-xl">
-                        <h1 className="font-semibold text-2xl">Must Receive Money</h1>
-                        <p className="mt-2 text-4xl">{convertCurrency(mustReceiveMoney)}</p>
-                    </div>
-                    
-                    {/* Shipments Picked Up */}
-                    <div className="bg-blue-500 text-white p-5 text-center rounded-xl">
-                        <h1 className="font-semibold text-2xl">Shipments Picked Up</h1>
-                        <p className="mt-2 text-5xl">{totalPickedUpShipments}</p>
-                    </div>
-                    
-                    {/* On Delivery Shipments */}
-                    <div className="bg-blue-500 text-white p-5 text-center rounded-xl">
-                        <h1 className="font-semibold text-2xl">On Delivery Shipments</h1>
-                        <p className="mt-2 text-5xl">{totalOnDeliveryShipments}</p>
-                    </div>
-                </div>
+                <CourierOnGoingStatisticSection 
+                    mustReceiveMoney={mustReceiveMoney} 
+                    totalPickedUpShipments={totalPickedUpShipments}
+                    totalOnDeliveryShipments={totalOnDeliveryShipments}
+                />
                 
                 {/* Display the table of ongoing deliveries */}
                 <ShipmentTable shipments={shipments} title='On Going Delivery' />

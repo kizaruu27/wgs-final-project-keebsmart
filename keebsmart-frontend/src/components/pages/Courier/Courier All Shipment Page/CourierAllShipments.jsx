@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { getShipments } from "../../../../server/shipmentController";
 import ShipmentTable from "../../../Layouts/Courier/All Shipment Table/ShipmentTable";
 import { validateUser } from "../../../../server/userValidation";
+import CourierStatisticSection from "../../../Layouts/Courier/Sections/CourierStatisticSection";
 
 export default function CourierAllShipments() {
     // State to store the list of shipments
@@ -56,20 +57,11 @@ export default function CourierAllShipments() {
             <DashboardCourierSideMenu />
             <DashboardContent>
                 {/* Dashboard statistics section */}
-                <div className="bg-white rounded-xl shadow-md grid grid-cols-3 gap-4 mb-4 p-5">
-                    <div className="bg-blue-500 text-white p-5 text-center rounded-xl">
-                        <h1 className="font-semibold text-2xl">On Delivery</h1>
-                        <p className="mt-2 text-4xl">{totalOnDelivery}</p>
-                    </div>
-                    <div className="bg-red-500 text-white p-5 text-center rounded-xl">
-                        <h1 className="font-semibold text-2xl">Canceled</h1>
-                        <p className="mt-2 text-5xl">{totalCanceled}</p>
-                    </div>
-                    <div className="bg-green-500 text-white p-5 text-center rounded-xl">
-                        <h1 className="font-semibold text-2xl">Finished</h1>
-                        <p className="mt-2 text-5xl">{totalFinished}</p>
-                    </div>
-                </div>
+                <CourierStatisticSection 
+                    totalOnDelivery={totalOnDelivery}
+                    totalCanceled={totalCanceled}
+                    totalFinished={totalFinished}
+                />
                 {/* Render the ShipmentTable component with the fetched shipments */}
                 <ShipmentTable shipments={shipments} title='My Shipments' />
             </DashboardContent>
