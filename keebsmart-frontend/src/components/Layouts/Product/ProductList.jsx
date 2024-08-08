@@ -8,6 +8,7 @@ export default function ProductList({ products }) {
             {products.map((item, key) => (
                 // Iterate over the products array and render a FeaturedProductItem for each product
                 <FeaturedProductItem 
+                    productItem={item.productItem}
                     key={key} // Unique key for each item in the list
                     id={item.id} // Product ID
                     productName={item.productName} // Product name

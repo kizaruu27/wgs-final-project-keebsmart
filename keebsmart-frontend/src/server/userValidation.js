@@ -1,6 +1,7 @@
 import axios from "axios"; // Import axios for making HTTP requests
 import { urlEndpoint, token } from "./url"; // Import constants for URL endpoint and token
 import { GoToPage } from "./pageController"; // Import function to handle page navigation
+import { userLogout } from "./auth";
 
 // Config object with headers including authorization token
 const config = {
@@ -35,6 +36,13 @@ export const validateUser = async (access) => {
                 default:
                     break; // Do nothing if access level does not match any case
             }
+        }
+
+        if (!response.data.user.isActive) {
+            console.log('User is not active');
+            userLogout(() => {
+                GoToPage('/login', 50);
+            })
         }
     } catch (error) {
         console.log(error); // Log any errors that occur during the request

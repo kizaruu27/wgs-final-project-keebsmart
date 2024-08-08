@@ -10,7 +10,7 @@ import HomePageGallery from '../Layouts/HomePageGallery'; // Importing HomePageG
 import Navbar from '../Layouts/Navbar'; // Importing Navbar component
 import Footer from '../Layouts/Footer'; // Importing Footer component
 import { useEffect, useState } from 'react'; // Importing useState and useEffect hooks from React
-import { getKeyboardsData, getKeycapsData, getSwitchesData } from '../../server/productController'; // Importing product data fetching functions from the server
+import { getKeyboardsForCustomer, getKeycapsForCustomer, getSwitchesForCustomer } from '../../server/productController'; // Importing product data fetching functions from the server
 import { validateUser } from '../../server/userValidation'; // Importing validateUser function from the server
 
 export default function HomePage() {
@@ -24,7 +24,7 @@ export default function HomePage() {
     // Fetching switch products from backend
     useEffect(() => {
         const fetchSwitchData = async () => {
-            await getSwitchesData(setSwitchData);
+            await getSwitchesForCustomer(setSwitchData);
         };
         
         fetchSwitchData();
@@ -33,7 +33,9 @@ export default function HomePage() {
     // Fetching keycap products from backend
     useEffect(() => {
         const fetchKeycapsData = async () => {
-            await getKeycapsData(setKeycapsData);
+            await getKeycapsForCustomer((data) => {
+                setKeycapsData(data);
+            });
         };
         
         fetchKeycapsData();
@@ -41,11 +43,9 @@ export default function HomePage() {
 
     // Fetching keyboard products from backend
     useEffect(() => {
-        const fetchKeyboardsData = async () => {
-            await getKeyboardsData(setKeyboardsData);
-        };
-        
-        fetchKeyboardsData();
+        getKeyboardsForCustomer((data) => {
+            setKeyboardsData(data);
+        })
     },[]);
 
     // Validating user access
@@ -81,6 +81,7 @@ export default function HomePage() {
                             imgMarginY='mt-3' 
                             img={item.productImage.imagePreviewUrl} 
                             subImg={item.productImage.imageUrls[0]} 
+                            productItem={item.productItem}
                         />
                     ) : null
                 ))}
@@ -104,6 +105,7 @@ export default function HomePage() {
                             imgMarginY='mt-3' 
                             img={item.productImage.imagePreviewUrl} 
                             subImg={item.productImage.imageUrls[0]} 
+                            productItem={item.productItem}
                         />
                     ) : null
                 ))}
@@ -127,6 +129,7 @@ export default function HomePage() {
                             imgMarginY='mt-3' 
                             img={item.productImage.imagePreviewUrl} 
                             subImg={item.productImage.imageUrls[0]} 
+                            productItem={item.productItem}
                         />
                     ) : null
                 ))}

@@ -1,7 +1,7 @@
 import CryptoJS from "crypto-js";
 import Cookies from "js-cookie";
 
-export const urlEndpoint = 'http://localhost:3000';
+export const urlEndpoint = import.meta.env.VITE_API_URL;
 const encryptedToken = Cookies.get('token');
 export const token = encryptedToken ? CryptoJS.AES.decrypt(encryptedToken, 'WOWOWO123').toString(CryptoJS.enc.Utf8) : null;
 

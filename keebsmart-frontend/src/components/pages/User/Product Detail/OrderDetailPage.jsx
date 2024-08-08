@@ -93,6 +93,7 @@ export default function OrderDetailPage() {
 
                         {/* Order timeline*/}
                         <OrderDetailTimelineSection 
+                            id={id}
                             address={address}
                             order={order}
                             latestStatus={latestStatus}

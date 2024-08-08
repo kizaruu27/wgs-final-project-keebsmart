@@ -1,7 +1,7 @@
 import { GoToPage } from "../../../server/pageController";
 import OrderTimeline from "../Admin Dashboard/Order Detail/OrderTimeline";
 
-export default function OrderDetailTimelineSection({address, order, latestStatus, shipping, shippingId, paymentMethod, currentStatus, courier, access, setOrderStatus, statusColor, setOpenCancelOrder}) {
+export default function OrderDetailTimelineSection({id, address, order, latestStatus, shipping, shippingId, paymentMethod, currentStatus, courier, access, setOrderStatus, statusColor, setOpenCancelOrder}) {
     return(
         <div className="mt-6 grow sm:mt-8 lg:mt-0">
             <div className="p-5 shadow-md rounded-xl my-5">
