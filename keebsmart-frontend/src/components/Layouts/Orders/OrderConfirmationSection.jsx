@@ -9,7 +9,7 @@ export default function OrderConfirmationSection({orderId, date, paymentMethod, 
                     <div className="space-y-4 sm:space-y-2 rounded-lg border border-gray-100 bg-gray-50 p-6 dark:border-gray-700 dark:bg-gray-800 mb-6 md:mb-8">
                         <dl className="sm:flex items-center justify-between gap-4">
                             <dt className="font-normal mb-1 sm:mb-0 text-gray-500 dark:text-gray-400">Date</dt>
-                            <dd className="font-medium text-gray-900 dark:text-white sm:text-end">{new Date(date).toLocaleDateString()}</dd>
+                            <dd className="font-medium text-gray-900 dark:text-white sm:text-end">{new Date(date).toDateString()}</dd>
                         </dl>
                         <dl className="sm:flex items-center justify-between gap-4">
                             <dt className="font-normal mb-1 sm:mb-0 text-gray-500 dark:text-gray-400">Payment Method</dt>

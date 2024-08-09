@@ -70,7 +70,7 @@ export default function ProductCategoryDetail({category, categoryId, setSelected
     // Fetch sales statistic
     useEffect(() => {
         getSalesStatistic((stat) => {
-            const statistic = stat.data.filter(item => item.category.categoryName === category);
+            const statistic = stat.data.filter(item => item.category.categoryName === category).sort((a, b) => b.soldTotal - a.soldTotal).splice(0, 5);
             console.log(category);
             setChartLabel(statistic.map(item => item.productName));
             setChartSeries(statistic.map(item => item.soldTotal));

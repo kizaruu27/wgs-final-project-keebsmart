@@ -38,12 +38,12 @@ export default function AdminDashboardPage() {
     useEffect(() => {
         // Fetch sales statistics data and process it
         getSalesStatistic((stat) => {
-            const allProductStatistic = stat.data;
+            const allProductStatistic = stat.data.sort((a, b) => b.soldTotal - a.soldTotal).splice(0, 5);
             
             // Separate statistics by product category
-            const keyboardStatistic = stat.data.filter(item => item.category.categoryName === 'Keyboards');
-            const keycapsStatistic = stat.data.filter(item => item.category.categoryName === 'Keycaps');
-            const switchStatistic = stat.data.filter(item => item.category.categoryName === 'Switches');
+            const keyboardStatistic = stat.data.filter(item => item.category.categoryName === 'Keyboards').sort((a, b) => b.soldTotal - a.soldTotal).splice(0, 5);
+            const keycapsStatistic = stat.data.filter(item => item.category.categoryName === 'Keycaps').sort((a, b) => b.soldTotal - a.soldTotal).splice(0, 5);
+            const switchStatistic = stat.data.filter(item => item.category.categoryName === 'Switches').sort((a, b) => b.soldTotal - a.soldTotal).splice(0, 5);
 
             // Set product statistics for the charts
             setProductStat(allProductStatistic.map(item => item.productName));
