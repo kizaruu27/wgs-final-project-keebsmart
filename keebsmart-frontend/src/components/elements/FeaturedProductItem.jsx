@@ -1,5 +1,6 @@
 import { convertCurrency } from "../../server/currency"; // Importing currency conversion function
 import { GoToPage } from "../../server/pageController"; // Importing page redirection function
+import { urlEndpoint } from "../../server/url";
 
 export default function FeaturedProductItem({ productName, img, price, id, subImg, productItem }) {
     const isEmpty = productItem.every(item => item.qty <= 0);
@@ -17,13 +18,13 @@ export default function FeaturedProductItem({ productName, img, price, id, subIm
             <div className="relative mx-3 mt-3 flex h-60 overflow-hidden rounded-xl">
                 <img
                     className=" peer absolute top-0 right-0 h-full w-full object-cover"
-                    src={img}
+                    src={`${urlEndpoint}/${img}`}
                     alt="product image" // Main product image
                 />
                 { !isEmpty &&
                     <img
                         className="peer absolute top-0 -right-96 h-full w-full object-cover transition-all delay-100 duration-1000 hover:right-0 peer-hover:right-0"
-                        src={subImg}
+                        src={`${urlEndpoint}/${subImg}`}
                         alt="product image" // Secondary image that slides in on hover
                     />
                 }

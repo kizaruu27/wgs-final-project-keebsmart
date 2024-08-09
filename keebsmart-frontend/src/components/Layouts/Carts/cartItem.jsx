@@ -3,6 +3,7 @@ import { deleteCart, getUserCart, updateUserCart } from "../../../server/cartCon
 import { GoToPage } from "../../../server/pageController";
 import { getProductItemDetail } from "../../../server/productController";
 import { convertCurrency } from "../../../server/currency";
+import { urlEndpoint } from "../../../server/url";
 
 export default function CartItem({cart, setCart, id, productItemId, image, qty, price, productName, variationValue, onChecked, checked, handleCheckbox}) {
     // State to manage the current quantity of the item in the cart
@@ -112,7 +113,7 @@ export default function CartItem({cart, setCart, id, productItemId, image, qty, 
                 />
                 {/* Product image */}
                 <a href="#" className="shrink-0 md:order-1">
-                    <img className="rounded-xl h-20 w-20 dark:hidden" src={image} alt="Product image" />
+                    <img className="rounded-xl h-20 w-20 dark:hidden" src={`${urlEndpoint}/${image}`} alt="Product image" />
                 </a>
 
                 {/* Quantity and price controls */}

@@ -40,17 +40,20 @@ export default function OrderDetailPage() {
     // Fetch order details when component mounts or `id` changes
     useEffect(() => {
         getOrderDetail(id, (data) => {
+            const allStatus = data.currentStatus.filter(item => item.status.status !== 'Cash Payment Accepted' && item.status.status !== 'Order Completed');
+            const lastStatus = allStatus.map(item => item.status.status)[allStatus.map(item => item.status.status).length - 1];
+
             // Log the latest order status
-            console.log(data.currentStatus.map(item => item.status.status)[data.currentStatus.map(item => item.status.status).length - 1]);
+            console.log(allStatus);
 
             // Update state with fetched order data
             setOrderItem(data.carts);
             setOrder(data);
             setOrderId(data.orderId);
-            setCurrentStatus(data.currentStatus);
+            setCurrentStatus(allStatus);
             setPaymentMethod(data.paymentMethod.paymentType);
             setAddress(`${data.address.street}, ${data.address.kelurahan}, ${data.address.kecamatan}, ${data.address.city}, ${data.address.province}, ${data.address.postCode}`);
-            setLatestStatus(data.currentStatus.map(item => item.status.status)[data.currentStatus.map(item => item.status.status).length - 1] === 'Order Completed' ? 'Finish' : data.currentStatus.map(item => item.status.status)[data.currentStatus.map(item => item.status.status).length - 1]);
+            setLatestStatus(lastStatus);
             setShipping(data.shipping);
             setCourier(data.shipping.user);
             setShippingId(data.shippingId);

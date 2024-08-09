@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { urlEndpoint } from "../../../server/url";
 
 export function ProductImageGrid({ productImages, imagePreview }) {
   // State to store the currently selected image
@@ -13,7 +14,7 @@ export function ProductImageGrid({ productImages, imagePreview }) {
     <div>
       {/* Display the currently selected image */}
       <img
-        src={selectedImage}
+        src={`${urlEndpoint}/${selectedImage}`}
         alt="Product preview"
         className="rounded-xl mx-auto" // Styles for rounded corners and center alignment
         style={{ width: 650 }} // Inline style to set width of the main image
@@ -25,7 +26,7 @@ export function ProductImageGrid({ productImages, imagePreview }) {
             {productImages.map((item, key) => (
               <img
                 key={key} // Unique key for each image in the list
-                src={`${item}`} // URL of the image
+                src={`${urlEndpoint}/${item}`} // URL of the image
                 className="rounded-xl cursor-pointer hover:opacity-50" // Styles for thumbnails: rounded corners, pointer cursor, and hover effect
                 style={{ width: 150 }} // Inline style to set width of thumbnails
                 onClick={() => setSelectedImage(item)} // Update the selected image on thumbnail click

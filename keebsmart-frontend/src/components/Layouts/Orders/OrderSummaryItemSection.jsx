@@ -1,4 +1,5 @@
 import { convertCurrency } from "../../../server/currency"
+import { urlEndpoint } from "../../../server/url"
 
 export default function OrderSummaryItemSection({carts}) {
     return (
@@ -10,7 +11,7 @@ export default function OrderSummaryItemSection({carts}) {
                             <td className="whitespace-nowrap py-4 md:w-[384px]">
                                 <div className="flex items-center gap-4">
                                     <a href="#" className="flex items-center aspect-square w-10 h-10 shrink-0">
-                                        <img className="h-auto w-full max-h-full rounded-lg dark:hidden" src={item.productItem.imageURLs[0]} alt="imac image" />
+                                        <img className="h-auto w-full max-h-full rounded-lg dark:hidden" src={`${urlEndpoint}/${item.productItem.imageURLs[0]}`} alt="imac image" />
                                     </a>
                                     <p className="text-wrap">
                                         {item.productItem.product.productName} - {item.productItem.variationOption.variationValue}

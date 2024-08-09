@@ -28,7 +28,8 @@ const IP_ADDRESS = process.env.IP_ADDRESS;
 app.use(cors({
     origin: [
         `http://localhost:${PORT}`, 
-        `http:${IP_ADDRESS}:${PORT}`, 
+        `http:${IP_ADDRESS}:${PORT}`,
+        `http://10.10.101.136:${PORT}`,
         'http://localhost:5173',
         `http://${IP_ADDRESS}:5173`
     ],
@@ -75,7 +76,7 @@ const upload = multer({ storage })
 app.post('/product/images', upload.array('images', 20), (req, res) => {
     try {
         const { nama, role } = req.body;
-        const imageUrls = req.files.map(file => `http://localhost:${PORT}/images/${file.filename}`);
+        const imageUrls = req.files.map(file => `/images/${file.filename}`);
         res.status(200).json({
             nama, role,
             message: 'Images uploaded successfully',
@@ -223,8 +224,8 @@ app.post('/product', accessValidation, upload.fields([
     async (req, res) => {
         try {
             const { inventoryId, productName, description, brand, categoryId, specs } = req.body;
-            const imagePreviewUrl = `http://localhost:${PORT}/images/${req.files['imagePreview'][0].filename}`;
-            const imageUrls = req.files['images'].map(file => `http://localhost:${PORT}/images/${file.filename}`);
+            const imagePreviewUrl = `/images/${req.files['imagePreview'][0].filename}`;
+            const imageUrls = req.files['images'].map(file => `/images/${file.filename}`);
 
             const newProduct = await prisma.products.create({
                 data: {
@@ -265,7 +266,7 @@ app.post('/product', accessValidation, upload.fields([
 // API for add product item
 app.post('/product/item/add', accessValidation, upload.array('images', 10), async (req, res) => {
     try {
-        const imageURLs = req.files.map(file => `http://localhost:${PORT}/images/${file.filename}`);
+        const imageURLs = req.files.map(file => `/images/${file.filename}`);
         const { productId, price, qty, status, manufacturer, inventoryItemId } = req.body;
 
         // get inventory item
@@ -388,8 +389,8 @@ app.put('/product/update/:id', accessValidation, upload.fields([
         try {
             const { id } = req.params;
             const { productName, description, brand, categoryId } = req.body;
-            const imagePreviewUrl = `http://localhost:${PORT}/images/${req.files['imagePreview'][0].filename}`;
-            const imageUrls = req.files['images'].map(file => `http://localhost:${PORT}/images/${file.filename}`);
+            const imagePreviewUrl = `http://${IP_ADDRESS}:${PORT}/images/${req.files['imagePreview'][0].filename}`;
+            const imageUrls = req.files['images'].map(file => `/images/${file.filename}`);
 
             const updatedProduct = await prisma.products.update({
                 data: {
@@ -430,7 +431,7 @@ app.put('/product/update/:id', accessValidation, upload.fields([
 app.put('/product/item/update/:id', accessValidation, upload.array('images', 10), async (req, res) => {
     try {
         const { id } = req.params;
-        const imageURLs = req.files.map(file => `http://localhost:${PORT}/images/${file.filename}`);
+        const imageURLs = req.files.map(file => `/images/${file.filename}`);
         const { price, qty, status, manufacturer } = req.body;
 
         // current product item
@@ -1037,5 +1038,5 @@ app.delete('/order/:id', accessValidation, async (req, res) => {
 
 
 app.listen(PORT, '0.0.0.0', () => {
-    console.log(`Listening to port http://${IP_ADDRESS}:${PORT}`);
+    console.log(`Listening to port ${PORT}`);
 })

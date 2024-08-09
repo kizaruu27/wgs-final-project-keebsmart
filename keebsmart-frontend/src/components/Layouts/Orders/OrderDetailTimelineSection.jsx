@@ -1,7 +1,12 @@
+import { useEffect } from "react";
 import { GoToPage } from "../../../server/pageController";
 import OrderTimeline from "../Admin Dashboard/Order Detail/OrderTimeline";
 
 export default function OrderDetailTimelineSection({id, address, order, latestStatus, shipping, shippingId, paymentMethod, currentStatus, courier, access, setOrderStatus, statusColor, setOpenCancelOrder}) {
+    useEffect(() => {
+        console.log(latestStatus);
+    }, []) 
+
     return(
         <div className="mt-6 grow sm:mt-8 lg:mt-0">
             <div className="p-5 shadow-md rounded-xl my-5">
@@ -23,14 +28,14 @@ export default function OrderDetailTimelineSection({id, address, order, latestSt
                 }
 
                 { latestStatus !== 'Checkout Success' &&
-                    <p className={`${statusColor} text-sm font-semibold rounded-xl text-center ${latestStatus === 'Waiting Courier For Pick Up' ? 'w-56' : 'w-40'}  p-1 text-nowrap`}>{latestStatus === 'Order Completed' || latestStatus === 'Cash Payment Accepted' ? 'Finish' : latestStatus}</p>
+                    <p className={`${statusColor} text-sm font-semibold rounded-xl text-center ${latestStatus === 'Waiting Courier For Pick Up' ? 'w-56' : 'w-40'}  p-1 text-nowrap`}>{latestStatus}</p>
                 }
             </div>
             
             { shipping && 
             <div>
                 <div className="p-5 shadow-md rounded-xl my-5">
-                    <p className="bg-green-500 text-white px-2 py-1 w-24 text-center rounded-xl my-3 text-nowrap text-sm font-semibold">{latestStatus === 'Delivered' || latestStatus === 'Finish' || latestStatus === 'Order Completed' || latestStatus === 'Cash Payment Accepted' ? 'Delivered' : 'On Delivery'}</p>
+                    <p className="bg-green-500 text-white px-2 py-1 w-24 text-center rounded-xl my-3 text-nowrap text-sm font-semibold">{latestStatus === 'Delivered' || latestStatus === 'Finish' ? 'Delivered' : 'On Delivery'}</p>
                     <p className="text-xl my-2">{shipping.shipmentName}</p>
                     <p className="text-md font-semibold mb-3">Shipment ID: <span className="text-md text-gray-500 font-normal">{shippingId !== null && shippingId.replace(/-/g, '').toUpperCase()}</span></p>
                     <p className="text-md font-semibold mb-3">Courier: <span className="text-md text-gray-500 font-normal">{courier.name}</span></p>

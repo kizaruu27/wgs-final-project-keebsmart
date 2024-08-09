@@ -1,5 +1,6 @@
 import { Tooltip } from "flowbite-react"
 import { GoToPage } from "../../../../server/pageController"
+import { urlEndpoint } from "../../../../server/url"
 
 export default function AllProductTable({products, activateProduct, setDelete, setEdit}) {
     return (
@@ -29,7 +30,7 @@ export default function AllProductTable({products, activateProduct, setDelete, s
                 {products.map((product, key) => (
                     <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600" key={key}>
                         <td className="px-6 py-4">
-                            <img src={product.productImage.imagePreviewUrl} alt="" style={{width: 100}} />
+                            <img src={`${urlEndpoint}/${product.productImage.imagePreviewUrl}`} alt="" style={{width: 100}} />
                         </td>
                         <th scope="row" onClick={() => GoToPage(`/admin/product/${product.id}`)} className="px-6 py-4 font-medium text-black tracking-wider dark:text-white cursor-pointer hover:underline">
                             {product.productName}

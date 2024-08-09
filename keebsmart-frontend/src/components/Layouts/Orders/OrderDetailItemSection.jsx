@@ -1,4 +1,5 @@
 import { convertCurrency } from "../../../server/currency"
+import { urlEndpoint } from "../../../server/url"
 
 export default function OrderDetailItemSection({orderItem, paymentMethod, order}) {
     return (
@@ -8,7 +9,7 @@ export default function OrderDetailItemSection({orderItem, paymentMethod, order}
                     {/* product name and image */}
                     <div className="flex items-center gap-6">
                         <a href="#" className="h-14 w-14 shrink-0">
-                            <img className="h-full w-full dark:hidden rounded-xl" src={item.productItem.imageURLs[0]} alt="imac image" />
+                            <img className="h-full w-full dark:hidden rounded-xl" src={`${urlEndpoint}/${item.productItem.imageURLs[0]}`} alt="imac image" />
                         </a>
                         <p className="min-w-0 flex-1 font-medium text-gray-900 dark:text-white">{item.productItem.product.productName} - {item.productItem.variationOption.variationValue}</p>
                     </div>

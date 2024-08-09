@@ -1,4 +1,5 @@
 import { convertCurrency } from "../../../../server/currency"
+import { urlEndpoint } from "../../../../server/url"
 import SetOrderButton from "../../../elements/SetOrderButton"
 
 export default function OrderItemSection({carts, order, paymentMethod, canCancel, onCancelOrder, status, id}) {
@@ -10,7 +11,7 @@ export default function OrderItemSection({carts, order, paymentMethod, canCancel
                     {carts.map((cart, key) => (
                         <div key={key} className="border rounded-xl shadow-md p-5 grid grid-cols-3">
                             <div className="p-5">
-                                <img src={cart.productItem.imageURLs[0]} alt="" className="rounded-xl" />
+                                <img src={`${urlEndpoint}/${cart.productItem.imageURLs[0]}`} alt="" className="rounded-xl" />
                             </div>
                             <div className="flex flex-col gap-2 justify-center col-span-2">
                                 <p className="text-lg font-semibold">{cart.productItem.product.productName}</p>

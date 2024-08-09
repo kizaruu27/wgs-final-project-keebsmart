@@ -1,4 +1,5 @@
 import { Label, FileInput } from "flowbite-react"
+import { urlEndpoint } from "../../../../server/url"
 
 export default function EditProductFormSection({
     postEditedProductItem,
@@ -49,7 +50,7 @@ export default function EditProductFormSection({
                     <p className="my-2">Product Item Image</p>
                     <div className="my-5 grid grid-cols-3 gap-3">
                         {imageURLs.map((image, key) => (
-                            <img key={key} src={image} className="h-full" />
+                            <img key={key} src={`${urlEndpoint}/${image}`} className="h-full" />
                         ))}
                     </div>
                     <Label

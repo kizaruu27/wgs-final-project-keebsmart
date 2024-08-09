@@ -1,5 +1,6 @@
 import { Tooltip } from "flowbite-react";
 import ProductCategorySalesChart from "../../../Charts Section/ProductCategorySalesChart";
+import { urlEndpoint } from "../../../../../server/url";
 
 export default function ProductInformationSection({product, image, category, chartLabel, chartSeries, productItems, productIsActive, onSetActive}) {
 
@@ -10,7 +11,7 @@ export default function ProductInformationSection({product, image, category, cha
                 <p className="text-2xl font-medium">{product.productName}</p>
             </div>
             <div className="row-span-2 bg-white p-5 shadow-md rounded-xl">
-                <img src={image} alt="" style={{width: 180}} className="mx-auto my-5" />
+                <img src={`${urlEndpoint}/${image}`} alt="" style={{width: 180}} className="mx-auto my-5" />
             </div>
             <div className="grid grid-cols-2 gap-4 h-28">
                 <div className="flex flex-col gap-2 p-5 bg-white h-28 rounded-xl shadow-md">

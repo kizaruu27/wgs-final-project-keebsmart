@@ -2,6 +2,7 @@ import { useState } from "react";
 import AddProductVariationModal from "../../Product Forms/AddProductVariationModal";
 import { GoToPage } from "../../../../../server/pageController";
 import { convertCurrency } from "../../../../../server/currency";
+import { urlEndpoint } from "../../../../../server/url";
 
 export default function ProductVariationSection({productItems, setEdit, setDelete}) {
     const [openAddVariationModal, setOpenAddVariationModal] = useState(false);
@@ -52,7 +53,7 @@ export default function ProductVariationSection({productItems, setEdit, setDelet
                                     {item.variationOption.variationValue}
                                 </th>
                                 <td className="px-6 py-4">
-                                    <img src={item.imageURLs[0]} alt="" />
+                                    <img src={`${urlEndpoint}/${item.imageURLs[0]}`} alt="" />
                                 </td>
                                 <td className="px-6 py-4 text-wrap">
                                     {item.unitId}

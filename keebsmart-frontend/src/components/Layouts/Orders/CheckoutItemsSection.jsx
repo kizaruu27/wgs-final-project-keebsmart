@@ -1,5 +1,6 @@
 import { convertCurrency } from "../../../server/currency";
 import { Spinner } from "flowbite-react";
+import { urlEndpoint } from "../../../server/url";
 
 export default function CheckoutItemsSection({carts, totalPrice, isLoading}) {
     return (
@@ -10,7 +11,7 @@ export default function CheckoutItemsSection({carts, totalPrice, isLoading}) {
                     <div key={key} className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
                         <div className="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0"> 
                             <a href="#" className="shrink-0 md:order-1">
-                                <img className="rounded-xl h-20 w-20 dark:hidden" src={item.productItem.imageURLs[0]} alt="imac image" />
+                                <img className="rounded-xl h-20 w-20 dark:hidden" src={`${urlEndpoint}/${item.productItem.imageURLs[0]}`} alt="imac image" />
                             </a>
 
                             <div className="flex items-center justify-between md:order-3 md:justify-end">
