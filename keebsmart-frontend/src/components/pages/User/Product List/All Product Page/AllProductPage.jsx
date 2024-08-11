@@ -6,6 +6,7 @@ import ProductList from "../../../../Layouts/Product/ProductList"; // Import the
 import { validateUser } from "../../../../../server/userValidation"; // Import user validation function
 import { Dropdown } from "flowbite-react"; // Import Dropdown component from Flowbite
 import Footer from "../../../../Layouts/Footer"; // Import the Footer component
+import { Helmet } from "react-helmet";
 
 // Main functional component for the AllProductPage
 export default function AllProductPage() {
@@ -34,6 +35,9 @@ export default function AllProductPage() {
 
     return (
         <div className="mx-auto"> {/* Container for the page */}
+            <Helmet>
+                <title>All Products | Keebsmart</title>
+            </Helmet>
             <Navbar /> {/* Render the Navbar component */}
             <ProductListHeader 
                 category='Products' 

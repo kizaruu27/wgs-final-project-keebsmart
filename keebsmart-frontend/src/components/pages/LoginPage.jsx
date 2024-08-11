@@ -8,6 +8,7 @@ import { GoToPage } from "../../server/pageController"; // Importing GoToPage fu
 import { useEffect, useState } from "react"; // Importing useEffect and useState hooks from React
 import AlertItem from "../elements/Alert"; // Importing AlertItem element
 import { jwtDecode } from "jwt-decode"; // Importing jwtDecode function
+import { Helmet } from "react-helmet";
 
 export default function LoginPage() {
     // State hooks for managing email and password input values
@@ -66,6 +67,9 @@ export default function LoginPage() {
 
     return (
         <LoginRegister>
+            <Helmet>
+                <title>Login | Keebsmart</title>
+            </Helmet>
             <LoginRegisterCover src="https://res.cloudinary.com/kineticlabs/image/upload/q_auto/c_fit,w_3500/f_auto/v1/api-images/products/yunzii-al66-keyboard/DSC00796_vmnqhp" />
             <LoginLayout>
                 <Logo textStyle='text-4xl text-center my-20' />

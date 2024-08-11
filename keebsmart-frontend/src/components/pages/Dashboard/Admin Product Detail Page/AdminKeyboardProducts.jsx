@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { getKeyboardsData } from "../../../../server/productController";
 import ProductCategoryDetail from "../../../Layouts/Admin Dashboard/Product Detail/Product Category/ProductCategoryDetail";
 import { validateUser } from "../../../../server/userValidation";
+import { Helmet } from "react-helmet";
 
 export default function AdminKeyboardProducts() {
     // State to store the list of keyboard products
@@ -33,6 +34,10 @@ export default function AdminKeyboardProducts() {
 
     return (
         <DashboardFragment>
+            <Helmet>
+                <title>All Keyboards List | Keebsmart</title>
+            </Helmet>
+
             {/* Navbar component for the dashboard */}
             <DashboardNavbar />
             

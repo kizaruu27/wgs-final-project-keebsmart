@@ -7,6 +7,7 @@ import { convertCurrency } from "../../../../server/currency";
 import { validateUser } from "../../../../server/userValidation";
 import Footer from "../../../Layouts/Footer";
 import UserOrderList from "../../../Layouts/Orders/UserOrderList";
+import { Helmet } from "react-helmet";
 
 export default function AllUserOrdersPage() {
     // State hooks for storing orders, managing cancel order modal visibility, and storing selected canceled order ID
@@ -50,6 +51,9 @@ export default function AllUserOrdersPage() {
 
     return (
         <div className="mx-auto">
+            <Helmet>
+                <title>My Orders | Keebsmart</title>
+            </Helmet>
             <Navbar />
             <section className="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
                 <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
@@ -57,7 +61,7 @@ export default function AllUserOrdersPage() {
                         <div className="gap-4 sm:flex sm:items-center sm:justify-between">
                             <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">My orders</h2>
                         </div>
-                        <UserOrderList orders={orders} changeStatusColorForTable={changeStatusColorForTable} currentStatus={currentStatus}/>
+                        <UserOrderList setCanceledOrder={setCanceledOrder} orders={orders} changeStatusColorForTable={changeStatusColorForTable} currentStatus={currentStatus}/>
                     </div>
                 </div>
             </section>

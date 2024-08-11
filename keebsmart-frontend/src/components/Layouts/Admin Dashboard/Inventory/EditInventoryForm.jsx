@@ -15,6 +15,7 @@ import AlertItem from "../../../elements/Alert";
 import EditInventoryFragment from "../../../fragments/Admin/EditInventoryFragment";
 import InventoryInformationSection from "./InventoryInformationSection";
 import EditInventoryItemSection from "./EditInventoryItemSection";
+import { Helmet } from "react-helmet";
 
 export default function EditInventoryForm() {
     const { id } = useParams(); // Extract the inventory item ID from URL parameters
@@ -155,6 +156,9 @@ export default function EditInventoryForm() {
 
     return (
         <DashboardFragment>
+            <Helmet>
+                <title>Edit Inventory {productName} | Keebsmart</title>
+            </Helmet>
             <DashboardNavbar />
             <DashboardSideMenu />
             <DashboardContent>

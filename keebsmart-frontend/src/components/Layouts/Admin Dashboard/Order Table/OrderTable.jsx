@@ -81,7 +81,7 @@ export default function OrderTable({orders, onDeleteRedirect, header}) {
                                     Order ID
                                 </th>
                                 <th scope="col" className="px-6 py-3 text-nowrap">
-                                    User
+                                    Buyer
                                 </th>
                                 <th scope="col" className="px-6 py-3 text-nowrap">
                                     Order Date

@@ -7,6 +7,7 @@ import { getShipments } from "../../../../server/shipmentController";
 import ShipmentTable from "../../../Layouts/Courier/All Shipment Table/ShipmentTable";
 import { validateUser } from "../../../../server/userValidation";
 import OrderCalculationStatusSection from "../../../Layouts/Admin Dashboard/Order Detail/OrderCalculationStatusSection";
+import { Helmet } from "react-helmet";
 
 export default function CourierFinishedDeliveryPage() {
     // State variable to store the list of finished shipments
@@ -39,6 +40,9 @@ export default function CourierFinishedDeliveryPage() {
 
     return (
         <DashboardFragment>
+            <Helmet>
+                <title>All Finished Shipments | Keebsmart</title>
+            </Helmet>
             <DashboardNavbar /> {/* Render the navigation bar */}
             <DashboardCourierSideMenu /> {/* Render the sidebar menu specific to couriers */}
             <DashboardContent>

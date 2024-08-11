@@ -10,6 +10,7 @@ import { FileInput, Label } from "flowbite-react";
 import FormAlert from "../../../elements/Alert/FormAlert";
 import { validateUser } from "../../../../server/userValidation";
 import EditProductFormSection from "./EditProductFOrmSection";
+import { Helmet } from "react-helmet";
 
 export default function EditProductItemForm () {
     // Extract the product ID from the URL parameters
@@ -117,6 +118,9 @@ export default function EditProductItemForm () {
 
     return (
         <DashboardFragment>
+            <Helmet>
+                <title>Edit Product {productName} | Keebsmart</title>
+            </Helmet>
             <DashboardNavbar />
             <DashboardSideMenu />
             <DashboardContent>

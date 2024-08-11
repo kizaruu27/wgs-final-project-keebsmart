@@ -5,6 +5,7 @@ import ProductListHeader from "../../../../Layouts/Product/ProductListHeader"; /
 import ProductList from "../../../../Layouts/Product/ProductList"; // Import the list component for displaying products
 import { validateUser } from "../../../../../server/userValidation"; // Import user validation function
 import Footer from "../../../../Layouts/Footer"; // Import the Footer component
+import { Helmet } from "react-helmet";
 
 // Main functional component for the KeyboardPage
 export default function KeyboardPage() {
@@ -26,6 +27,9 @@ export default function KeyboardPage() {
 
     return (
         <div className="mx-auto"> {/* Container for the page */}
+            <Helmet>
+                <title>All Keyboards | Keebsmart</title>
+            </Helmet>
             <Navbar /> {/* Render the Navbar component */}
             <ProductListHeader 
                 category='Mechanical Keyboards' 

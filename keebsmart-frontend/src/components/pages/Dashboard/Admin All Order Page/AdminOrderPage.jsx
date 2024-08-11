@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import OrderTable from "../../../Layouts/Admin Dashboard/Order Table/OrderTable";
 import OrderCalculationSection from "../../../Layouts/Admin Dashboard/Order Detail/OrderCalculationSection";
 import { validateUser } from "../../../../server/userValidation";
+import { Helmet } from "react-helmet";
 
 export default function AdminOrderPage() {
     // State to store all orders
@@ -45,6 +46,10 @@ export default function AdminOrderPage() {
 
     return (
         <DashboardFragment>
+            <Helmet>
+                <title>All Orders List | Keebsmart</title>
+            </Helmet>
+
             {/* Navbar component for the dashboard */}
             <DashboardNavbar />
             

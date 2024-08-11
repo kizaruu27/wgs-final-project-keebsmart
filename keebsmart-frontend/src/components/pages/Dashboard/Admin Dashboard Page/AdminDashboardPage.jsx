@@ -13,6 +13,7 @@ import GridThreeCols from '../../../fragments/Dashboard/GridThreeCols';
 import { validateUser } from '../../../../server/userValidation';
 import { getIncome } from '../../../../server/incomeController';
 import { convertCurrency } from '../../../../server/currency';
+import { Helmet } from 'react-helmet';
 
 export default function AdminDashboardPage() {
     // States for chart data
@@ -83,6 +84,10 @@ export default function AdminDashboardPage() {
 
     return (
         <DashboardFragment>
+            <Helmet>
+                <title>Admin Dashboard | Keebsmart</title>
+            </Helmet>
+
             {/* Navbar component for dashboard */}
             <DashboardNavbar />
             

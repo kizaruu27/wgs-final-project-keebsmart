@@ -9,6 +9,7 @@ import { useState } from "react";
 import { userRegister } from "../../server/auth";
 import { HiInformationCircle, HiCheckCircle } from "react-icons/hi";
 import { GoToPage } from '../../server/pageController';
+import { Helmet } from "react-helmet";
 
 // Define the RegisterPage component
 export default function RegisterPage() {
@@ -50,6 +51,9 @@ export default function RegisterPage() {
     // Render the component
     return (
         <LoginRegister>
+            <Helmet>
+                <title>Register | Keebsmart</title>
+            </Helmet>
             <LoginRegisterCover src="https://res.cloudinary.com/kineticlabs/image/upload/q_auto/c_fit,w_3500/f_auto/v1/api-images/products/yunzii-al66-keyboard/DSC00796_vmnqhp" />
             <RegisterLayout>
                 <Logo textStyle='text-3xl text-center my-7' />

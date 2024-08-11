@@ -12,6 +12,7 @@ import Footer from '../Layouts/Footer'; // Importing Footer component
 import { useEffect, useState } from 'react'; // Importing useState and useEffect hooks from React
 import { getKeyboardsForCustomer, getKeycapsForCustomer, getSwitchesForCustomer } from '../../server/productController'; // Importing product data fetching functions from the server
 import { validateUser } from '../../server/userValidation'; // Importing validateUser function from the server
+import { Helmet } from 'react-helmet';
 
 export default function HomePage() {
     // State to store switch products
@@ -55,6 +56,9 @@ export default function HomePage() {
 
     return (
         <div className='mx-auto'>
+            <Helmet>
+                <title>Home | Keebsmart</title>
+            </Helmet>
             <Navbar/>
             {/* Header navigation component with onClick handlers for navigation */}
             <HeaderNavigation onClickKeyboard='/keyboards'  onClickKeycaps='/keycaps' onClickSwitch='/switches' />

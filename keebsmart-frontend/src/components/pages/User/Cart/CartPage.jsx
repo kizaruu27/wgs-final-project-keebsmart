@@ -11,6 +11,7 @@ import { validateUser } from "../../../../server/userValidation";
 import { useDispatch, useSelector } from "react-redux";
 import { setAllChecked } from "../../../../redux/cartSlice";
 import Footer from "../../../Layouts/Footer";
+import { Helmet } from "react-helmet";
 
 export default function CartPage() {
     // Dispatch function for Redux actions
@@ -97,6 +98,9 @@ export default function CartPage() {
 
     return (
         <div className="mx-auto">
+            <Helmet>
+                <title>My Carts | Keebsmart</title>
+            </Helmet>
             <Navbar />
                 <section className="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
                     <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">

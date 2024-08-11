@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import OrderTable from "../../../Layouts/Admin Dashboard/Order Table/OrderTable";
 import OrderCalculationStatusSection from "../../../Layouts/Admin Dashboard/Order Detail/OrderCalculationStatusSection";
 import { validateUser } from "../../../../server/userValidation";
+import { Helmet } from "react-helmet";
 
 export default function AdminOrderOnDelivery() {
     const [orders, setOrders] = useState([]); // State variable to store filtered orders
@@ -47,6 +48,9 @@ export default function AdminOrderOnDelivery() {
 
     return (
         <DashboardFragment>
+            <Helmet>
+                <title>On Delivery Orders | Keebsmart</title>
+            </Helmet>
             <DashboardNavbar />
             <DashboardSideMenu />
             <DashboardContent>

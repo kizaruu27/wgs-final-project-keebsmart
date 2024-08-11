@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { GoToPage } from "../../../../server/pageController";
 import UserTable from "../../../Layouts/Admin Dashboard/User Table/UserTable";
 import { validateUser } from "../../../../server/userValidation";
+import { Helmet } from "react-helmet";
 
 export default function AdminAllUsers() {
     const [users, setUsers] = useState([]); // State variable to store user data
@@ -38,6 +39,9 @@ export default function AdminAllUsers() {
 
     return (
         <DashboardFragment>
+            <Helmet>
+                <title>All Users | Keebsmart</title>
+            </Helmet>
             <DashboardNavbar />
             <DashboardSideMenu />
             <DashboardContent>

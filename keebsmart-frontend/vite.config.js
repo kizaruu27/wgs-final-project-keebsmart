@@ -14,13 +14,13 @@ function getNetworkIp() {
   }
 }
 
-const ip = getNetworkIp();
+export const ipAddress = getNetworkIp();
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
   server: {
-    host: '0.0.0.0' || ip,
+    host: '0.0.0.0' || ipAddress,
     port: 5173,
   }
 })

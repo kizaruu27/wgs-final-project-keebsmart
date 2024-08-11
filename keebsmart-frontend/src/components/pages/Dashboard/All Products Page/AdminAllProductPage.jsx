@@ -9,6 +9,7 @@ import AllProductTable from "../../../Layouts/Admin Dashboard/Product Table/AllP
 import DeleteModal from "../../../Layouts/Modals/DeleteModal";
 import AddProductFormModal from "../../../Layouts/Admin Dashboard/Product Forms/AddProductFormModal";
 import { validateUser } from "../../../../server/userValidation";
+import { Helmet } from "react-helmet";
 
 export default function AdminAllProductPage() {
     // State to hold the list of products
@@ -53,6 +54,10 @@ export default function AdminAllProductPage() {
 
     return (
         <DashboardFragment>
+            <Helmet>
+                <title>All Products List | Keebsmart</title>
+            </Helmet>
+
             {/* Navbar component for dashboard */}
             <DashboardNavbar />
             

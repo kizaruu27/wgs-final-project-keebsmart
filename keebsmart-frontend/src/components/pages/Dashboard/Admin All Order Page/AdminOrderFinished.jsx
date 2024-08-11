@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import OrderTable from "../../../Layouts/Admin Dashboard/Order Table/OrderTable";
 import OrderCalculationStatusSection from "../../../Layouts/Admin Dashboard/Order Detail/OrderCalculationStatusSection";
 import { validateUser } from "../../../../server/userValidation";
+import { Helmet } from "react-helmet";
 
 export default function AdminOrderFinished() {
     const [orders, setOrders] = useState([]); // State variable to store orders with 'Finished' or 'Order Completed' status
@@ -38,6 +39,9 @@ export default function AdminOrderFinished() {
 
     return (
         <DashboardFragment>
+            <Helmet>
+                <title>All Finished Orders | Keebsmart</title>
+            </Helmet>
             <DashboardNavbar />
             <DashboardSideMenu />
             <DashboardContent>

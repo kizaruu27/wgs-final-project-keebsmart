@@ -5,6 +5,7 @@ import ProductListHeader from "../../../../Layouts/Product/ProductListHeader"; /
 import { getKeycapsForCustomer } from "../../../../../server/productController"; // Import function to fetch keycaps data
 import { validateUser } from "../../../../../server/userValidation"; // Import function to validate user
 import Footer from "../../../../Layouts/Footer"; // Import the Footer component
+import { Helmet } from "react-helmet";
 
 // Functional component for rendering the Keycaps page
 export default function KeycapsPage() {
@@ -24,6 +25,9 @@ export default function KeycapsPage() {
 
     return (
         <div className="mx-auto">
+            <Helmet>
+                <title>All keycaps | Keebsmart</title>
+            </Helmet>
              {/* Render the Navbar component */}
             <Navbar />
             {/* Render the ProductListHeader with a category and description */}

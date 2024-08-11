@@ -1,6 +1,6 @@
 import { convertCurrency } from "../../../server/currency"
 
-export default function UserOrderList({orders, changeStatusColorForTable, currentStatus}) {
+export default function UserOrderList({orders, changeStatusColorForTable, currentStatus, setCanceledOrder}) {
     return (
         <div className="mt-6 flow-root sm:mt-8">
             <div className="divide-y divide-gray-200 dark:divide-gray-700">

@@ -8,6 +8,7 @@ import ShipmentTable from "../../../Layouts/Courier/All Shipment Table/ShipmentT
 import { convertCurrency } from "../../../../server/currency";
 import { validateUser } from "../../../../server/userValidation";
 import CourierOnGoingStatisticSection from "../../../Layouts/Courier/Sections/CourierOnGoingStatisticSection";
+import { Helmet } from "react-helmet";
 
 export default function CourierOnGoingDeliveryPage() {
     // State variables to manage shipment data and statistics
@@ -67,6 +68,9 @@ export default function CourierOnGoingDeliveryPage() {
 
     return (
         <DashboardFragment>
+            <Helmet>
+                <title>On Going Shipments | Keebsmart</title>
+            </Helmet>
             <DashboardNavbar />
             <DashboardCourierSideMenu />
             <DashboardContent>

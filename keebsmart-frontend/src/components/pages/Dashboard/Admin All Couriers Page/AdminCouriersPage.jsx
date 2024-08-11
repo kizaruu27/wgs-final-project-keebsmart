@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { getAllUser, changeUserStatus } from "../../../../server/userDataController";
 import { GoToPage } from "../../../../server/pageController";
 import { validateUser } from "../../../../server/userValidation";
+import { Helmet } from "react-helmet";
 
 export default function AdminCouriersPage() {
     const [couriers, setCouriers] = useState([]); // State to store courier data
@@ -38,6 +39,9 @@ export default function AdminCouriersPage() {
 
     return (
         <DashboardFragment>
+            <Helmet>
+                <title>All Couriers | Keebsmart</title>
+            </Helmet>
             <DashboardNavbar />
             <DashboardSideMenu />
             <DashboardContent>

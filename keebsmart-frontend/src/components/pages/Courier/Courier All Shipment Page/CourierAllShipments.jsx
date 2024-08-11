@@ -7,6 +7,7 @@ import { getShipments } from "../../../../server/shipmentController";
 import ShipmentTable from "../../../Layouts/Courier/All Shipment Table/ShipmentTable";
 import { validateUser } from "../../../../server/userValidation";
 import CourierStatisticSection from "../../../Layouts/Courier/Sections/CourierStatisticSection";
+import { Helmet } from "react-helmet";
 
 export default function CourierAllShipments() {
     // State to store the list of shipments
@@ -53,6 +54,9 @@ export default function CourierAllShipments() {
 
     return (
         <DashboardFragment>
+            <Helmet>
+                <title>My Shipments | Keebsmart</title>
+            </Helmet>
             <DashboardNavbar />
             <DashboardCourierSideMenu />
             <DashboardContent>

@@ -11,6 +11,7 @@ import { convertCurrency } from "../../../../server/currency";
 import { validateUser } from "../../../../server/userValidation";
 import CourierDashboardFragment from "../../../fragments/Courier/CourierDashboardFragment";
 import CourierOrderTable from "../../../Layouts/Courier/All Shipment Table/CourierOrderTable";
+import { Helmet } from "react-helmet";
 
 export default function CourierDashboardPage() {
     const [orders, setOrders] = useState([]); // State to hold the list of orders
@@ -84,6 +85,9 @@ export default function CourierDashboardPage() {
 
     return (
         <DashboardFragment>
+            <Helmet>
+                <title>Courier Dashboard | Keebsmart</title>
+            </Helmet>
             <DashboardNavbar />
             <DashboardCourierSideMenu />
             <DashboardContent>

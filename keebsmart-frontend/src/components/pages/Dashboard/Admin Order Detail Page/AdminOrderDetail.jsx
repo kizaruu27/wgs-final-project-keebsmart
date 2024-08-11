@@ -12,6 +12,7 @@ import OrderItemSection from "../../../Layouts/Admin Dashboard/Order Detail/Orde
 import OrderTimeline from "../../../Layouts/Admin Dashboard/Order Detail/OrderTimeline";
 import { validateUser } from "../../../../server/userValidation";
 import { getUserData } from "../../../../server/userDataController";
+import { Helmet } from "react-helmet";
 
 export default function AdminOrderDetail () {
     const { id } = useParams(); // Get the order ID from URL parameters
@@ -121,6 +122,9 @@ export default function AdminOrderDetail () {
 
     return (
         <DashboardFragment>
+            <Helmet>
+                <title>Order #{id} | Keebsmart</title>
+            </Helmet>
             <DashboardNavbar />
             <DashboardSideMenu />
             <DashboardContent>

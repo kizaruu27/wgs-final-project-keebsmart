@@ -13,6 +13,7 @@ import { getShipmentDetail } from "../../../../server/shipmentController";
 import DashboardCourierSideMenu from "../../../Layouts/DashboardCourierSideMenu";
 import { getUserData } from "../../../../server/userDataController";
 import { validateUser } from "../../../../server/userValidation";
+import { Helmet } from "react-helmet";
 
 export default function ShipmentDetail() {
     // Extract the shipment ID from URL parameters
@@ -83,6 +84,9 @@ export default function ShipmentDetail() {
 
     return (
         <DashboardFragment>
+            <Helmet>
+                <title>Shipment #{id} | Keebsmart</title>
+            </Helmet>
             <DashboardNavbar />
             <DashboardCourierSideMenu />
             <DashboardContent>

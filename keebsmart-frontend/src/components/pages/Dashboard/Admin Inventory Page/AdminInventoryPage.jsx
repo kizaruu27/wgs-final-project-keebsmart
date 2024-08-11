@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import AddInventoryModalFOrm from "../../../Layouts/Admin Dashboard/Inventory/AddInventoryModalForm";
 import { GoToPage } from "../../../../server/pageController";
 import { validateUser } from "../../../../server/userValidation";
+import { Helmet } from "react-helmet";
 
 export default function AdminInventoryPage() {
     // State variable to store the list of inventory items
@@ -39,6 +40,9 @@ export default function AdminInventoryPage() {
 
     return (
         <DashboardFragment>
+            <Helmet>
+                <title>Inventory List | Keebsmart</title>
+            </Helmet>
             <DashboardNavbar /> {/* Render the navigation bar */}
             <DashboardSideMenu /> {/* Render the sidebar menu */}
             <DashboardContent>

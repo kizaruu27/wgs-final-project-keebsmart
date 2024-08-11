@@ -10,6 +10,7 @@ import Footer from "../../../Layouts/Footer";
 import OrderSummaryBillingInformation from "../../../Layouts/Orders/OrderSummaryBillingInformation";
 import OrderSummaryItemSection from "../../../Layouts/Orders/OrderSummaryItemSection";
 import SummarySection from "../../../Layouts/Orders/SummarySection";
+import { Helmet } from "react-helmet";
 
 export default function OrderSummaryPage() {
     // Hook to get location object which contains the state passed from previous page
@@ -69,6 +70,9 @@ export default function OrderSummaryPage() {
 
     return (
         <div className="mx-auto">
+            <Helmet>
+                <title>Order Summary | Keebsmart</title>
+            </Helmet>
             <Navbar  />
             <section className="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
                 <form onSubmit={e => postNewOrder(e)} className="mx-auto max-w-screen-xl px-4 2xl:px-0">

@@ -11,6 +11,7 @@ import ProductVariationSection from "../../../Layouts/Admin Dashboard/Product De
 import DeleteModal from "../../../Layouts/Modals/DeleteModal";
 import { validateUser } from "../../../../server/userValidation";
 import { activateProduct } from "../../../../server/productController";
+import { Helmet } from "react-helmet";
 
 export default function AdminProductItem() {
     // State to hold the details of the product
@@ -84,6 +85,10 @@ export default function AdminProductItem() {
 
     return (
         <DashboardFragment>
+            <Helmet>
+                <title>Detail {`${product.productName}`} | Keebsmart</title>
+            </Helmet>
+
             {/* Sidebar component for dashboard navigation */}
             <DashboardSideMenu />
             

@@ -33,7 +33,7 @@ export default function ProductListSection({setAdd, products, onActivateProduct,
                     {products.map((product, key) => (
                         <tr className="bg-white border-b dark:bg-gray-800 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600" key={key}>
                             <td className="px-6 py-4">
-                                <img src={`${urlEndpoint}/${product.productImage.imagePreviewUrl}`} alt="" style={{width: 100}} />
+                                <img className="rounded-xl" src={`${urlEndpoint}/${product.productImage.imagePreviewUrl}`} alt="" style={{width: 100}} />
                             </td>
                             <th scope="row" onClick={() => GoToPage(`/admin/product/${product.id}`)} className="px-6 py-4 font-medium text-black tracking-wider dark:text-white cursor-pointer hover:underline">
                                 {product.productName}

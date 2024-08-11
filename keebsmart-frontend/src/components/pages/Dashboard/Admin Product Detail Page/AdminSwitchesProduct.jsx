@@ -6,6 +6,7 @@ import { useState, useEffect } from "react";
 import { getSwitchesData } from "../../../../server/productController";
 import ProductCategoryDetail from "../../../Layouts/Admin Dashboard/Product Detail/Product Category/ProductCategoryDetail";
 import { validateUser } from "../../../../server/userValidation";
+import { Helmet } from "react-helmet";
 
 export default function AdminSwitchesProduct() {
     // State to store the list of switches products
@@ -32,6 +33,10 @@ export default function AdminSwitchesProduct() {
 
     return (
         <DashboardFragment>
+            <Helmet>
+                <title>All Switches List | Keebsmart</title>
+            </Helmet>
+
             {/* Navbar component for the dashboard */}
             <DashboardNavbar />
             

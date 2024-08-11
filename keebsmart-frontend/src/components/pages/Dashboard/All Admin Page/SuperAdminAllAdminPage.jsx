@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { GoToPage } from "../../../../server/pageController";
 import AdminsTable from "../../../Layouts/Super Admin Dashboard/AdminsTable";
 import { validateUser } from "../../../../server/userValidation";
+import { Helmet } from "react-helmet";
 
 export default function SuperAdminAllAdminPage() {
     const [users, setUsers] = useState([]); // State to store admin users
@@ -62,6 +63,9 @@ export default function SuperAdminAllAdminPage() {
 
     return (
         <DashboardFragment>
+            <Helmet>
+                <title>Super Admin Dashboard | Keebsmart</title>
+            </Helmet>
             <DashboardNavbar />
             <DashboardSideMenu />
             <DashboardContent>

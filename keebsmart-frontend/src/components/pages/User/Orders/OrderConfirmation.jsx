@@ -5,6 +5,7 @@ import { validateUser } from "../../../../server/userValidation";
 import { GoToPage } from "../../../../server/pageController";
 import Footer from "../../../Layouts/Footer";
 import OrderConfirmationSection from "../../../Layouts/Orders/OrderConfirmationSection";
+import { Helmet } from "react-helmet";
 
 export default function OrderConfirmation() {
     // Hook to get location object which contains the state passed from previous page
@@ -31,6 +32,9 @@ export default function OrderConfirmation() {
 
     return (
         <div className="mx-auto">
+            <Helmet>
+                <title>Order Confirmation | Keebsmart</title>
+            </Helmet>
             <Navbar />
             <OrderConfirmationSection  
                 orderId={orderId}

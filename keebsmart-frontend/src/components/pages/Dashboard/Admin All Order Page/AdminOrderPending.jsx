@@ -6,6 +6,7 @@ import DashboardNavbar from "../../../Layouts/DashboardNavbar";
 import DashboardSideMenu from "../../../Layouts/DashboardSideMenu";
 import { getOrders } from "../../../../server/orderController";
 import { validateUser } from "../../../../server/userValidation";
+import { Helmet } from "react-helmet";
 
 export default function AdminOrderPending() {
     const [orders, setOrders] = useState([]); // State variable to store the list of pending orders
@@ -31,6 +32,9 @@ export default function AdminOrderPending() {
 
     return (
         <DashboardFragment>
+            <Helmet>
+                <title>All Pending Order | Keebsmart</title>
+            </Helmet>
             <DashboardNavbar />
             <DashboardSideMenu />
             <DashboardContent>

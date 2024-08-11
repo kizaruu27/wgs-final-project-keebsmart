@@ -12,6 +12,7 @@ import { getUserData } from "../../../../server/userDataController";
 import Footer from "../../../Layouts/Footer";
 import OrderDetailItemSection from "../../../Layouts/Orders/OrderDetailItemSection";
 import OrderDetailTimelineSection from "../../../Layouts/Orders/OrderDetailTimelineSection";
+import { Helmet } from "react-helmet";
 
 export default function OrderDetailPage() {
     // Get the order ID from URL parameters
@@ -81,6 +82,9 @@ export default function OrderDetailPage() {
 
     return (
         <div className="mx-auto p-5">
+            <Helmet>
+                <title>Order #{orderId.substring(0, 8).toLocaleUpperCase()} | Keebsmart</title>
+            </Helmet>
             <Navbar />
             <section className="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
                 <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">

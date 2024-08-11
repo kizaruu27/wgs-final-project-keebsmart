@@ -16,6 +16,7 @@ import { getUserCart } from "../../../../server/cartController";
 import NotificationCartItem from "../../../elements/Notification/NotificationCartIcon";
 import WarningNotificationIcon from "../../../elements/Notification/WarningNotificationIcon";
 import Footer from "../../../Layouts/Footer";
+import { Helmet } from "react-helmet";
 
 export default function ProductPage() {
     // Extract product ID from URL parameters
@@ -171,6 +172,9 @@ export default function ProductPage() {
 
     return (
         <div className="mx-auto">
+            <Helmet>
+                <title>{`${product.productName}`} | Keebsmart</title>
+            </Helmet>
             <Navbar />
             {/* Display cart notification */}
             <div className="text-center">

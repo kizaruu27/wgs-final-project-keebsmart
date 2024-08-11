@@ -6,6 +6,7 @@ import { getOrders } from "../../../../server/orderController";
 import { useEffect, useState } from "react";
 import OrderTable from "../../../Layouts/Admin Dashboard/Order Table/OrderTable";
 import { validateUser } from "../../../../server/userValidation";
+import { Helmet } from "react-helmet";
 
 export default function AdminOrderCanceled() {
     const [orders, setOrders] = useState([]); // State variable to store orders with 'Canceled' status
@@ -36,6 +37,9 @@ export default function AdminOrderCanceled() {
 
     return (
         <DashboardFragment>
+            <Helmet>
+                <title>All Canceled Orders | Keebsmart</title>
+            </Helmet>
             <DashboardNavbar />
             <DashboardSideMenu />
             <DashboardContent>

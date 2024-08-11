@@ -15,6 +15,8 @@ import CheckoutAddressSection from "../../../Layouts/Orders/CheckoutAddressSecti
 import CheckoutPaymentSection from "../../../Layouts/Orders/CheckoutPaymentSection";
 import CheckoutOrderNotes from "../../../Layouts/Orders/CheckoutOrderNotes";
 import CheckoutItemsSection from "../../../Layouts/Orders/CheckoutItemsSection";
+import { Helmet } from "react-helmet";
+import { GoToPage } from "../../../../server/pageController";
 
 export default function CheckoutPage() {
     const location = useLocation(); // Set up location for navigation
@@ -47,6 +49,10 @@ export default function CheckoutPage() {
 
     // state for open add address modal
     const [openAddAddressModal, setOpenAddAddressModal] = useState(false);
+
+    useEffect(() => {
+        if (cartIds.length <= 0) GoToPage('/cart', 50)
+    }, [])
 
     // Validate users access
     useEffect(() => {
@@ -124,6 +130,9 @@ export default function CheckoutPage() {
 
     return (
         <div className="mx-auto">
+            <Helmet>
+                <title>Checkout | Keebsmart</title>
+            </Helmet>
             <Navbar />
             <section className="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
                 <form onSubmit={e => proceedToPayment(e)} className="mx-auto max-w-screen-xl px-4 2xl:px-0">

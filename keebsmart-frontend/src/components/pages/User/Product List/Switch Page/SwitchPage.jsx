@@ -5,6 +5,7 @@ import { getSwitchesForCustomer } from "../../../../../server/productController"
 import ProductList from "../../../../Layouts/Product/ProductList"; // Import the ProductList component
 import { validateUser } from "../../../../../server/userValidation"; // Import function to validate user
 import Footer from "../../../../Layouts/Footer"; // Import the Footer component
+import { Helmet } from "react-helmet";
 
 // Functional component for rendering the Switches page
 export default function SwitchPage() {
@@ -25,6 +26,9 @@ export default function SwitchPage() {
 
     return (
         <div className="mx-auto">
+            <Helmet>
+                <title>All Switches | Keebsmart</title>
+            </Helmet>
             {/* Render the Navbar component */}
             <Navbar />
             
