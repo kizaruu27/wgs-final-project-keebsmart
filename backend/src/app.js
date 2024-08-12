@@ -13,9 +13,9 @@ const { getAlluser, changeUserStatus, deleteUser, registerUser, registerAdmin, d
 const { login } = require('./Utils/auth');
 const { addNewInventory, getInventory, getUnusedInventory, getInventoryDetailById, deleteInventory, updateInventory, updateInventoryItem, deleteInventoryItem, getInventoryDetail, getInventoryItemDetail } = require('./Utils/inventoryHandler');
 const { getVariationsData, getVariationFromProduct } = require('./Utils/variationHandler');
-const { getAllProducts, getProductsForCustomer, searchProduct, getProductItemById, getAllProductDetail, getAllCategory, getSwitchesDataForCustomer, getKeyboardsDataForCustomer, getKeycapsDataForCustomer, getKeyboardsDataForAdmin, getKeycapsDataFOrAdmin, getKeycapsDataForAdmin, getSwitchesDataForAdmin, productActivation, deleteProductItem, getProductItemDetail, deleteProducts } = require('./Utils/productHandler');
+const { getAllProducts, getProductsForCustomer, searchProduct, getProductItemById, getAllProductDetail, getAllCategory, getSwitchesDataForCustomer, getKeyboardsDataForCustomer, getKeycapsDataForCustomer, getKeyboardsDataForAdmin, getKeycapsDataFOrAdmin, getKeycapsDataForAdmin, getSwitchesDataForAdmin, productActivation, deleteProductItem, getProductItemDetail, deleteProducts, checkProductItemStock } = require('./Utils/productHandler');
 const { getProductSales } = require('./Utils/salesHandler');
-const { getOrderDetails, setOrderStatus, getUserOrders, getUserAddress, getAddressDetail, getOrderById } = require('./Utils/orderHandler');
+const { getOrderDetails, setOrderStatus, getUserOrders, getUserAddress, getAddressDetail, getOrderById, cancelOrder, adminCancelOrder } = require('./Utils/orderHandler');
 const { createShipment, getAllShipments, getShipmentsByStatus, getFinishedDelivery, getShipmentDetail } = require('./Utils/shipmentHandler');
 const prisma = new PrismaClient();
 const app = express();
@@ -212,6 +212,9 @@ app.get('/product/:id', getProductItemById);
 
 // get product detail with deleted data
 app.get('/product/sales/:id', getAllProductDetail);
+
+// check product item qty
+app.post('/product/qty', checkProductItemStock);
 
 // API for get product sales
 app.get('/sales', getProductSales);
@@ -507,6 +510,12 @@ app.get('/orders', getOrderDetails);
 // API for set order status
 app.patch('/order/status/:id', accessValidation, setOrderStatus);
 
+// API for cancel order for customer
+app.patch('/order/cancel/:id', accessValidation, cancelOrder);
+
+// API for cancel order for admin
+app.patch('/admin/order/cancel/:id', accessValidation, adminCancelOrder);
+
 // API for get user orders
 app.get('/user/orders', accessValidation, getUserOrders);
 
@@ -747,6 +756,12 @@ app.post('/cart', accessValidation, async (req, res) => {
                 isOrdered: false
             }
         });
+
+        if (productItem.qty <= 0) {
+            return res.status(200).json({
+                msg: 'Sorry, this item is no longer available :('
+            })
+        }
 
         if (similarCart) {
             if (similarCart.qty >= productItem.qty) {

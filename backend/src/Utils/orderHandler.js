@@ -62,6 +62,113 @@ const setOrderStatus = async (req, res) => {
     }
 };
 
+const cancelOrder = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const orderStatus = await prisma.orderStatus.findFirst({
+            where: {
+                status: 'Canceled'
+            }
+        })
+
+        const order = await prisma.orders.findUnique({
+            where: {
+                orderId: id
+            },
+            include: {
+                currentStatus: {
+                    include: {
+                        status: true
+                    }
+                }
+            }
+        });
+
+        const orderLatestStatus = order.currentStatus.map(item => item.status.status)[order.currentStatus.length - 1];
+
+        if (orderLatestStatus !== 'Checkout Success') {
+            if (orderLatestStatus === 'Canceled') {
+                return res.status(200).json({
+                    msg: "Your order is already canceled!"
+                });
+            } else {
+                return res.status(200).json({
+                    msg: "Your order is being processed, you can't cancel your order"
+                });
+            }
+        }
+
+        const updatedStatus = await prisma.currentStatus.create({
+            data: {
+                orderId: id,
+                orderStatusId: orderStatus.id
+            }
+        });
+
+        res.status(201).json({
+            updatedStatus,
+            orderStatus,
+            msg: 'Order successfully updated!'
+        });
+    } catch (error) {
+        console.log(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
+    }
+};
+
+const adminCancelOrder = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const orderStatus = await prisma.orderStatus.findFirst({
+            where: {
+                status: 'Canceled'
+            }
+        })
+
+        const order = await prisma.orders.findUnique({
+            where: {
+                orderId: id
+            },
+            include: {
+                currentStatus: {
+                    include: {
+                        status: true
+                    }
+                }
+            }
+        });
+
+        const orderLatestStatus = order.currentStatus.map(item => item.status.status)[order.currentStatus.length - 1];
+
+        if (orderLatestStatus !== 'Checkout Success' && orderLatestStatus !== 'On Process' && orderLatestStatus !== 'On Packing') {
+            return res.status(200).json({
+                msg: "There is an update from this order, please refresh your page",
+                orderLatestStatus
+            });
+        }
+
+        const updatedStatus = await prisma.currentStatus.create({
+            data: {
+                orderId: id,
+                orderStatusId: orderStatus.id
+            }
+        });
+
+        res.status(201).json({
+            updatedStatus,
+            orderStatus,
+            msg: 'Order successfully updated!'
+        });
+    } catch (error) {
+        console.log(error);
+        const userId = req.userId;
+        handleError(userId, error.message, res);
+    }
+};
+
 const getUserOrders = async (req, res) => {
     try {
         const userId = req.userId;
@@ -200,5 +307,6 @@ module.exports = {
     getUserAddress,
     getAddressDetail,
     getOrderById,
-    
+    cancelOrder,
+    adminCancelOrder
 }

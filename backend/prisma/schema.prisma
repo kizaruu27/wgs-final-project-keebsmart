@@ -153,8 +153,11 @@ model MoneyKeep {
 }
 
 model TotalIncome {
-  id     Int @id @default(autoincrement())
-  amount Int
+  id      Int     @id @default(autoincrement())
+  amount  Int
+  month   String?
+  orderId String? @unique
+  order   Orders? @relation(fields: [orderId], references: [orderId])
 }
 
 model PaymentMethods {
@@ -213,6 +216,7 @@ model Orders {
   paymentMethod   PaymentMethods  @relation(fields: [paymentMethodId], references: [id])
   user            User            @relation(fields: [userId], references: [id])
   shipping        Shipping?
+  income          TotalIncome?
   currentStatus   currentStatus[]
   carts           Cart[]          @relation("CartToOrders")
 }

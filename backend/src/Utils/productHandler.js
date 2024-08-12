@@ -537,6 +537,47 @@ const deleteProducts = async (req, res) => {
     }
 };
 
+const checkProductItemStock = async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        const carts = await prisma.cart.findMany({
+            where: {
+                id: {
+                    in: id
+                }
+            },
+            select: {
+                productItem: {
+                    include: {
+                        product: true,
+                        variationOption: {
+                            select: {
+                                variationValue: true
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        const checkIsEmpty = carts.some(item => item.productItem.qty <= 0);
+        const emptyProductItem = checkIsEmpty ? 
+            carts.filter(item => item.productItem.qty <= 0).map(item => ({
+                productName: `${item.productItem.product.productName} - ${item.productItem.variationOption.variationValue}`
+            }))
+            : null;
+
+        res.json({
+            isEmpty: checkIsEmpty,
+            emptyProductItem
+        });
+    } catch (error) {
+        console.log(error);
+        handleError(null, error.message, res);
+    }
+}
+
 module.exports = {
     getAllProducts,
     getProductsForCustomer,
@@ -554,6 +595,5 @@ module.exports = {
     deleteProductItem,
     getProductItemDetail,
     deleteProducts,
-    
-
+    checkProductItemStock,
 }
