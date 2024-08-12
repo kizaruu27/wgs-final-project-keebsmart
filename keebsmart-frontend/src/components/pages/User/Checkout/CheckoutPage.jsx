@@ -17,6 +17,10 @@ import CheckoutOrderNotes from "../../../Layouts/Orders/CheckoutOrderNotes";
 import CheckoutItemsSection from "../../../Layouts/Orders/CheckoutItemsSection";
 import { Helmet } from "react-helmet";
 import { GoToPage } from "../../../../server/pageController";
+import validator from "validator";
+import AddCartNotification from "../../../elements/Notification/AddCartNotification";
+import WarningIcon from "../../../elements/Icon/WarningIcon";
+import { checkProductsQty } from "../../../../server/productController";
 
 export default function CheckoutPage() {
     const location = useLocation(); // Set up location for navigation
@@ -40,6 +44,10 @@ export default function CheckoutPage() {
     const [targetedCartIds, setTargetedCartIds] = useState([]);
     const [addressId, setAddressId] = useState(0);
     const [orderNotes, setOrderNotes] = useState('');
+
+    // State for notification handler
+    const [showNotif, setShowNotif] = useState(false);
+    const [notificationMsg, setNotificationMsg] = useState('');
 
     // State for user address
     const [userAddress, setUserAddress] = useState([]);
@@ -80,31 +88,46 @@ export default function CheckoutPage() {
     // Set up for payment
     const proceedToPayment = async (e) => {
         e.preventDefault();
-        
-        setTargetedCartIds(cartIds);
-        setIsLoading(true);
 
+        if (!validator.isMobilePhone(phoneNumber, 'id-ID')) {
+            setShowNotif(true);
+            setNotificationMsg('Phone number is not valid!');
+            return;
+        }
+        
         if (addressId === '' || addressId === null || addressId === 0 || addressId === undefined) {
             console.log('Please choose your address');
         } else {
+            setTargetedCartIds(cartIds);
+            setIsLoading(true);
+
             setTimeout(() => {
-                navigate('/order/summary', {
-                    state: {
-                        name,
-                        phoneNumber,
-                        targetedCartIds: cartIds,
-                        addressId,
-                        orderNotes,
-                        carts,
-                        street,
-                        kecamatan,
-                        kelurahan,
-                        province,
-                        city,
-                        postCode,
-                        totalPrice
+                checkProductsQty(cartIds, (data) => {
+                    if (data.isEmpty) {
+                        setIsLoading(false);
+                        setShowNotif(true);
+                        setNotificationMsg('Sorry, one of the item of your cart is empty right now :(');
+                    } else {
+                        navigate('/order/summary', {
+                            state: {
+                                name,
+                                phoneNumber,
+                                targetedCartIds: cartIds,
+                                addressId,
+                                orderNotes,
+                                carts,
+                                street,
+                                kecamatan,
+                                kelurahan,
+                                province,
+                                city,
+                                postCode,
+                                totalPrice
+                            }
+                        });
                     }
-                });
+                })
+
             }, 2000);
         }
     };
@@ -133,6 +156,15 @@ export default function CheckoutPage() {
             <Helmet>
                 <title>Checkout | Keebsmart</title>
             </Helmet>
+            <div className="text-center">
+                <AddCartNotification 
+                    showNotif={showNotif}
+                    setShowNotif={setShowNotif}
+                    msg={notificationMsg}
+                    color='bg-red-500 text-white'
+                    icon={<WarningIcon />}
+                />
+            </div>
             <Navbar />
             <section className="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
                 <form onSubmit={e => proceedToPayment(e)} className="mx-auto max-w-screen-xl px-4 2xl:px-0">

@@ -5,7 +5,7 @@ import { getProductItemDetail } from "../../../server/productController";
 import { convertCurrency } from "../../../server/currency";
 import { urlEndpoint } from "../../../server/url";
 
-export default function CartItem({cart, setCart, id, productItemId, image, qty, price, productName, variationValue, onChecked, checked, handleCheckbox}) {
+export default function CartItem({cart, setCart, id, productItemId, image, qty, price, productName, variationValue, onChecked, checked, handleCheckbox, className, itemQty}) {
     // State to manage the current quantity of the item in the cart
     const [currentQty, setCurrentQty] = useState(qty);
     // State to manage whether the item is checked or not
@@ -100,16 +100,17 @@ export default function CartItem({cart, setCart, id, productItemId, image, qty, 
     }, [totalPrice, id]);
 
     return (
-        <div className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6">
+        <div className={`rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:p-6 ${className}`}>
             <div className="space-y-4 md:flex md:items-center md:justify-between md:gap-6 md:space-y-0"> 
                 {/* Checkbox for selecting the item */}
                 <input 
+                    disabled={itemQty <= 0 ? true : false}
                     id="default-checkbox" 
                     type="checkbox" 
                     value="" 
                     className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600" 
                     onChange={(e) => handleCheckboxChange(e)} 
-                    checked={checked} 
+                    checked={itemQty <= 0 ? false : checked} 
                 />
                 {/* Product image */}
                 <a href="#" className="shrink-0 md:order-1">
@@ -122,6 +123,7 @@ export default function CartItem({cart, setCart, id, productItemId, image, qty, 
                     <div className="flex items-center">
                         {/* Button to decrease quantity */}
                         <button 
+                            disabled={itemQty <= 0 ? true : false}
                             onClick={() => decreaseQty(id)} 
                             className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
                         >
@@ -130,9 +132,10 @@ export default function CartItem({cart, setCart, id, productItemId, image, qty, 
                             </svg>
                         </button>
                         {/* Display current quantity */}
-                        <p className="w-10 shrink-0 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white">{currentQty}</p>
+                        <p className="w-10 shrink-0 border-0 bg-transparent text-center text-sm font-medium text-gray-900 focus:outline-none focus:ring-0 dark:text-white">{itemQty <= 0 ? itemQty : currentQty}</p>
                         {/* Button to increase quantity */}
                         <button 
+                            disabled={itemQty <= 0 ? true : false}
                             onClick={() => increaseCartQty(id)} 
                             className="inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-gray-300 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700"
                         >

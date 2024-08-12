@@ -24,7 +24,9 @@ export default function CartSection({cart, setCart, setChecked, handleCheckboxCh
                     </div>
                     {/* Mapping through each cart item and rendering a CartItem component */}
                     {cart.map((item, key) =>
-                        <CartItem 
+                        <CartItem
+                            itemQty={item.productItem.qty}
+                            className={`${item.productItem.qty <= 0 ? 'opacity-35' : ''}`}
                             setCart={setCart} 
                             handleCheckbox={handleCheckboxChange} 
                             cart={cart} 

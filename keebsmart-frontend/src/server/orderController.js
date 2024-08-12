@@ -198,4 +198,42 @@ export const receiveMoneyFromCourier = async (id, onSuccess) => {
     } catch (error) {
         console.log(error); // Log any errors that occur during the request
     }
-}
+};
+
+// Function for canceling an order for customer
+export const cancelOrderForCustomer = async (id, onSuccess, onFailed) => {
+    try {
+        const response = await axios.patch(`${urlEndpoint}/order/cancel/${id}`, null, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if (response.status === 200) {
+            onFailed(response.data.msg);
+        } else {
+            onSuccess(response.data);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+};
+
+// Function for cancel order for admins
+export const cancelOrderForAdmins = async (id, onSuccess, onFailed) => {
+    try {
+        const response = await axios.patch(`${urlEndpoint}/admin/order/cancel/${id}`, null, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        });
+
+        if (response.status === 200) {
+            onFailed(response.data.msg);
+        } else {
+            onSuccess(response.data);
+        }
+    } catch (error) {
+        console.log(error);
+    }
+};

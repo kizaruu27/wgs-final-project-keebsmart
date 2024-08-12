@@ -12,6 +12,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { setAllChecked } from "../../../../redux/cartSlice";
 import Footer from "../../../Layouts/Footer";
 import { Helmet } from "react-helmet";
+import { checkProductsQty } from "../../../../server/productController";
+import AddCartNotification from "../../../elements/Notification/AddCartNotification";
+import WarningIcon from "../../../elements/Icon/WarningIcon";
 
 export default function CartPage() {
     // Dispatch function for Redux actions
@@ -25,6 +28,13 @@ export default function CartPage() {
     const [selectedCartId, setSelectedCartId] = useState([]);
     // State to store the subtotal price of selected items
     const [subTotalPrice, setSubTotalPrice] = useState(0);
+
+    // State for handling notification
+    const [showNotif, setShowNotif] = useState(false); // State for handling notification rendering
+    const [notificationMsg, setNotificationMsg] = useState(''); // State for handling the notification messages
+
+    // State for handling empty products
+    const [emptyProducts, setEmptyProducts] = useState([]);
 
     // Effect hook to validate the user as a customer when the component mounts
     useEffect(() => {
@@ -46,12 +56,12 @@ export default function CartPage() {
     const selectAll = (e) => {
         const checked = e.target.checked; // Determine if 'Select All' checkbox is checked or not
         dispatch(setAllChecked(checked)); // Update the Redux state for 'select all' checkbox
-        cart.map((item) => setChecked(checked, item.id, item.subTotalPrice)); // Update individual item selection
+        cart.filter(item => item.productItem.qty > 0).map((item) => setChecked(checked, item.id, item.subTotalPrice)); // Update individual item selection
         
         // Update cart state to reflect 'Select All' status
         const updatedCartItems = cart.map(item => ({
             ...item,
-            isChecked: checked
+            isChecked: item.productItem.qty <= 0 ? false : checked
         }));
         setCart(updatedCartItems);
     };
@@ -93,7 +103,18 @@ export default function CartPage() {
     // Function to navigate to the checkout page with selected cart IDs
     const postNewPendingOrder = () => {
         const cartIds = selectedCartId.map(item => item.id); // Extract IDs from selected items
-        navigate('/checkout', { state: { cartIds } }); // Navigate to checkout page with state
+
+        // Give qty checker here!
+        checkProductsQty(cartIds, (data) => {
+            if (data.isEmpty) {
+                setEmptyProducts(data.emptyProductItem);
+                setShowNotif(true);
+                setNotificationMsg('Sorry, one the item in your cart is no longer available :(');
+            } else {
+                navigate('/checkout', { state: { cartIds } }); // Navigate to checkout page with state
+            }
+        })
+
     };
 
     return (
@@ -101,6 +122,18 @@ export default function CartPage() {
             <Helmet>
                 <title>My Carts | Keebsmart</title>
             </Helmet>
+            <div className="text-center">
+                { emptyProducts.map((item, key) => (
+                    <AddCartNotification 
+                        key={key}
+                        showNotif={showNotif}
+                        setShowNotif={setShowNotif}
+                        msg={`Sorry, ${item.productName} is empty right now :(`}
+                        color='bg-red-500 text-white'
+                        icon={< WarningIcon />}
+                    />
+                )) }
+            </div>
             <Navbar />
                 <section className="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
                     <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">

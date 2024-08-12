@@ -11,6 +11,9 @@ import OrderSummaryBillingInformation from "../../../Layouts/Orders/OrderSummary
 import OrderSummaryItemSection from "../../../Layouts/Orders/OrderSummaryItemSection";
 import SummarySection from "../../../Layouts/Orders/SummarySection";
 import { Helmet } from "react-helmet";
+import AddCartNotification from "../../../elements/Notification/AddCartNotification";
+import WarningIcon from "../../../elements/Icon/WarningIcon";
+import { checkProductsQty } from "../../../../server/productController";
 
 export default function OrderSummaryPage() {
     // Hook to get location object which contains the state passed from previous page
@@ -35,6 +38,10 @@ export default function OrderSummaryPage() {
     // State for managing loading status
     const [isLoading, setIsLoading] = useState(false);
 
+    // State for handling notification
+    const [showNotif, setShowNotif] = useState(false);
+    const [notificationMsg, setNotificationMsg] = useState('');
+
     // Effect to handle redirect if no cart IDs are available
     useEffect(() => {
         console.log(name, phoneNumber, cartIds, addressId, orderNotes, carts);
@@ -52,19 +59,27 @@ export default function OrderSummaryPage() {
         setIsLoading(true); // Set loading state to true
 
         setTimeout(() => {
-            makeNewOrder(cartIds, name, phoneNumber, totalPrice, orderNotes, 1, addressId, (data) => {
-                console.log(data);
-                navigate('/order/confirmation', {
-                    state: {
-                        orderId: data.newOrder.orderId, // ID of the newly created order
-                        date: data.newOrder.orderDate, // Date of the order
-                        paymentMethod: data.newOrder.paymentMethod.paymentType, // Payment method used
-                        name,
-                        address: `${street}, ${kelurahan}, ${kecamatan}, ${city}, ${province}, ${postCode}`, // Full address as a single string
-                        phoneNumber
-                    }
-                })
+            checkProductsQty(cartIds, (data) => {
+                if (data.isEmpty) {
+                    setIsLoading(false);
+                    setShowNotif(true);
+                    setNotificationMsg('Sorry, one of your item is currently empty :(');
+                } else {
+                    makeNewOrder(cartIds, name, phoneNumber, totalPrice, orderNotes, 1, addressId, (data) => {
+                        navigate('/order/confirmation', {
+                            state: {
+                                orderId: data.newOrder.orderId, // ID of the newly created order
+                                date: data.newOrder.orderDate, // Date of the order
+                                paymentMethod: data.newOrder.paymentMethod.paymentType, // Payment method used
+                                name,
+                                address: `${street}, ${kelurahan}, ${kecamatan}, ${city}, ${province}, ${postCode}`, // Full address as a single string
+                                phoneNumber
+                            }
+                        })
+                    })
+                }
             })
+
         }, 3000); // Simulate processing time with a delay
     }
 
@@ -73,6 +88,15 @@ export default function OrderSummaryPage() {
             <Helmet>
                 <title>Order Summary | Keebsmart</title>
             </Helmet>
+            <div className="text-center">
+                <AddCartNotification 
+                    showNotif={showNotif}
+                    setShowNotif={setShowNotif}
+                    msg={notificationMsg}
+                    color='bg-red-500 text-white'
+                    icon={<WarningIcon/>}
+                />
+            </div>
             <Navbar  />
             <section className="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
                 <form onSubmit={e => postNewOrder(e)} className="mx-auto max-w-screen-xl px-4 2xl:px-0">

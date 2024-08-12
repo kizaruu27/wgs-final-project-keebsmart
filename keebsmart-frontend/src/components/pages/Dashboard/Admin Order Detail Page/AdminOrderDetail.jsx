@@ -3,7 +3,7 @@ import DashboardContent from "../../../fragments/DashboardContent";
 import DashboardFragment from "../../../fragments/DashboardFragment";
 import DashboardNavbar from "../../../Layouts/DashboardNavbar";
 import DashboardSideMenu from "../../../Layouts/DashboardSideMenu";
-import { getOrderDetail, setOrderStatus } from "../../../../server/orderController";
+import { cancelOrderForAdmins, getOrderDetail, setOrderStatus } from "../../../../server/orderController";
 import { useParams } from "react-router-dom";
 import { GoToPage } from "../../../../server/pageController";
 import BuyerDetailSection from "../../../Layouts/Admin Dashboard/Order Detail/BuyerDetailSection";
@@ -13,6 +13,9 @@ import OrderTimeline from "../../../Layouts/Admin Dashboard/Order Detail/OrderTi
 import { validateUser } from "../../../../server/userValidation";
 import { getUserData } from "../../../../server/userDataController";
 import { Helmet } from "react-helmet";
+import DeleteModal from "../../../Layouts/Modals/DeleteModal";
+import AddCartNotification from "../../../elements/Notification/AddCartNotification";
+import WarningIcon from "../../../elements/Icon/WarningIcon";
 
 export default function AdminOrderDetail () {
     const { id } = useParams(); // Get the order ID from URL parameters
@@ -31,6 +34,13 @@ export default function AdminOrderDetail () {
     const [shippingId, setShippingId] = useState('');
     const [courierName, setCourierName] = useState('');
     const [access, setAccess] = useState('');
+
+    // State for open modal
+    const [openModal, setOpenModal] = useState(false);
+
+    // State for handling notification
+    const [showNotif, setShowNotif] = useState(false);
+    const [notificationMsg, setNotificationMsg] = useState('');
 
     // Determine if the order can be canceled based on its current status
     const canCancel = () => {
@@ -79,10 +89,18 @@ export default function AdminOrderDetail () {
     }
 
     // Function to handle order cancellation
-    const cancelOrder = (status) => {
-        setOrderStatus(id, status, () => {
-            GoToPage(`/admin/order/${id}`, 100); // Redirect to the order detail page after cancellation
-        });
+    const cancelOrder = (id) => {
+        cancelOrderForAdmins(id, (data) => {
+            // On Success Cancel
+            console.log(data);
+            GoToPage(`/admin/order/${id}`, 50);
+        }, (msg) => {
+            // On Failed Cancel
+            console.log(msg);
+            setOpenModal(false);
+            setShowNotif(true);
+            setNotificationMsg(msg);
+        })
     }
 
     // Fetch order details when the component mounts
@@ -125,6 +143,13 @@ export default function AdminOrderDetail () {
             <Helmet>
                 <title>Order #{id} | Keebsmart</title>
             </Helmet>
+            <AddCartNotification 
+                showNotif={showNotif}
+                setShowNotif={setShowNotif}
+                msg={notificationMsg}
+                color='bg-red-500 text-white'
+                icon={<WarningIcon/>}
+            />
             <DashboardNavbar />
             <DashboardSideMenu />
             <DashboardContent>
@@ -140,7 +165,7 @@ export default function AdminOrderDetail () {
                         carts={carts} 
                         order={order} 
                         paymentMethod={paymentMethod} 
-                        onCancelOrder={() => cancelOrder('Canceled')} 
+                        onCancelOrder={() => setOpenModal(true)} 
                         canCancel={canCancel} 
                         status={status} 
                         id={id} 
@@ -158,6 +183,12 @@ export default function AdminOrderDetail () {
                     {/* Section displaying order timeline */}
                     <OrderTimeline order={order} currentStatus={currentStatus} access={access} courierName={courierName} />
                 </div>
+                <DeleteModal 
+                    openConfirmationModal={openModal}
+                    setOpenConfirmationModal={setOpenModal}
+                    msg='Are you sure want to cancel this order?'
+                    onClickDelete={() => cancelOrder(id)}
+                />
             </DashboardContent>
         </DashboardFragment>
     );

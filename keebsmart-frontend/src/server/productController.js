@@ -373,3 +373,14 @@ export const searchProducts = async (searchKey, onSuccess) => {
         console.log(error);
     }
 }
+
+// Function for check product item is available or not
+export const checkProductsQty = async (id, onSucces) => {
+    try {
+        const data = { id }
+        const response = await axios.post(`${urlEndpoint}/product/qty`, data);
+        onSucces(response.data);
+    } catch (error) {
+        console.log(error);
+    }
+}

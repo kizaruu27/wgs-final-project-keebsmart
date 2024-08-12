@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import Navbar from "../../../Layouts/Navbar";
-import { changeStatusColor, getOrderDetail } from "../../../../server/orderController";
+import { cancelOrderForCustomer, changeStatusColor, getOrderDetail } from "../../../../server/orderController";
 import { useParams } from "react-router-dom";
 import OrderTimeline from "../../../Layouts/Admin Dashboard/Order Detail/OrderTimeline";
 import { setOrderStatus } from "../../../../server/orderController";
@@ -13,6 +13,8 @@ import Footer from "../../../Layouts/Footer";
 import OrderDetailItemSection from "../../../Layouts/Orders/OrderDetailItemSection";
 import OrderDetailTimelineSection from "../../../Layouts/Orders/OrderDetailTimelineSection";
 import { Helmet } from "react-helmet";
+import AddCartNotification from "../../../elements/Notification/AddCartNotification";
+import WarningIcon from "../../../elements/Icon/WarningIcon";
 
 export default function OrderDetailPage() {
     // Get the order ID from URL parameters
@@ -32,6 +34,10 @@ export default function OrderDetailPage() {
     const [statusColor, setStatusColor] = useState('');
     const [shippingId, setShippingId] = useState('');
     const [access, setAccess] = useState('');
+
+    // State for handling notification
+    const [showNotif, setShowNotif] = useState(false);
+    const [notificationMsg, setNotificationMsg] = useState('');
 
     // Validate user access level as 'customer' on component mount
     useEffect(() => {
@@ -74,9 +80,17 @@ export default function OrderDetailPage() {
     }, [])
 
     // Function to handle order cancellation
-    const cancelOrder = (id, status) => {
-        setOrderStatus(id, status, () => {
-            GoToPage(`/order/${id}`, 100);
+    const cancelOrder = (id) => {
+        cancelOrderForCustomer(id, (data) => {
+            // On success cancel order
+            console.log(data);
+            GoToPage(`/order/${id}`)
+        }, (msg) => {
+            // On failed cancel order
+            console.log(msg);
+            setOpenCancelOrder(false);
+            setShowNotif(true);
+            setNotificationMsg(msg);
         })
     }
 
@@ -85,11 +99,19 @@ export default function OrderDetailPage() {
             <Helmet>
                 <title>Order #{orderId.substring(0, 8).toLocaleUpperCase()} | Keebsmart</title>
             </Helmet>
+            <div className="text-center">
+                <AddCartNotification 
+                    showNotif={showNotif}
+                    setShowNotif={setShowNotif}
+                    msg={notificationMsg}
+                    color='bg-red-500 text-white'
+                    icon={<WarningIcon/>}
+                />
+            </div>
             <Navbar />
             <section className="bg-white py-8 antialiased dark:bg-gray-900 md:py-16">
                 <div className="mx-auto max-w-screen-xl px-4 2xl:px-0">
                     <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">Track the delivery of order #{orderId.substring(0, 8).toLocaleUpperCase()}</h2>
-
                     <div className="mt-6 sm:mt-8 lg:flex lg:gap-8">
                         {/* Order Item */}
                         <OrderDetailItemSection 
@@ -117,7 +139,7 @@ export default function OrderDetailPage() {
                     </div>
                 </div>
             </section>
-            <DeleteModal onClickDelete={() => cancelOrder(id, 'Canceled')} openConfirmationModal={openCancelOrder} setOpenConfirmationModal={setOpenCancelOrder} msg='Are you sure want to cancel the order?' />
+            <DeleteModal onClickDelete={() => cancelOrder(id)} openConfirmationModal={openCancelOrder} setOpenConfirmationModal={setOpenCancelOrder} msg='Are you sure want to cancel the order?' />
             <Footer />
         </div>
     )
