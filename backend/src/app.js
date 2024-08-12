@@ -14,7 +14,7 @@ const { login } = require('./Utils/auth');
 const { addNewInventory, getInventory, getUnusedInventory, getInventoryDetailById, deleteInventory, updateInventory, updateInventoryItem, deleteInventoryItem, getInventoryDetail, getInventoryItemDetail } = require('./Utils/inventoryHandler');
 const { getVariationsData, getVariationFromProduct } = require('./Utils/variationHandler');
 const { getAllProducts, getProductsForCustomer, searchProduct, getProductItemById, getAllProductDetail, getAllCategory, getSwitchesDataForCustomer, getKeyboardsDataForCustomer, getKeycapsDataForCustomer, getKeyboardsDataForAdmin, getKeycapsDataFOrAdmin, getKeycapsDataForAdmin, getSwitchesDataForAdmin, productActivation, deleteProductItem, getProductItemDetail, deleteProducts, checkProductItemStock } = require('./Utils/productHandler');
-const { getProductSales } = require('./Utils/salesHandler');
+const { getProductSales, getKeyboardSales, getKeycapsSales, getSwitchesSales } = require('./Utils/salesHandler');
 const { getOrderDetails, setOrderStatus, getUserOrders, getUserAddress, getAddressDetail, getOrderById, cancelOrder, adminCancelOrder } = require('./Utils/orderHandler');
 const { createShipment, getAllShipments, getShipmentsByStatus, getFinishedDelivery, getShipmentDetail } = require('./Utils/shipmentHandler');
 const prisma = new PrismaClient();
@@ -218,6 +218,15 @@ app.post('/product/qty', checkProductItemStock);
 
 // API for get product sales
 app.get('/sales', getProductSales);
+
+// API for get keyboard sales
+app.get('/sales/keyboards', getKeyboardSales);
+
+// API for get keycaps sales
+app.get('/sales/keycaps', getKeycapsSales);
+
+// API for get switches sales
+app.get('/sales/switches', getSwitchesSales);
 
 // API for add new product
 app.post('/product', accessValidation, upload.fields([
@@ -666,15 +675,31 @@ app.patch('/money', accessValidation, async (req, res) => {
         });
         const totalAmmount = updatedMoneyKeep.map(item => item.amount).reduce((acc, accvalue) => acc + accvalue, 0);
 
-        // Update income
-        const updatedIncome = await prisma.totalIncome.update({
+        const month = new Date().toLocaleString('default', {month: 'short'});
+
+        // Find the similar month in the database
+        const incomeInSameMonth = await prisma.totalIncome.findFirst({
             where: {
-                id: 1
-            },
+                month
+            }
+        });
+
+        // Update income
+        const updatedIncome = incomeInSameMonth ? await prisma.totalIncome.update({
             data: {
-                amount: { increment: totalAmmount }
+                amount: {increment: totalAmmount}
+            },
+            where: {
+                id: incomeInSameMonth.id
             }
         })
+        :
+        await prisma.totalIncome.create({
+            data: {
+                amount: totalAmmount,
+                month
+            }
+        });
 
         res.json({
             moneyKeep,
@@ -693,13 +718,22 @@ app.patch('/money', accessValidation, async (req, res) => {
 // API for get total income
 app.get('/income', accessValidation, async (req, res) => {
     try {
-        const totalIncome = await prisma.totalIncome.findUnique({
-            where: {
-                id: 1
+        const income = await prisma.totalIncome.findMany({
+            select: {
+                amount: true,
+                month: true
+            },
+            orderBy: {
+                id: 'asc'
             }
         });
 
-        res.json(totalIncome);
+        const totalIncome = income.map(item => item.amount).reduce((acc, accValue) => acc + accValue, 0);
+
+        res.json({
+            income,
+            totalIncome
+        });
     } catch (error) {
         console.log(error);
         const userId = req.userId;

@@ -3,7 +3,7 @@ import DashboardFragment from '../../../fragments/DashboardFragment';
 import DashboardSideMenu from '../../../Layouts/DashboardSideMenu';
 import DashboardContent from '../../../fragments/DashboardContent';
 import DashboardNavbar from '../../../Layouts/DashboardNavbar';
-import { getSalesStatistic, getAllProducts } from '../../../../server/productController';
+import { getSalesStatistic, getAllProducts, getKeyboardsSales, getKeycapsSales, getSwitchesSales } from '../../../../server/productController';
 import { getOrders } from '../../../../server/orderController';
 import TotalActiveIncomeSection from '../../../Layouts/Admin Dashboard/Dashboard/TotalIncomeSection';
 import TotalActiveProducts from '../../../Layouts/Admin Dashboard/Dashboard/TotalActiveProductsSection';
@@ -37,32 +37,6 @@ export default function AdminDashboardPage() {
     const [income, setIncome] = useState(0); // Total income value
 
     useEffect(() => {
-        // Fetch sales statistics data and process it
-        getSalesStatistic((stat) => {
-            const allProductStatistic = stat.data.sort((a, b) => b.soldTotal - a.soldTotal).splice(0, 5);
-            
-            // Separate statistics by product category
-            const keyboardStatistic = stat.data.filter(item => item.category.categoryName === 'Keyboards').sort((a, b) => b.soldTotal - a.soldTotal).splice(0, 5);
-            const keycapsStatistic = stat.data.filter(item => item.category.categoryName === 'Keycaps').sort((a, b) => b.soldTotal - a.soldTotal).splice(0, 5);
-            const switchStatistic = stat.data.filter(item => item.category.categoryName === 'Switches').sort((a, b) => b.soldTotal - a.soldTotal).splice(0, 5);
-
-            // Set product statistics for the charts
-            setProductStat(allProductStatistic.map(item => item.productName));
-            setSoldStat(allProductStatistic.map(item => item.soldTotal));
-
-            // Set data for individual category charts
-            setKeyboardLabelChart(keyboardStatistic.map(item => item.productName));
-            setKeyboardSeriesChart(keyboardStatistic.map(item => item.soldTotal));
-            
-            setKeycapsLabelChart(keycapsStatistic.map(item => item.productName));
-            setKeycapsSeriesChart(keycapsStatistic.map(item => item.soldTotal));
-            
-            setSwitchLabelChart(switchStatistic.map(item => item.productName));
-            setSwitchSeriesChart(switchStatistic.map(item => item.soldTotal));
-        });
-    }, []); // Empty dependency array means this effect runs once after the initial render
-
-    useEffect(() => {
         // Fetch all products and count the active ones
         getAllProducts((products) => {
             const allActiveProducts = products.filter(product => product.isActive === true);
@@ -71,9 +45,36 @@ export default function AdminDashboardPage() {
     }, []); // Empty dependency array means this effect runs once after the initial render
 
     useEffect(() => {
+        getKeyboardsSales((data) => {
+            setKeyboardLabelChart(data.map(item => item.productName));
+            setKeyboardSeriesChart(data.map(item => item.totalSales));
+        })
+    }, []);
+
+    useEffect(() => {
+        getKeycapsSales((data) => {
+            setKeycapsLabelChart(data.map(item => item.productName));
+            setKeycapsSeriesChart(data.map(item => item.totalSales));
+        })
+    }, []);
+
+    useEffect(() => {
+        getSwitchesSales((data) => {
+            setSwitchLabelChart(data.map(item => item.productName));
+            setSwitchSeriesChart(data.map(item => item.totalSales));
+        })
+    }, []);
+
+    useEffect(() => {
         // Fetch total income data
         getIncome((data) => {
             setIncome(data);
+        }, (sales) => {
+            const month = sales.map(item => item.month);
+            const amount = sales.map(item => item.amount);
+
+            setProductStat(month);
+            setSoldStat(amount)
         });
     }, []); // Empty dependency array means this effect runs once after the initial render
 

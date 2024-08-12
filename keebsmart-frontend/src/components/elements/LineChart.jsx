@@ -1,15 +1,26 @@
 import ReactApexChart from "react-apexcharts";
+import { convertCurrency } from "../../server/currency";
 
 export default function LineChart({products, sold}) {
      // option untuk charts
     const options = {
         chart: {
-            type: 'bar'
+            type: 'line'
+        },
+        stroke: {
+            curve: 'smooth'
         },
         xaxis: {
             categories: products,
             labels: {
-                show: false
+                show: true
+            }
+        },
+        yaxis: {
+            labels: {
+                formatter: function(value) {
+                    return convertCurrency(value)
+                }
             }
         }
     };
@@ -17,10 +28,10 @@ export default function LineChart({products, sold}) {
     // data untuk charts
     const series = [
         {
-            name: "Sold",
+            name: "Revenue",
             data: sold
         }
     ]
 
-    return  <ReactApexChart options={options} series={series} type="bar" width="800" height="300"/>
+    return  <ReactApexChart options={options} series={series} type="line" width="800" height="300"/>
 }

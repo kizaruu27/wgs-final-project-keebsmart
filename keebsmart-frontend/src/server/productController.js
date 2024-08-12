@@ -384,3 +384,34 @@ export const checkProductsQty = async (id, onSucces) => {
         console.log(error);
     }
 }
+
+// Function for get keyboards sales
+export const getKeyboardsSales = async (onSucces) => {
+    try {
+        const response = await axios.get(`${urlEndpoint}/sales/keyboards`);
+        onSucces(response.data.totalSales);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+// Function for get keycaps sales
+export const getKeycapsSales = async (onSucces) => {
+    try {
+        const response = await axios.get(`${urlEndpoint}/sales/keycaps`);
+        onSucces(response.data.totalSales);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+// Function for get switches sales
+export const getSwitchesSales = async (onSucces) => {
+    try {
+        const response = await axios.get(`${urlEndpoint}/sales/switches`);
+        onSucces(response.data.totalSales);
+    } catch (error) {
+        console.log(error);
+    }
+}
+

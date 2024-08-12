@@ -3,7 +3,7 @@ import DashboardFragment from "../../../fragments/DashboardFragment";
 import DashboardNavbar from "../../../Layouts/DashboardNavbar";
 import DashboardSideMenu from "../../../Layouts/DashboardSideMenu";
 import { useState, useEffect } from "react";
-import { getSwitchesData } from "../../../../server/productController";
+import { getSwitchesData, getSwitchesSales } from "../../../../server/productController";
 import ProductCategoryDetail from "../../../Layouts/Admin Dashboard/Product Detail/Product Category/ProductCategoryDetail";
 import { validateUser } from "../../../../server/userValidation";
 import { Helmet } from "react-helmet";
@@ -18,6 +18,9 @@ export default function AdminSwitchesProduct() {
     // State to manage the selected switches for editing
     const [selectedSwitches, setSelectedSwitches] = useState([]);
 
+    const [chartLabel, setChartLabel] = useState([]);
+    const [chartSeries, setChartSeries] = useState([]);
+
     // Fetch switches data when the component mounts
     useEffect(() => {
         getSwitchesData((data) => {
@@ -25,6 +28,13 @@ export default function AdminSwitchesProduct() {
             setTotalProducts(data.length); // Set the total number of switches products
         });
     }, []); // Empty dependency array means this effect runs once after the initial render
+
+    useEffect(() => {
+        getSwitchesSales((data) => {
+            setChartLabel(data.map(item => item.productName));
+            setChartSeries(data.map(item => item.totalSales));
+        })
+    }, [])
 
     // Validate that the user is an admin when the component mounts
     useEffect(() => {
@@ -52,6 +62,8 @@ export default function AdminSwitchesProduct() {
                     setSelectedProduct={setSelectedSwitches} // Function to set the selected switches for editing
                     products={switches} // Pass the list of switches products
                     totalProducts={totalProducts} // Pass the total number of switches products
+                    chartLabel={chartLabel}
+                    chartSeries={chartSeries}
                 />
             </DashboardContent>
         </DashboardFragment>

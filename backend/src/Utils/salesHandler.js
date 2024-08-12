@@ -51,6 +51,81 @@ const getProductSales = async (req, res) => {
     }
 };
 
+const getKeyboardSales = async (req, res) => {
+    try {
+        const products = await prisma.products.findMany({
+            where: {
+                categoryId: 1
+            },
+            include: {
+                productItem: true
+            },
+        });
+
+        const totalSales = products.map(item => ({
+            productName: item.productName,
+            totalSales: item.productItem.map(item => item.sold).reduce((acc, accValue) => acc + accValue, 0)
+        }));
+
+        res.json({
+            totalSales: totalSales.sort((a, b) => b.totalSales - a.totalSales).slice(0, 5)
+        })
+    } catch (error) {
+        handleError(null, error.message, res)
+    }
+}
+
+const getKeycapsSales = async (req, res) => {
+    try {
+        const products = await prisma.products.findMany({
+            where: {
+                categoryId: 2
+            },
+            include: {
+                productItem: true
+            },
+        });
+
+        const totalSales = products.map(item => ({
+            productName: item.productName,
+            totalSales: item.productItem.map(item => item.sold).reduce((acc, accValue) => acc + accValue, 0)
+        }));
+
+        res.json({
+            totalSales: totalSales.sort((a, b) => b.totalSales - a.totalSales).slice(0, 5)
+        })
+    } catch (error) {
+        handleError(null, error.message, res)
+    }
+}
+
+const getSwitchesSales = async (req, res) => {
+    try {
+        const products = await prisma.products.findMany({
+            where: {
+                categoryId: 3
+            },
+            include: {
+                productItem: true
+            },
+        });
+
+        const totalSales = products.map(item => ({
+            productName: item.productName,
+            totalSales: item.productItem.map(item => item.sold).reduce((acc, accValue) => acc + accValue, 0)
+        }));
+
+        res.json({
+            totalSales: totalSales.sort((a, b) => b.totalSales - a.totalSales).slice(0, 5)
+        })
+    } catch (error) {
+        handleError(null, error.message, res);
+    }
+}
+
 module.exports = {
     getProductSales,
+    getKeyboardSales,
+    getKeycapsSales,
+    getSwitchesSales
 }

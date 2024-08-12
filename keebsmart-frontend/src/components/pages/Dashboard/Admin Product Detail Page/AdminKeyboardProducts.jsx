@@ -3,7 +3,7 @@ import DashboardFragment from "../../../fragments/DashboardFragment";
 import DashboardNavbar from "../../../Layouts/DashboardNavbar";
 import DashboardSideMenu from "../../../Layouts/DashboardSideMenu";
 import { useState, useEffect } from "react";
-import { getKeyboardsData } from "../../../../server/productController";
+import { getKeyboardsData, getKeyboardsSales } from "../../../../server/productController";
 import ProductCategoryDetail from "../../../Layouts/Admin Dashboard/Product Detail/Product Category/ProductCategoryDetail";
 import { validateUser } from "../../../../server/userValidation";
 import { Helmet } from "react-helmet";
@@ -18,6 +18,9 @@ export default function AdminKeyboardProducts() {
     // State to manage the selected keyboard for editing
     const [selectedKeyboard, setSelectedKeyboard] = useState([]);
 
+    const [chartLabel, setChartLabel] = useState([]);
+    const [chartSeries, setChartSeries] = useState([]);
+
     // Fetch data for keyboard products when the component mounts
     useEffect(() => {
         getKeyboardsData((data) => {
@@ -26,6 +29,14 @@ export default function AdminKeyboardProducts() {
             setTotalProducts(data.length); // Set the total number of keyboard products
         });
     }, []); // Empty dependency array means this effect runs once after the initial render
+
+    // Fetch sales keyboard data
+    useEffect(() => {
+        getKeyboardsSales((data) => {
+            setChartLabel(data.map(item => item.productName));
+            setChartSeries(data.map(item => item.totalSales));
+        })
+    }, [])
 
     // Validate that the user is an admin when the component mounts
     useEffect(() => {
@@ -53,6 +64,8 @@ export default function AdminKeyboardProducts() {
                     setSelectedProduct={setSelectedKeyboard} // Function to set the selected keyboard for editing
                     totalProducts={totalProducts} // Pass the total number of keyboard products
                     products={keyboards} // Pass the list of keyboard products
+                    chartLabel={chartLabel}
+                    chartSeries={chartSeries}
                 />
             </DashboardContent>
         </DashboardFragment>

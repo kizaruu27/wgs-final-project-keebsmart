@@ -10,7 +10,7 @@ import { GoToPage } from "../../../../../server/pageController";
 import AddProductFormModal from "../../Product Forms/AddProductFormModal";
 import AddProductByCategoryFormModal from "../../Product Forms/AddProductByCategoryFormModal";
 
-export default function ProductCategoryDetail({category, categoryId, setSelectedProduct, totalProducts, products}) {
+export default function ProductCategoryDetail({category, categoryId, setSelectedProduct, totalProducts, products, chartLabel, chartSeries}) {
     // Variable to store user data
     const [username, setUsername] = useState('');
     const [userEmail, setUserEmail] = useState('');
@@ -21,10 +21,6 @@ export default function ProductCategoryDetail({category, categoryId, setSelected
 
     // Variable for set id to delete
     const [selectedId, setSelectedId] = useState(0);
-
-    // Add product statistic
-    const [chartLabel, setChartLabel] = useState([]);
-    const [chartSeries, setChartSeries] = useState([]);
 
     // Add product variable
     const [openAddProductModal, setOpenAddProductModal] = useState(false);
@@ -68,14 +64,13 @@ export default function ProductCategoryDetail({category, categoryId, setSelected
     }, [0]);
 
     // Fetch sales statistic
-    useEffect(() => {
-        getSalesStatistic((stat) => {
-            const statistic = stat.data.filter(item => item.category.categoryName === category).sort((a, b) => b.soldTotal - a.soldTotal).splice(0, 5);
-            console.log(category);
-            setChartLabel(statistic.map(item => item.productName));
-            setChartSeries(statistic.map(item => item.soldTotal));
-        })
-    }, [0])
+    // useEffect(() => {
+    //     getSalesStatistic((stat) => {
+    //         const statistic = stat.data.filter(item => item.category.categoryName === category).sort((a, b) => b.soldTotal - a.soldTotal).splice(0, 5);
+    //         setChartLabel(statistic.map(item => item.productName));
+    //         setChartSeries(statistic.map(item => item.soldTotal));
+    //     })
+    // }, [0])
 
     // const setEdit = (product) => {
     //     setOpenEditModal(true);
