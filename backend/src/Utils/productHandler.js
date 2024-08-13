@@ -443,15 +443,11 @@ const getProductItemDetail = async (req, res) => {
                     include: {
                         inventory: {
                             include: {
-                                item: {
-                                    where: {
-                                        isDeleted: false
-                                    }
-                                }
+                                item: true
                             },
-                            where: {
-                                isDeleted: false
-                            }
+                            // where: {
+                            //     isDeleted: 
+                            // }
                         }
                     }
                 },

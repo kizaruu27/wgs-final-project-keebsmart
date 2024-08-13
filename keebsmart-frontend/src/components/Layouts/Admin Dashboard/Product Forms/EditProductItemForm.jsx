@@ -11,6 +11,7 @@ import FormAlert from "../../../elements/Alert/FormAlert";
 import { validateUser } from "../../../../server/userValidation";
 import EditProductFormSection from "./EditProductFOrmSection";
 import { Helmet } from "react-helmet";
+import { urlEndpoint } from "../../../../server/url";
 
 export default function EditProductItemForm () {
     // Extract the product ID from the URL parameters
@@ -31,6 +32,8 @@ export default function EditProductItemForm () {
     const [imageFiles, setImageFiles] = useState([]); // Files selected for upload
     const [defaultFileNames, setDefaultFileNames] = useState([]); // Default names of the files
 
+    const [inventoryIsDeleted, setInventoryIsDeleted] = useState(false);
+
     const [onShowAlert, setOnShowAlert] = useState(false); // Controls visibility of alert
 
     // Array of possible item statuses
@@ -45,6 +48,8 @@ export default function EditProductItemForm () {
     useEffect(() => {
         getProductItemDetail(id, (data) => {
             // Populate state with fetched data
+            console.log(data.product.inventory.item.filter(item => item.variation === data.variationOption.variationValue)[0]);
+            setInventoryIsDeleted(data.product.inventory.item.filter(item => item.variation === data.variationOption.variationValue)[0].isDeleted);
             setProductName(data.product.productName);
             setProductVariant(data.variationOption.variationValue);
             setItemQty(data.qty);
@@ -55,16 +60,18 @@ export default function EditProductItemForm () {
             setManufacturer(data.manufacturer);
             setInventoryItem(data.product.inventory.item.filter(item => item.variation === data.variationOption.variationValue)[0]);
             setImageURLs(data.imageURLs);
-            console.log(data);
         });
-    }, [id]);
+    }, []);
 
     // Effect to fetch and convert image URLs to files when imageURLs change
     useEffect(() => {
         const fetchImages = async () => {
             try {
                 // Fetch each image URL and convert it to a File object
-                const filePromises = imageURLs.map(async (imageUrl) => {
+                const urls = imageURLs.map(item => `${urlEndpoint}${item}`);
+                console.log(urls);
+                
+                const filePromises = urls.map(async (imageUrl) => {
                     const response = await fetch(imageUrl);
                     const blob = await response.blob();
                     return new File([blob], imageUrl.split('/').pop(), { type: blob.type });
@@ -110,7 +117,7 @@ export default function EditProductItemForm () {
         setItemQty(e.target.value);
 
         // Show alert if quantity exceeds the allowable limit
-        if (inventoryItem !== null) {
+        if (!inventoryIsDeleted) {
             if (e.target.value > inventoryItem.qty + initialQty) setOnShowAlert(true);
             else setOnShowAlert(false);
         }
@@ -144,6 +151,7 @@ export default function EditProductItemForm () {
                         imageFiles={imageFiles}
                         imageURLs={imageURLs}
                         manufacturer={manufacturer}
+                        isInventoryDeleted={inventoryIsDeleted}
                     />
                 </div>
             </DashboardContent>

@@ -126,12 +126,22 @@ const deleteInventory = async (req, res) => {
                 id: Number(id),
             },
             data: {
-                isDeleted: true
+                isDeleted: true,
             }
         });
 
+        const deletedInventoryItem = await prisma.inventoryItem.updateMany({
+            where: {
+                inventoryId: deletedInventory.id
+            },
+            data: {
+                isDeleted: true
+            }
+        })
+
         res.json({
             deletedInventory,
+            deletedInventoryItem,
             msg: 'Delete inventory successful',
         });
     } catch (error) {

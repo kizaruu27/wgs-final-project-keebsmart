@@ -71,11 +71,11 @@ export default function CartPage() {
         // Toggle the 'isChecked' state of the selected item
         const updatedCartItems = cart.map(item => item.id === id ? ({
             ...item,
-            isChecked: !item.isChecked
+            isChecked: item.productItem.qty <= 0 ? false : !item.isChecked
         }) : item);
 
         // Check if all items are selected
-        const allItemsChecked = updatedCartItems.every(item => item.isChecked);
+        const allItemsChecked = updatedCartItems.filter(item => item.productItem.qty > 0).every(item => item.isChecked);
         dispatch(setAllChecked(allItemsChecked)); // Update the Redux state
         setCart(updatedCartItems); // Update local cart state
     }

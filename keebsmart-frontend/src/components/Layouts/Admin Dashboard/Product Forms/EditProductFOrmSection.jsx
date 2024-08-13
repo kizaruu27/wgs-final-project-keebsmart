@@ -18,6 +18,7 @@ export default function EditProductFormSection({
     defaultFileNames,
     onImageChange,
     onShowAlert,
+    isInventoryDeleted
 }) {
     return (
         <form onSubmit={e => postEditedProductItem(e)}>
@@ -25,8 +26,9 @@ export default function EditProductFormSection({
                 <div>
                     <label htmlFor="qty">Qty</label>
                     <input onChange={e => handleOnQtyChange(e)} defaultValue={itemQty} type="number" id="qty" className="my-2 bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" required />
-                    {inventoryItem !== null && 
+                    {inventoryItem !== null && !isInventoryDeleted ?
                         <p className="text-sm text-gray-500">Qty: {inventoryItem.qty}</p>
+                        : null
                     }
                 </div>
                 <div>
@@ -50,7 +52,7 @@ export default function EditProductFormSection({
                     <p className="my-2">Product Item Image</p>
                     <div className="my-5 grid grid-cols-3 gap-3">
                         {imageURLs.map((image, key) => (
-                            <img key={key} src={`${urlEndpoint}/${image}`} className="h-full" />
+                            <img key={key} src={`${urlEndpoint}/${image}`} className="h-full rounded-xl" />
                         ))}
                     </div>
                     <Label

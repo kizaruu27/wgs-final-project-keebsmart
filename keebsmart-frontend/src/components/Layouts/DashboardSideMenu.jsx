@@ -38,7 +38,6 @@ export default function DashboardSideMenu() {
     useEffect(() => {
         getUserData((data) => {
             setAccess(data.access)
-            console.log(data.access);
         }, (error) => {
             console.log(error);
         })

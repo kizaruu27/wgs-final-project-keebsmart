@@ -38,6 +38,7 @@ import AdminOrderPending from './components/pages/Dashboard/Admin All Order Page
 import AdminCouriersPage from './components/pages/Dashboard/Admin All Couriers Page/AdminCouriersPage';
 import AllProductPage from './components/pages/User/Product List/All Product Page/AllProductPage';
 import ForgotPasswordPage from './components/pages/Authentication/ForgotPasswordPage';
+import EditProductForm from './components/Layouts/Admin Dashboard/Product Forms/EditProductForm';
 
 export default function App() {
     return (
@@ -83,6 +84,7 @@ export default function App() {
                     <Route path="/admin/inventory" Component={AdminInventoryPage}/>
                     <Route path="/admin/inventory/update/:id" Component={EditInventoryForm}/>
                     <Route path="/admin/product/update/:id" Component={EditProductItemForm}/>
+                    <Route path="/admin/product/edit/:id" Component={EditProductForm}/>
                 </Routes>
             </Router>
         </>

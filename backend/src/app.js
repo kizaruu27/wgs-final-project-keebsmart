@@ -420,13 +420,13 @@ app.put('/product/update/:id', accessValidation, upload.fields([
     async (req, res) => {
         try {
             const { id } = req.params;
-            const { productName, description, brand, categoryId } = req.body;
-            const imagePreviewUrl = `http://${IP_ADDRESS}:${PORT}/images/${req.files['imagePreview'][0].filename}`;
+            const { productName, description, specs, brand, categoryId } = req.body;
+            const imagePreviewUrl = `/images/${req.files['imagePreview'][0].filename}`;
             const imageUrls = req.files['images'].map(file => `/images/${file.filename}`);
 
             const updatedProduct = await prisma.products.update({
                 data: {
-                    productName, description, brand, categoryId: Number(categoryId),
+                    productName, description, brand, categoryId: Number(categoryId), specs,
                     productImage: {
                         update: {
                             imagePreviewUrl, 
@@ -439,18 +439,10 @@ app.put('/product/update/:id', accessValidation, upload.fields([
                 }
             });
 
-            const productLog = await prisma.productLog.create({
-                data: {
-                    userId: req.userId,
-                    process: `Delete ${updatedProduct.productName}`
-                }
-            })
-
             res.status(201);
             res.json({
                 updatedProduct,
-                productLog,
-                msg: 'Product berhasil diubah!'
+                msg: 'Product updated successfully!'
             });
         } catch (error) {
             const userId = req.userId;
@@ -495,7 +487,7 @@ app.put('/product/item/update/:id', accessValidation, upload.array('images', 10)
             }
         });
 
-        if (inventoryItem) {
+        if (!inventoryItem.isDeleted) {
             // update inventory item qty
             await prisma.inventoryItem.update({
                 where: {

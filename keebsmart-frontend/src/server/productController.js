@@ -220,7 +220,7 @@ export const deleteProductItem = async (id, onSuccess, onFailed) => {
 }
 
 // Function for update a product
-export const updateProduct = async (id, productName, description, brand, categoryId, imagePreview, images, onSuccess, onFailed) => {
+export const updateProduct = async (id, productName, description, brand, categoryId, specs, imagePreview, images, onSuccess, onFailed) => {
     try {
         const formData = new FormData();
         formData.append('productName', productName);
@@ -233,6 +233,10 @@ export const updateProduct = async (id, productName, description, brand, categor
             formData.append('images', images[i]);
         }
 
+        for (let i = 0; i < specs.length; i ++) {
+            formData.append('specs', specs[i]);
+        }
+
         const response = await axios.put(`${urlEndpoint}/product/update/${id}`, formData, {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -241,9 +245,7 @@ export const updateProduct = async (id, productName, description, brand, categor
         });
 
         if (response.status !== 201) return onFailed('Edit product failed!');
-
-        console.log(response);
-        onSuccess('Edit product success');
+        onSuccess(response.data);
     } catch (error) {
         onFailed(error);
     }

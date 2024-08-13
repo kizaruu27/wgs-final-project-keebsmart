@@ -53,7 +53,7 @@ export default function ProductVariationSection({productItems, setEdit, setDelet
                                     {item.variationOption.variationValue}
                                 </th>
                                 <td className="px-6 py-4">
-                                    <img src={`${urlEndpoint}/${item.imageURLs[0]}`} alt="" />
+                                    <img src={`${urlEndpoint}/${item.imageURLs[0]}`} className="rounded-xl"/>
                                 </td>
                                 <td className="px-6 py-4 text-wrap">
                                     {item.unitId}
