@@ -1,7 +1,7 @@
 import LoginRegisterTitle from "./LoginRegisterTitle";
 import LoginRegisterButton from "./LoginRegisterButton";
 
-export default function LoginForm({onSubmit, onEmailChange, onPasswordChange}) {
+export default function LoginForm({onSubmit, onEmailChange, onPasswordChange, onForgotPassword}) {
     return (
         <div className='mt-2'>
             <LoginRegisterTitle title='Login' />
@@ -13,6 +13,9 @@ export default function LoginForm({onSubmit, onEmailChange, onPasswordChange}) {
                 <div>
                     <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
                     <input type="password" id="password" name="password" onChange={onPasswordChange} className="mt-1 p-2 w-full border rounded-md bg-gray-100 focus:border-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-300 transition-colors duration-300" required/>
+                </div>
+                <div>
+                    <p onClick={onForgotPassword} className="cursor-pointer text-blue-700 font-bold text-sm">Forgot your password?</p>
                 </div>
                 <div>
                     <LoginRegisterButton text='Login' />

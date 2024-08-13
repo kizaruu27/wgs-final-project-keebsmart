@@ -9,7 +9,7 @@ const { handleError } = require('./Utils/errorHandler');
 const { body, validationResult} = require('express-validator');
 const multer = require('multer');
 const { PrismaClient } = require('@prisma/client');
-const { getAlluser, changeUserStatus, deleteUser, registerUser, registerAdmin, deleteAdmin, registerCourier, getLoginUserData } = require('./Utils/userHandler');
+const { getAlluser, changeUserStatus, deleteUser, registerUser, registerAdmin, deleteAdmin, registerCourier, getLoginUserData, checkEmail, userResetPassword } = require('./Utils/userHandler');
 const { login } = require('./Utils/auth');
 const { addNewInventory, getInventory, getUnusedInventory, getInventoryDetailById, deleteInventory, updateInventory, updateInventoryItem, deleteInventoryItem, getInventoryDetail, getInventoryItemDetail } = require('./Utils/inventoryHandler');
 const { getVariationsData, getVariationFromProduct } = require('./Utils/variationHandler');
@@ -134,6 +134,26 @@ const registrationValidation = [
 
 // API for user registration
 app.post('/registration', registrationValidation, registerUser);
+
+// API for check user email
+app.get('/email/check/:email', checkEmail);
+
+// Function for password validation
+const validateNewPassword = [
+    body('newPassword').custom(async (value) => {
+        const hasNumber = /\d/.test(value);
+        const hasUppercase = /[A-Z]/.test(value);
+        const hasLowercase = /[a-z]/.test(value);
+        const hasMinLength = value.length >= 8;
+
+        if (!hasNumber || !hasUppercase || !hasLowercase || !hasMinLength) {
+            throw new Error('Password must be at least 8 characters, contain at least one uppercase letter, one lowercase letter, and one number');
+        }
+    })
+]
+
+// API for reset user password
+app.patch('/reset/password/:id', validateNewPassword, userResetPassword);
 
 // API for admin registration
 app.post('/registration/admin', accessValidation, registrationValidation, registerAdmin);

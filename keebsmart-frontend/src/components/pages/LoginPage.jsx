@@ -65,6 +65,11 @@ export default function LoginPage() {
         userLogin(email, password, onAdminLogin, onSuperAdminLogin, onCourierLogin, onCustomerLogin, onLoginFailed);
     };
 
+    // Redirect to forgot password page
+    const onForgotPassword = () => {
+        GoToPage('/forgot-password', 50);
+    }
+
     return (
         <LoginRegister>
             <Helmet>
@@ -74,7 +79,12 @@ export default function LoginPage() {
             <LoginLayout>
                 <Logo textStyle='text-4xl text-center my-20' />
                 {isClick && <AlertItem type={alertType} msg={alertMsg} />}
-                <LoginForm onSubmit={e => login(e)} onEmailChange={(e) => setEmail(e.target.value)} onPasswordChange={(e) => setPassword(e.target.value)} />
+                <LoginForm 
+                    onSubmit={e => login(e)} 
+                    onEmailChange={(e) => setEmail(e.target.value)} 
+                    onPasswordChange={(e) => setPassword(e.target.value)} 
+                    onForgotPassword={onForgotPassword}
+                />
             </LoginLayout>
         </LoginRegister>
     );

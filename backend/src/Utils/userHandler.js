@@ -275,6 +275,79 @@ const getLoginUserData = async (req, res) => {
     }
 }
 
+const checkEmail = async (req, res) => {
+    try {
+        const { email } = req.params;
+        
+        const similarEmail = await prisma.user.findUnique({
+            where: {
+                email,
+                isDeleted: false,
+                isActive: true
+            }
+        });
+
+        if (similarEmail) {
+            return res.status(200).json({
+                similarEmail,
+                msg: 'Email found!'
+            });
+        } else {
+            return res.status(404).json({
+                msg: 'Email not found!, please insert a correct email!'
+            })
+        }
+    } catch (error) {
+        console.log(error);
+        handleError(null, error.message, res)
+    }
+};
+
+const userResetPassword = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { newPassword } = req.body;
+        const errors = validationResult(req);
+
+        if (!errors.isEmpty()) {
+            return res.status(200).json(errors.array());
+        }
+
+        const user = await prisma.user.findUnique({
+            where: {
+                id
+            }
+        });
+
+        const passwordIsSame = await bcrypt.compare(newPassword, user.password);
+
+        if (passwordIsSame) {
+            return res.status(404).json({
+                msg: 'New password cannot be the same as your old password!'
+            })
+        }
+
+        const hashPassword = await bcrypt.hash(newPassword, 10);
+        const updatedUserPassword = await prisma.user.update({
+            where: {
+                id
+            },
+            data: {
+                password: hashPassword
+            }
+        })
+
+        res.status(201);
+        res.json({
+            updatedUser: updatedUserPassword,
+            msg: 'Password successfully updated!'
+        })
+    } catch (error) {
+        console.log(error);
+        handleError(null, error.message, res);
+    }
+}
+
 module.exports = {
     getAlluser,
     changeUserStatus,
@@ -283,5 +356,8 @@ module.exports = {
     registerAdmin,
     deleteAdmin,
     registerCourier,
-    getLoginUserData
+    getLoginUserData,
+    checkEmail,
+    userResetPassword,
+
 }

@@ -136,3 +136,28 @@ export const userLogout = async (onLogout) => {
         console.log(error);
     }
 }
+
+// Function for handling forgot password for users
+export const checkEmailIsAvailable = async (email, onSuccess, onFailed) => {
+    try {
+        const response = await axios.get(`${urlEndpoint}/email/check/${email}`);
+        onSuccess(response.data);
+    } catch (error) {
+        onFailed(error.response.data.msg);
+    }
+}
+
+// Function for handling reset password for user
+export const resetUserPassword = async (id, newPassword, onSuccess, onFailed) => {
+    try {
+        const response = await axios.patch(`${urlEndpoint}/reset/password/${id}`, { newPassword });
+
+        if (response.status === 200) {
+            onFailed(response.data[0].msg);
+        } else {
+            onSuccess(response.data);
+        }
+    } catch (error) {
+        onFailed(error.response.data.msg);
+    }
+}

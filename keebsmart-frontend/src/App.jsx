@@ -37,6 +37,7 @@ import OrderDetailPage from './components/pages/User/Product Detail/OrderDetailP
 import AdminOrderPending from './components/pages/Dashboard/Admin All Order Page/AdminOrderPending';
 import AdminCouriersPage from './components/pages/Dashboard/Admin All Couriers Page/AdminCouriersPage';
 import AllProductPage from './components/pages/User/Product List/All Product Page/AllProductPage';
+import ForgotPasswordPage from './components/pages/Authentication/ForgotPasswordPage';
 
 export default function App() {
     return (
@@ -46,6 +47,7 @@ export default function App() {
                     <Route path="/" Component={HomePage}/>
                     <Route path="/login" Component={LoginPage}/>
                     <Route path="/register" Component={RegisterPage}/>
+                    <Route path="/forgot-password" Component={ForgotPasswordPage}/>
                     <Route path="/products" Component={AllProductPage}/>
                     <Route path="/keyboards" Component={KeyboardPage}/>
                     <Route path="/keycaps" Component={KeycapsPage}/>

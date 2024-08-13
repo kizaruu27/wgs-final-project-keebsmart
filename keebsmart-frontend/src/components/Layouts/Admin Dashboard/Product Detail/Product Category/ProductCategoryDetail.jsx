@@ -63,19 +63,6 @@ export default function ProductCategoryDetail({category, categoryId, setSelected
         getUserData(onGetUserSuccess, onGetUserFailed, onTokenEmpty);
     }, [0]);
 
-    // Fetch sales statistic
-    // useEffect(() => {
-    //     getSalesStatistic((stat) => {
-    //         const statistic = stat.data.filter(item => item.category.categoryName === category).sort((a, b) => b.soldTotal - a.soldTotal).splice(0, 5);
-    //         setChartLabel(statistic.map(item => item.productName));
-    //         setChartSeries(statistic.map(item => item.soldTotal));
-    //     })
-    // }, [0])
-
-    // const setEdit = (product) => {
-    //     setOpenEditModal(true);
-    //     setSelectedProduct(product);
-    // }
     return (
         <>
             <div className="grid grid-cols-2 gap-3">

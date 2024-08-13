@@ -22,7 +22,7 @@ export default function ProductListSection({setAdd, products, onActivateProduct,
                             Category
                         </th>
                         <th scope="col" className="px-6 py-3">
-                            Is Active
+                            Publish To Store
                         </th>
                         <th scope="col" className="px-6 py-3">
                             Action
