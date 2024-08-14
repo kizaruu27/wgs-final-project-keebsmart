@@ -262,6 +262,11 @@ const getLoginUserData = async (req, res) => {
                     where: {
                         isDeleted: false
                     }
+                },
+                moneyKeep: {
+                    where: {
+                        isReceived: false
+                    }
                 }
             }
         });

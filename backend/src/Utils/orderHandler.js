@@ -299,6 +299,27 @@ const getOrderById = async (req, res) => {
     }
 };
 
+const ordersForCourier = async (req, res) => {
+    try {
+        const orders = await prisma.orders.findMany({
+            include: {
+                currentStatus: {
+                    include: {
+                        status: true
+                    },
+                }
+            },
+        });
+        const courierOrders = orders.filter(order => order.currentStatus.map(item => item.status.status)[order.currentStatus.map(item => item.status.status).length - 1] === 'Waiting Courier For Pick Up')
+        res.json({
+            courierOrders
+        })
+    } catch (error) {
+        handleError(null, error.message, res);
+        console.log(error);
+    }
+}
+
 
 module.exports = {
     getOrderDetails,
@@ -308,5 +329,6 @@ module.exports = {
     getAddressDetail,
     getOrderById,
     cancelOrder,
-    adminCancelOrder
+    adminCancelOrder,
+    ordersForCourier
 }

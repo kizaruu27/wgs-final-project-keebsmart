@@ -15,7 +15,7 @@ const { addNewInventory, getInventory, getUnusedInventory, getInventoryDetailByI
 const { getVariationsData, getVariationFromProduct } = require('./Utils/variationHandler');
 const { getAllProducts, getProductsForCustomer, searchProduct, getProductItemById, getAllProductDetail, getAllCategory, getSwitchesDataForCustomer, getKeyboardsDataForCustomer, getKeycapsDataForCustomer, getKeyboardsDataForAdmin, getKeycapsDataFOrAdmin, getKeycapsDataForAdmin, getSwitchesDataForAdmin, productActivation, deleteProductItem, getProductItemDetail, deleteProducts, checkProductItemStock } = require('./Utils/productHandler');
 const { getProductSales, getKeyboardSales, getKeycapsSales, getSwitchesSales } = require('./Utils/salesHandler');
-const { getOrderDetails, setOrderStatus, getUserOrders, getUserAddress, getAddressDetail, getOrderById, cancelOrder, adminCancelOrder } = require('./Utils/orderHandler');
+const { getOrderDetails, setOrderStatus, getUserOrders, getUserAddress, getAddressDetail, getOrderById, cancelOrder, adminCancelOrder, ordersForCourier } = require('./Utils/orderHandler');
 const { createShipment, getAllShipments, getShipmentsByStatus, getFinishedDelivery, getShipmentDetail } = require('./Utils/shipmentHandler');
 const prisma = new PrismaClient();
 const app = express();
@@ -548,6 +548,9 @@ app.get('/user/address/:id', getAddressDetail);
 
 // API for get order by id
 app.get('/order/:id', accessValidation, getOrderById);
+
+// API for get orders for courier
+app.get('/courier/orders', ordersForCourier);
 
 // API for create pending order
 app.post('/pending-order', accessValidation, async (req, res) => {

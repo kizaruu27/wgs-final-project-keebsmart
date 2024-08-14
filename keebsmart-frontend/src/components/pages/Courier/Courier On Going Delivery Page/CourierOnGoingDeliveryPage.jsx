@@ -38,7 +38,7 @@ export default function CourierOnGoingDeliveryPage() {
                     shipmentStatus(shipment) === 'On Delivery'
                 )
                 .map(item => item.order)
-                .filter(item => item.paymentMethodId === 1) // Only consider orders with cash payment method
+                .filter(item => item.paymentMethodId === 1) // Only consider orders with cash on delivery  payment method
                 .map(item => item.totalPrice);
             
             // Calculate total money to be received
