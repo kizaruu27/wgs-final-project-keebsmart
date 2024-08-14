@@ -23,9 +23,9 @@ export default function AllUserOrdersPage() {
     // Function to determine the current status of an order
     const currentStatus = (item) => {
         // Gets the most recent status from the currentStatus array
-        const statuses = item.currentStatus.map(statusItem => statusItem.status.status);
+        const statuses = item.currentStatus.filter(item => item.status.status !== 'Cash Payment Accepted' && item.status.status !== 'Order Completed').map(statusItem => statusItem.status.status);
         const latestStatus = statuses[statuses.length - 1];
-        return (latestStatus === 'Order Completed' || latestStatus === 'Cash Payment Accepted') ? 'Finish' : latestStatus;
+        return latestStatus;
     }
 
     // Effect to fetch user orders from the server
@@ -61,7 +61,7 @@ export default function AllUserOrdersPage() {
                         <div className="gap-4 sm:flex sm:items-center sm:justify-between">
                             <h2 className="text-xl font-semibold text-gray-900 dark:text-white sm:text-2xl">My orders</h2>
                         </div>
-                        <UserOrderList setCanceledOrder={setCanceledOrder} orders={orders} changeStatusColorForTable={changeStatusColorForTable} currentStatus={currentStatus}/>
+                        <UserOrderList setOrderStatus={setOrderStatus} setCanceledOrder={setCanceledOrder} orders={orders} changeStatusColorForTable={changeStatusColorForTable} currentStatus={currentStatus}/>
                     </div>
                 </div>
             </section>

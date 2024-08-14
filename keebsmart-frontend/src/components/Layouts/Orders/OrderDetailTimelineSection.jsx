@@ -32,7 +32,7 @@ export default function OrderDetailTimelineSection({id, address, order, latestSt
                 }
             </div>
             
-            { shipping && 
+            { shipping && latestStatus !== 'Canceled' && 
             <div>
                 <div className="p-5 shadow-md rounded-xl my-5">
                     <p className="bg-green-500 text-white px-2 py-1 w-24 text-center rounded-xl my-3 text-nowrap text-sm font-semibold">{latestStatus === 'Delivered' || latestStatus === 'Finish' ? 'Delivered' : 'On Delivery'}</p>

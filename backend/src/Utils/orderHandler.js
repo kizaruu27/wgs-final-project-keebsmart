@@ -12,6 +12,9 @@ const getOrderDetails = async (req, res) => {
                 currentStatus: {
                     include: {
                         status: true
+                    },
+                    orderBy: {
+                        updateAt: 'asc'
                     }
                 }
             },
@@ -178,23 +181,26 @@ const getUserOrders = async (req, res) => {
                 isDeleted: false
             },
             include: {
+                user: true,
                 address: true,
                 paymentMethod: true,
                 currentStatus: {
-                    include : {
-                        status: true
-                    }
-                },
-                carts: {
-                    include: {
-                        productItem: true
+                    select: {
+                        status: {
+                            select: {
+                                status: true
+                            }
+                        },
+                    },
+                    orderBy: {
+                        updateAt: 'asc'
                     }
                 }
             },
             orderBy: {
                 orderDate: 'desc'
             }
-        });
+        })
 
         res.json({
             orders,

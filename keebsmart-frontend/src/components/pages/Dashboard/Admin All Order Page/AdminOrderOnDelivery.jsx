@@ -65,7 +65,7 @@ export default function AdminOrderOnDelivery() {
                 {/* Table displaying orders with 'Courier Pick Up', 'On Delivery', or 'Delivered' status */}
                 <OrderTable 
                     orders={orders} 
-                    onDeleteRedirect='admin/order/ondelivery' 
+                    onDeleteRedirect='/admin/order/ondelivery' 
                     header='On Delivery Order' 
                 />
             </DashboardContent>

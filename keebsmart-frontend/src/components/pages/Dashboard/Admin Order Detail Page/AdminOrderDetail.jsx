@@ -174,7 +174,7 @@ export default function AdminOrderDetail () {
                     {/* Display shipment details if order status is relevant */}
                     {status === 'Courier Pick Up' || status === 'On Delivery' || status === 'Cash On Delivery Paid' || status === 'Delivered' || status === 'Finish' || status === 'Cash Payment Accepted' || status === 'Order Completed' ?
                         <div className="bg-white rounded-xl shadow-md p-5 col-span-2">
-                            <div className="mb-3 p-1 font-semibold text-nowrap bg-green-500 text-white rounded-full text-center w-36">{status === 'Order Completed' || status === 'Finish' ? 'Delivered' : status}</div>
+                            <div className={`mb-3 p-1 font-semibold text-nowrap bg-green-500 text-white rounded-full text-center ${status === 'Cash On Delivery Paid' ? 'w-56' : 'w-36'}`}>{status === 'Order Completed' || status === 'Finish' ? 'Delivered' : status}</div>
                             <p className="font-semibold text-lg mb-2">Shipment ID: <span className="font-light">{shippingId}</span></p>
                             <p className="font-semibold text-lg">Courier: <span className="font-light">{courierName}</span></p>
                         </div>

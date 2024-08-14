@@ -58,7 +58,7 @@ export default function AdminOrderProcessed() {
                 {/* Table displaying orders with 'On Process' or 'On Packing' status */}
                 <OrderTable 
                     orders={orders} 
-                    onDeleteRedirect='admin/order/processed' 
+                    onDeleteRedirect='/admin/order/processed' 
                     header='On Processed Orders' 
                 />
             </DashboardContent>

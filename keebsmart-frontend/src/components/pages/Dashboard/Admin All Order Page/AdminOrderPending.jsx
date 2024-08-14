@@ -41,7 +41,7 @@ export default function AdminOrderPending() {
                 {/* Render a table of pending orders */}
                 <OrderTable 
                     orders={orders} 
-                    onDeleteRedirect={'admin/order/pending'} 
+                    onDeleteRedirect={'/admin/order/pending'} 
                     header='Pending Orders' 
                 />
             </DashboardContent>

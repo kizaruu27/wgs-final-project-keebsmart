@@ -1,6 +1,7 @@
 import { convertCurrency } from "../../../server/currency"
+import { GoToPage } from "../../../server/pageController"
 
-export default function UserOrderList({orders, changeStatusColorForTable, currentStatus, setCanceledOrder}) {
+export default function UserOrderList({orders, changeStatusColorForTable, currentStatus, setCanceledOrder, setOrderStatus}) {
     return (
         <div className="mt-6 flow-root sm:mt-8">
             <div className="divide-y divide-gray-200 dark:divide-gray-700">

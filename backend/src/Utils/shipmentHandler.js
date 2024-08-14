@@ -42,6 +42,9 @@ const getAllShipments = async (req, res) => {
                         currentStatus: {
                             include: {
                                 status: true
+                            },
+                            orderBy: {
+                                updateAt: 'asc'
                             }
                         }
                     }
@@ -117,6 +120,9 @@ const getFinishedDelivery = async (req, res) => {
                         currentStatus: {
                             include: {
                                 status: true
+                            },
+                            orderBy: {
+                                updateAt: 'asc'
                             }
                         },
                         address: true
