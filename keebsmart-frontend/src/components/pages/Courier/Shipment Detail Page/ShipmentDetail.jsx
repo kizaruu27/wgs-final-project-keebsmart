@@ -14,6 +14,7 @@ import DashboardCourierSideMenu from "../../../Layouts/DashboardCourierSideMenu"
 import { getUserData } from "../../../../server/userDataController";
 import { validateUser } from "../../../../server/userValidation";
 import { Helmet } from "react-helmet";
+import { setOrderStatus } from "../../../../server/orderController";
 
 export default function ShipmentDetail() {
     // Extract the shipment ID from URL parameters
@@ -27,6 +28,7 @@ export default function ShipmentDetail() {
     const [address, setAddress] = useState({});
     const [shipment, setShipment] = useState({});
     const [order, setOrder] = useState({});
+    const [orderId, setOrderId] = useState('');
     const [paymentMethod, setPaymentMethod] = useState('');
     const [carts, setCarts] = useState([]);
     const [lastUpdate, setLastUpdate] = useState('');
@@ -50,7 +52,8 @@ export default function ShipmentDetail() {
 
     // Function to cancel the shipment and redirect to the shipment detail page
     const cancelShipment = (status) => {
-        setOrderStatus(id, status, () => {
+        setOrderStatus(orderId, status, (data) => {
+            console.log(data);
             GoToPage(`/courier/shipment/${id}`, 100);
         });
     };
@@ -66,6 +69,9 @@ export default function ShipmentDetail() {
             setShipment(data.shipment);
             setStatus(data.currentStatus);
             setOrder(data.shipment.order);
+            setOrderId(data.shipment.order.orderId);
+            console.log(data.shipment.order.orderId);
+            
             setPaymentMethod(data.shipment.order.paymentMethod);
             setCarts(data.shipment.order.carts);
             setLastUpdate(data.lastUpdate);
@@ -116,6 +122,7 @@ export default function ShipmentDetail() {
 
                     {/* Display order items and provide option to cancel if applicable */}
                     <ShipmentOrderItems
+                        cancelShipment={cancelShipment}
                         shipmentId={shipment.id}
                         canCancel={canCancel}
                         carts={carts}
