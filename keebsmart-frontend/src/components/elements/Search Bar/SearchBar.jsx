@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { searchProducts } from "../../../server/productController";
 import { GoToPage } from "../../../server/pageController";
+import { urlEndpoint } from "../../../server/url";
 
 export default function SearchBar() {
     const [isDropdownVisible, setDropdownVisible] = useState(false);
@@ -58,7 +59,7 @@ export default function SearchBar() {
                             <ul className="py-3">
                                 {products.map((item, key) => (
                                     <li key={key} className="flex px-4 gap-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 cursor-pointer" style={{height: 100}} onClick={() => GoToPage(`/product/${item.id}`)}>
-                                        <img src={item.productImage.imagePreviewUrl} alt="" className="rounded-xl" width={100} />
+                                        <img src={`${urlEndpoint}/${item.productImage.imagePreviewUrl}`} alt="" className="rounded-xl" width={100} />
                                         <p className="my-auto font-semibold text-md">{item.productName}</p>
                                     </li>
                                 ))}
